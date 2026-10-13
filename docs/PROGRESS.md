@@ -35,7 +35,6 @@ None.
 - Team machine: `~/.npm` cache has root-owned files; fix with `sudo chown -R $(whoami) ~/.npm` (ADR-030).
 - Visual regression baselines start in Phase 4A.
 - Finalise CSP script policy in Phase 7 (ADR-016).
-- **TC-SEC-020 (Supabase REST denial on the real dev project) is NOT RUN** until the team adds `NEXT_PUBLIC_SUPABASE_URL` + `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` to `.env.local` and runs `npm run test:supabase`. Must pass before Phase 5A approval at the latest.
 - Remove the `deepmerge-ts` / `mysql2` npm overrides once Prisma ships patched dependencies (ADR-036, review in Phase 7).
 - Page-level caching + on-demand revalidation (≤30 s freshness) is designed with the pages in 4A/5B (ADR-035).
 - Real menu, prices, hours, address and offers: still demo placeholders (Q-01…Q-08).

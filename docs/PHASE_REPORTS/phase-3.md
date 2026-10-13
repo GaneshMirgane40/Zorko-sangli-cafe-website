@@ -173,3 +173,23 @@ npm run test:db:down       # remove the test container
 **If something fails, send back:** the exact command, its full terminal output (check it contains no connection strings first), and for the browser, the URL and the JSON response.
 
 Phase 3 complete. Waiting for your approval or bug reports before starting Phase 4A. To approve, reply exactly: approved, go to Phase 4A
+
+---
+
+## Round 2 — 2026-10-14
+
+**Bug reported by the team:** `npm run test:supabase` still showed every test as skipped after the Supabase URL and publishable key were added to `.env.local`.
+
+- **Cause:** the test loaded `.env.local` through `@next/env`. Vitest sets `NODE_ENV=test`, and in test mode Next.js deliberately skips `.env.local`, so the keys were never read.
+- **Fix:** `tests/supabase/rest-denied.test.ts` now reads `.env.local` with Node's `process.loadEnvFile`, which does not override variables already set in the shell.
+- **Regression evidence:** the same command now runs every case. The skip placeholder only appears when the keys are really missing.
+
+| Check | Result |
+|---|---|
+| Team ran `npm run db:migrate:deploy` + seed on the dev Supabase project | Done by the team; `prisma migrate status` → "2 migrations found … Database schema is up to date!" |
+| **TC-SEC-020** Supabase REST API denial (17 tables: read, insert, update, delete) against the dev project | **PASS**, 34 passed (1 "NOT RUN" placeholder skipped, as designed) |
+
+No other files changed. The earlier results (check, integration and E2E) are unaffected, because they don't use this file.
+
+Phase 3 complete. Waiting for your approval or bug reports before starting Phase 4A. To approve, reply exactly: approved, go to Phase 4A
+

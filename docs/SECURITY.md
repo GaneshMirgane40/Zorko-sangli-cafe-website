@@ -153,7 +153,7 @@ Scales: L(ikelihood) and I(mpact) are 1–3; Risk = L×I.
 | `npm audit --omit=dev` (TC-SEC-102) | 2 | PASS: 0 vulnerabilities. Full audit: 5 high, all one dev-only chain (R-12, ADR-032) |
 | ESLint `react/no-danger` enforced | 2 | PASS (lint clean) |
 | RLS enabled on **every** `public` table (17/17), zero policies; `anon` and `authenticated` get `permission denied` on SELECT/DELETE of every table and on INSERT (TC-SEC-022, local Postgres with Supabase roles) | 3 | PASS |
-| Supabase REST API denial against the real dev project (TC-SEC-020) | 3 | **NOT RUN**: needs `NEXT_PUBLIC_SUPABASE_URL` + publishable key in `.env.local` (`npm run test:supabase`) |
+| Supabase REST API denial against the real dev project (TC-SEC-020) | 3 (Round 2) | **PASS**: 34/34 against the dev project after migrations (17 tables × read / write attempts) |
 | Injection payloads (SQL, LIKE wildcards, template, NoSQL-style, XSS strings) in `q`, slugs and `category` (TC-SEC-090) | 3 | PASS: search treats them as text (0 results, 200); slugs/category rejected with 400 before the DB |
 | LIKE wildcard escaping (`%`, `_`, `\` in search) — defect found and fixed in Phase 3 (TC-UNIT-013) | 3 | PASS |
 | Error responses never contain stack traces, SQL, Prisma codes or connection details; DB outage → 503 generic (TC-UNIT-080, TC-INT-080) | 3 | PASS |

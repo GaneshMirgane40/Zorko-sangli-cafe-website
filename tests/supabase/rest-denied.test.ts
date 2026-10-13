@@ -1,4 +1,4 @@
-import { loadEnvConfig } from '@next/env'
+import { existsSync } from 'node:fs'
 import { describe, expect, it } from 'vitest'
 
 /**
@@ -7,7 +7,10 @@ import { describe, expect, it } from 'vitest'
  * write attempts that must fail. Run: `npm run test:supabase` (needs NEXT_PUBLIC_SUPABASE_URL and
  * NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY in .env.local; values are never printed).
  */
-loadEnvConfig(process.cwd())
+// Not @next/env: Vitest sets NODE_ENV=test, and Next.js deliberately skips .env.local in test
+// mode, so the keys were never loaded (Phase 3 Round 2 bug). Node's loader reads the file
+// directly and does not override variables already set in the shell.
+if (existsSync('.env.local')) process.loadEnvFile('.env.local')
 const url = process.env.NEXT_PUBLIC_SUPABASE_URL?.replace(/\/+$/, '')
 const key = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY
 
