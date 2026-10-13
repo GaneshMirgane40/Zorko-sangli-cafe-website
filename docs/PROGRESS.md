@@ -7,9 +7,9 @@ Single source of truth for project state (CLAUDE.md Section 0.1).
 | Field | Value |
 |---|---|
 | Current phase | **Phase 2 — Application foundation** |
-| Status | **IN PROGRESS** |
+| Status | **AWAITING TEAM VERIFICATION** |
 | Branch | `phase-2` (local only, not pushed) |
-| Latest report | `docs/PHASE_REPORTS/phase-1.md` (phase-2 in progress) |
+| Latest report | `docs/PHASE_REPORTS/phase-2.md` |
 | Last updated | 2026-10-13 |
 
 ## Approved phases
@@ -27,8 +27,10 @@ None.
 
 - Loyalty and Reward Program: future work (synopsis methodology lists it as future expansion). Confirm with guide.
 - Online ordering, payment, customer accounts, delivery/order tracking: future work (synopsis + CLAUDE.md 3.0).
-- Install a secret scanner (gitleaks or equivalent) before Phase 2 checks; not installed on the dev machine yet.
-- Pin exact library versions in Phase 2; verify TypeScript 7 / ESLint 10 compatibility with Next 16 (ADR-002).
+- Secret scanning: gitleaks runs via Docker (`ghcr.io/gitleaks/gitleaks`); CI uses gitleaks-action once a GitHub remote exists (Q-16).
+- Re-check dev-only advisory `braces` ≤3.0.3 each phase; adopt the patched release when published (ADR-032).
+- Team machine: `~/.npm` cache has root-owned files; fix with `sudo chown -R $(whoami) ~/.npm` (ADR-030).
+- Visual regression baselines start in Phase 4A.
 - Finalise CSP script policy in Phase 7 (ADR-016).
 
 ## Assumptions waiting for team confirmation
