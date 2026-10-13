@@ -6,17 +6,17 @@ Single source of truth for project state (CLAUDE.md Section 0.1).
 
 | Field | Value |
 |---|---|
-| Current phase | **Phase 0 — Repository discovery and baseline** |
-| Status | **AWAITING TEAM VERIFICATION** |
-| Branch | `phase-0` (local only, not pushed) |
-| Latest report | `docs/PHASE_REPORTS/phase-0.md` |
+| Current phase | **Phase 1 — Requirements, architecture, design spec** |
+| Status | **IN PROGRESS** |
+| Branch | `phase-1` (local only, not pushed) |
+| Latest report | `docs/PHASE_REPORTS/phase-0.md` (phase-1 in progress) |
 | Last updated | 2026-10-13 |
 
 ## Approved phases
 
 | Phase | Date | Approval message (quoted) |
 |---|---|---|
-| — | — | none yet |
+| Phase 0 | 2026-10-13 | "approved, go to Phase 1" |
 
 ## Open bugs
 
