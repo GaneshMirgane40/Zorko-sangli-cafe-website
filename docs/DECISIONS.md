@@ -198,3 +198,45 @@ Verified on Chromium and WebKit (TC-COMP-006, now an E2E test because jsdom lack
 - **Exposure:** lint tooling only. It processes our own config globs on developer and CI machines and is never shipped or reachable by user input.
 - npm's suggested "fix" downgrades `eslint-config-next` to 14.x, which is incompatible with Next 16 and is rejected.
 - **Controls:** `npm audit --omit=dev` = 0 vulnerabilities; CI gates on production dependencies at high or above. Re-check at each phase and adopt the patched release once published.
+
+## ADR-033 Prisma 7 configuration — Accepted (Phase 3)
+- **Versions:** `prisma` / `@prisma/client` / `@prisma/adapter-pg` 7.10.0, `pg` 8.23.1. Checked against the installed packages: Prisma 7 removed `url`/`directUrl` from `schema.prisma`.
+- **Migrations / CLI:** `prisma.config.ts` sets `datasource.url = DIRECT_URL` and loads `.env.local` through `@next/env` (Prisma 7 no longer reads env files).
+- **Runtime:** `src/server/db.ts` builds `PrismaClient` with the `PrismaPg` adapter on the pooled `DATABASE_URL` (Supabase transaction pooler; `pg` uses unnamed prepared statements, which the pooler supports). Pool `max: 5`, 5 s connect timeout, 10 s `statement_timeout`.
+- **Generator:** `prisma-client` with output `src/generated/prisma` (git-ignored, rebuilt by `postinstall`, `typecheck` and `build`).
+- **`prisma` CLI is a devDependency.** The runtime needs only `@prisma/client` and the adapter.
+- npm 11 blocked the install scripts of `prisma`/`@prisma/engines`. They were **not** approved: the CLI downloads the schema engine on first use, which works.
+
+## ADR-034 Throwaway Docker Postgres for automated DB tests — Accepted (Phase 3)
+- Integration and E2E tests use a local `postgres:17-alpine` container (`scripts/test-db.sh`, port 54329, bound to 127.0.0.1, non-secret local password) with Supabase's `anon`/`authenticated` roles recreated. Tests never touch the team's Supabase projects, and they run before the team supplies credentials.
+- **"Reset" recreates the container** and runs `prisma migrate deploy` + seed, instead of `prisma migrate reset`. The test database is disposable, and Prisma refuses `migrate reset` from AI agents.
+- **Trade-off:** Postgres 17 locally vs Supabase's version; the live Supabase REST check (TC-SEC-020) covers the real project.
+
+## ADR-035 Public read API is uncached in Phase 3 — Accepted
+- Every `/api/v1/*` handler calls `connection()` (required: with Cache Components, a GET handler without runtime data would be prerendered at build time and would query the DB during `next build`). Responses carry `Cache-Control: no-store`, so availability changes are visible on the next request.
+- Page-level caching with tags (`use cache` + `revalidateTag`, ≤30 s freshness) is decided with the pages in Phase 4A and Phase 5B.
+- Health returns 503 `{status:"degraded", db:"down"}` when the DB is unreachable.
+
+## ADR-036 Prisma CLI advisories fixed with npm overrides — Accepted (Phase 3)
+- The `prisma@7.10.0` CLI pulls `deepmerge-ts@7.1.5` (GHSA-ggr8-5vv4-36mx, stack exhaustion) and, through its bundled local dev server, `mysql2@3.15.3` (GHSA-3f6p-5ww8-9rcr and GHSA-rgwj-5xj2-c3m3). npm's "fix" was a downgrade to Prisma 6, which is rejected (ADR-002).
+- **Decision:** `overrides` pin `deepmerge-ts@8.0.2` and `mysql2@3.24.6`. Verified: `prisma generate`, `validate`, `migrate deploy`/`status`, seed and all tests pass.
+- Remove the overrides once Prisma ships patched dependencies (re-check in Phase 7).
+
+## ADR-037 Search escapes LIKE wildcards — Accepted (Phase 3 finding)
+Prisma parameterises `contains`, but it does **not** escape `%`, `_` and `\`. A search for `%` matched every item. `escapeLike()` escapes them before the query (TC-UNIT-013, TC-SEC-090). This was not an injection (values were always parameters), but results were wrong.
+
+## ADR-038 Demo seed is create-only and guarded — Accepted (Phase 3)
+- It runs only with `ALLOW_DEMO_SEED=true`, never when `NODE_ENV` or `VERCEL_ENV` is `production`.
+- It creates missing rows only (by slug/key) and never updates or deletes. It never creates an admin or a password. Every row has `isDemo = true`.
+- Placeholder images are generated locally (`public/demo/*.webp`, labelled "DEMO IMAGE"). Demo storage paths `demo/…` are served from `/public`; real uploads (Phase 5B) use Supabase Storage paths, and `mediaUrl()` only accepts these two path shapes.
+- `npm run db:remove-demo -- --confirm` deletes only demo rows, in one transaction.
+- The menu has 17 items in total; one is unpublished on purpose, to test hiding.
+
+## ADR-039 Schema details settled in Phase 3 — Accepted
+- **`CategoryIcon` enum:** BURGER, PIZZA, PASTA, SNACKS, SANDWICH, BEVERAGE, COFFEE, DESSERT, MEAL, GENERAL. Mapped to Lucide icons in Phase 4A.
+- **Café verification flags:** `addressVerified`, `contactVerified`, `hoursVerified`, `mapVerified`, `socialVerified` (all false for demo data). The API exposes them as `verified{…}` so the UI can label placeholders.
+- **At most 4 images per item:** enforced in the database by `sortOrder BETWEEN 0 AND 3` + `UNIQUE(menuItemId, sortOrder)`.
+- `RateLimitBucket` is unique on `(key, scope, windowStart)`; the TRD said `(key, windowStart)`, but the scope is needed so login and feedback limits do not collide.
+- **Constraint lesson (Phase 3 finding):** a CHECK that evaluates to NULL passes. `Offer_price_matches_kind` now uses `IS NOT NULL` explicitly. The migration was corrected before it was applied anywhere except the throwaway test DB.
+- **Menu list:** count and page run as two parallel reads, not a `$transaction`. That avoids pinning a pooled connection and a `pg` deprecation warning from the adapter.
+

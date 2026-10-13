@@ -6,7 +6,8 @@ const baseURL = `http://localhost:${PORT}`
 /**
  * E2E runs against a production build (`next build && next start`), never the dev server, so
  * headers, caching and error pages behave as in production. ENABLE_STYLEGUIDE exposes the
- * dev-only /dev/styleguide page in that build.
+ * dev-only /dev/styleguide page in that build. The server talks to the local test database, so
+ * Docker must be running (`npm run test:e2e` starts and seeds it).
  */
 export default defineConfig({
   testDir: './tests/e2e',
@@ -29,6 +30,9 @@ export default defineConfig({
     timeout: 240_000,
     env: {
       ENABLE_STYLEGUIDE: 'true',
+      // The local throwaway test database (scripts/test-db.sh), migrated + seeded by
+      // `npm run test:e2e`. Never a Supabase project.
+      DATABASE_URL: 'postgresql://zorko_test:zorko_test@127.0.0.1:54329/zorko_test',
       NEXT_PUBLIC_SITE_URL: baseURL,
     },
   },

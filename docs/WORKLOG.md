@@ -12,12 +12,12 @@
 
 | | |
 |---|---|
-| **Current phase** | Phase 2 — Application foundation |
-| **Phase status** | AWAITING TEAM VERIFICATION. All Phase 2 work is done and committed. Do **not** start Phase 3 until the team replies exactly `approved, go to Phase 3`. |
-| **Git** | Branch `phase-2`, last commit `89089f5`. `main` holds phases 0–1 (tags `phase-0-approved`, `phase-1-approved`). Nothing pushed (no remote). |
-| **Last task completed** | Created this WORKLOG (2026-10-13). |
-| **Next action** | Wait for the team's reply. On approval: follow the "On approval" steps below, then start Phase 3. On a bug list: set PROGRESS to `CHANGES REQUESTED`, fix on `phase-2`, add regression tests, append "Round 2" to `docs/PHASE_REPORTS/phase-2.md`. |
-| **Waiting on the team** | (1) Approval phrase for Phase 2. (2) For Phase 3: a **development** Supabase project, with `DATABASE_URL` and `DIRECT_URL` placed in `.env.local` by the team (never pasted in chat); optionally `NEXT_PUBLIC_SUPABASE_URL` + publishable key. (3) Optional: `sudo chown -R $(whoami) ~/.npm` to fix their npm cache (ADR-030). (4) Open questions Q-01…Q-20 in `docs/OPEN_QUESTIONS.md`. |
+| **Current phase** | Phase 3 — Database and backend foundation |
+| **Phase status** | AWAITING TEAM VERIFICATION. All Phase 3 work is done and committed. Do **not** start Phase 4A until the team replies exactly `approved, go to Phase 4A`. |
+| **Git** | Branch `phase-3`. `main` holds phases 0–2 (tags `phase-0-approved` … `phase-2-approved`). Nothing pushed (no remote). |
+| **Last task completed** | Phase 3 report written, PROGRESS set to AWAITING TEAM VERIFICATION, committed (2026-10-14). |
+| **Next action** | Wait for the team's reply. On approval: "On approval" steps below, then start Phase 4A. On a bug list: PROGRESS → `CHANGES REQUESTED`, fix on `phase-3`, add regression tests, append "Round 2" to `docs/PHASE_REPORTS/phase-3.md`. |
+| **Waiting on the team** | (1) Approval phrase for Phase 3. (2) Dev Supabase `DATABASE_URL` + `DIRECT_URL` in `.env.local` (migrations/seed not yet run on Supabase). (3) `NEXT_PUBLIC_SUPABASE_URL` + publishable key so TC-SEC-020 can run (`npm run test:supabase`). (4) Open questions Q-01…Q-20. |
 
 ### On approval (the CLAUDE.md §0.2 step 8 routine)
 1. In `PROGRESS.md`: add a row to "Approved phases" (date + quoted message), set the current phase and status to `IN PROGRESS`, and update the branch.
@@ -34,7 +34,8 @@
 cd ~/projects/zorko-sangli
 git status && git log --oneline -5 && git tag
 npm ci && npm run check                 # lint, typecheck, format, unit tests, build
-npm run test:e2e                        # Playwright, expect 56 passed
+npm run test:integration                # Docker test DB, expect 65 passed
+npm run test:e2e                        # Docker test DB + Playwright, expect 68 passed
 ```
 
 ---
@@ -46,7 +47,10 @@ npm run test:e2e                        # Playwright, expect 56 passed
   - Cache Components is on. Request data (`searchParams`, `cookies()`) must be read inside `<Suspense>`, otherwise the build fails.
   - Error boundaries use `retry()`.
   - `PageProps` / `LayoutProps` are generated types, so typecheck runs `next typegen` first.
-- **Prisma:** npm `latest` is a release candidate (8.0.0-rc). Use stable **7.10.0** (ADR-002).
+- **Prisma:** npm `latest` is a release candidate (8.0.0-rc). Use stable **7.10.0** (ADR-002). Prisma 7: URLs live in `prisma.config.ts` (CLI) and `src/server/db.ts` (adapter), not in the schema; the client is generated into git-ignored `src/generated/` (ADR-033).
+- **Prisma refuses `migrate reset` from an AI agent.** The test DB is reset by recreating its Docker container (`scripts/test-db.sh reset`, ADR-034). Docker Desktop must be running for integration/E2E tests.
+- **Prisma `contains` does not escape `%`/`_`**: use `escapeLike()` (ADR-037). **A CHECK that evaluates to NULL passes**: use `IS NOT NULL` explicitly (ADR-039).
+- With Cache Components, every DB-reading GET route must call `connection()` (use `apiRoute()` in `src/server/http.ts`), or `next build` tries to prerender it.
 - **Safari/WebKit specifics:**
   - HSTS and `upgrade-insecure-requests` break `http://localhost`, so they are sent only for https sites (ADR-028).
   - In Playwright WebKit, keyboard tests use **Option+Tab**.

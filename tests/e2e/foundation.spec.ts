@@ -9,8 +9,10 @@ test.describe('Foundation (Phase 2)', () => {
     expect(res.headers()['content-type']).toContain('application/json')
     expect(res.headers()['cache-control']).toContain('no-store')
     const body = await res.json()
-    expect(Object.keys(body).sort()).toEqual(['status', 'time', 'version'])
+    // Phase 3 adds the database round-trip (`db`), as planned in TRD §6.
+    expect(Object.keys(body).sort()).toEqual(['db', 'status', 'time', 'version'])
     expect(body.status).toBe('ok')
+    expect(body.db).toBe('ok')
   })
 
   test('health is evaluated per request, not prerendered at build', async ({ request }) => {
@@ -66,7 +68,7 @@ test.describe('Foundation (Phase 2)', () => {
     await expect(page.getByRole('link', { name: 'Go home' })).toHaveAttribute('href', '/')
   })
 
-  for (const path of ['/', '/api/health', '/does-not-exist']) {
+  for (const path of ['/', '/api/health', '/api/v1/menu', '/does-not-exist']) {
     test(`security headers on ${path} (TC-SEC-110, TC-SEC-111)`, async ({ request }) => {
       const res = await request.get(path)
       const h = res.headers()

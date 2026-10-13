@@ -50,6 +50,7 @@
 | TC-UNIT-010 | `menuQuerySchema` parses valid/invalid params (`pageSize=500`, `q` of 61 characters, `sort=evil`) | Caps or rejects per TRD §6 |
 | TC-UNIT-011 | Filter builder combines q + category + price + popular + offers | `where` has all conditions with AND |
 | TC-UNIT-012 | Price band boundaries: ₹99.99 / ₹100 / ₹200 / ₹200.01 | Under100 / 100–200 / 100–200 / 200+ |
+| TC-UNIT-013 | `escapeLike` escapes `%`, `_`, `\` in search | Matched literally |
 | TC-UNIT-020 | `offerStatus` for now < start, start ≤ now < end, now ≥ end, expiredAt set, IST midnight edge | SCHEDULED / ACTIVE / EXPIRED / EXPIRED / correct |
 | TC-UNIT-021 | Combo savings: regular sum − promo; % rounded down; promo ≥ regular | Correct values; no savings badge when ≤0 |
 | TC-UNIT-022 | `isOpenNow` for open, closed, a closed day, boundary minutes (IST) | Correct |
@@ -59,6 +60,14 @@
 | TC-UNIT-042 | Safe `next` redirect: `/admin/menu` ok; `//evil`, `https://evil`, `/\evil` rejected | Correct |
 | TC-UNIT-050 | Feedback schema: lengths, honeypot non-empty, unknown field | Rejects as specified |
 | TC-UNIT-060 | Image magic-byte sniffer: JPEG/PNG/WebP headers; HTML, SVG, GIF, empty | Accept the first 3; reject the others |
+
+Added in Phase 3:
+
+| ID | Case | Expected |
+|---|---|---|
+| TC-UNIT-070 | Seed guard: no `ALLOW_DEMO_SEED`, `=1`, production `NODE_ENV`/`VERCEL_ENV`, missing URL | Refused with reason |
+| TC-UNIT-071 | `mediaUrl`: demo path, storage path, traversal, absolute/external URL, SVG, Storage unconfigured | Local/bucket URL or null |
+| TC-UNIT-080 | Error mapping: Prisma P2002/P2025/P2003/P1001/unknown, Zod, ApiError | 409/404/409/503/500/400; no internal text |
 
 ### 4.2 Component (TC-COMP)
 
@@ -81,6 +90,7 @@
 | TC-INT-001 | Unique slug violation on item create | 409 mapped error |
 | TC-INT-002 | Price ≤0, endsAt ≤ startsAt, lat 91 | Rejected (Zod and DB CHECK) |
 | TC-INT-003 | Delete a category with items | Blocked (Restrict) → 409 |
+| TC-INT-004 | Other CHECKs: offer price vs kind (incl. NULL), café lat/lng/WhatsApp/singleton, hours ranges, self-relation, 5th image, add-on min>max, combo qty 21, item in offer cannot be deleted | Rejected by the DB |
 | TC-INT-010 | `GET /api/v1/menu` combined filters on seed | Only items matching all filters; meta correct |
 | TC-INT-011 | Pagination: page 1/2/last/out-of-range; pageSize cap | Correct slices; empty data on out-of-range; 400 on pageSize>48 |
 | TC-INT-012 | Archived/unpublished items and archived categories | Never returned publicly |
@@ -88,6 +98,7 @@
 | TC-INT-020 | `GET /api/v1/menu/[slug]` unknown/archived | 404 `NOT_FOUND` shape |
 | TC-INT-021 | Item details include related, FBT and combos | Only published/active ones |
 | TC-INT-030 | `GET /api/v1/offers` | Active + scheduled; never expired; `offers/[slug]` expired → 404 |
+| TC-INT-031 | `GET /api/v1/cafe` | 7 hours rows, `verified` flags, `openNow`, no internal id |
 | TC-INT-040 | `GET /api/v1/reviews` | APPROVED only |
 | TC-INT-041 | `POST /api/v1/feedback` valid | 201, stored PENDING |
 | TC-INT-050 | Response contracts (Zod-validated in the test) for every public endpoint | Match TRD §6 |
@@ -110,6 +121,7 @@
 | TC-SEC-008 | Login rate limit (6th attempt in the window) | Blocked with a generic message |
 | TC-SEC-009 | Logout then reuse the old cookie | Not authorised |
 | TC-SEC-020 | Supabase REST `GET/POST/PATCH/DELETE /rest/v1/<each table>` with the publishable key (and with an authenticated user token) | No rows / permission denied; no write succeeds |
+| TC-SEC-022 | RLS at DB level (local Postgres with Supabase roles): RLS on every `public` table, no policies; `anon`/`authenticated` SELECT/DELETE/INSERT | `permission denied` everywhere; fails if a new table lacks RLS |
 | TC-SEC-021 | Storage upload to `public-media` with the publishable key | Denied |
 | TC-SEC-030 | Mass assignment: extra fields (`id`, `isArchived`, `createdAt`, `adminUserId`, `status`) in action/API payloads | 400 rejected |
 | TC-SEC-031 | Role escalation: client sends `isAdmin`/`role` fields or a different `authUserId` | Ignored/rejected; no escalation |
@@ -206,11 +218,11 @@ Notes from Phase 2:
 
 
 ```
-npm run lint          # ESLint
-npm run typecheck     # tsc --noEmit
-npm test              # Vitest unit + component
-npm run test:int      # Vitest integration (needs DB; Phase 3+)
-npm run test:e2e      # Playwright (builds + starts app)
-npm run test:security # security subset (Phase 3+)
-npm run build         # next build
+npm run check             # lint + typecheck + format + unit/component + build
+npm test                  # Vitest unit + component (no DB)
+npm run test:integration  # Docker test DB (recreated, migrated, seeded) + Vitest integration
+npm run test:e2e          # Docker test DB + Playwright (builds + starts app), Chromium + WebKit
+npm run test:supabase     # TC-SEC-020 against the DEV Supabase project (needs URL + publishable key)
+npm run test:db:down      # remove the test container
 ```
+Phase 3 notes: integration and E2E need Docker Desktop running. `test:supabase` reports "skipped" (= NOT RUN) when the keys are missing; it never passes without running.

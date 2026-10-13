@@ -110,15 +110,15 @@ sequenceDiagram
 | `proxy.ts` | Refresh the Supabase session cookie; redirect unauthenticated `/admin/*` (except `/admin/login`) to login. **Not an authorization boundary.** |
 | `server/auth/` | `getSessionUser()`, `requireAdmin()`, `AuthError` types. |
 | `server/services/` | Business logic per domain. The only place that imports Prisma. Returns DTOs. |
-| `server/db.ts` | Prisma client singleton with the pg adapter (`import "server-only"`). |
+| `server/db.ts` | Prisma client singleton with the pg adapter (`import "server-only"`). `server/env.ts` validates `DATABASE_URL` lazily. `server/log.ts` writes JSON log lines. |
 | `server/storage.ts` | Supabase Storage admin client (secret key; server-only). |
 | `server/rate-limit.ts` | Postgres fixed-window limiter. |
 | `server/audit.ts` | `recordAudit(tx, …)`. |
 | `server/revalidate.ts` | Maps entity changes to tags/paths. |
 | `lib/validation/` | Zod schemas shared with client forms (no server imports). |
 | `lib/config/env.ts` | Zod-validated env; separate `serverEnv` (server-only) and `publicEnv`. |
-| `lib/format.ts` | `formatRupees(paise)`, IST date helpers, `offerStatus()`, `isOpenNow()` (pure, unit-tested). |
-| `lib/http.ts` | `ok()`, `fail()`, `ApiError` → consistent JSON responses; `assertSameOrigin()`. |
+| `lib/format.ts` | `formatRupees(paise)`, IST date helpers, `offerStatus()`, `isOpenNow()` (pure, unit-tested). `lib/media.ts`: `mediaUrl()` (demo paths → `/demo/…`, storage paths → public bucket URL). |
+| `server/http.ts` | `ok()`, `fail()`, `ApiError`, `toApiError()` (safe error mapping), `apiRoute()` wrapper (request id, `connection()`, logging), `parseQuery()`. `assertSameOrigin()` arrives with the first POST (Phase 6). *(Moved from `lib/` in Phase 3: it is server-only.)* |
 | `components/`, `features/` | UI (UI_SPEC §16). Never import `server/*` from client components. |
 
 ## 4. Database schema
@@ -142,7 +142,7 @@ Prisma models, summarised. All IDs are `String @id @default(cuid())`; every mode
 | **Feedback** | displayName? (40), message (1000), status enum PENDING/APPROVED/REJECTED, moderatedAt?, moderatedById? FK AdminUser | index (status, createdAt) |
 | **AdminUser** | authUserId (uuid, unique, = Supabase `auth.users.id`), email (unique), displayName?, isActive Bool, lastLoginAt? | — |
 | **AuditLog** | adminUserId? FK (SetNull), action (enum-like string), entityType, entityId?, summary (300), createdAt | index (createdAt desc), (entityType, entityId); no updatedAt (append-only) |
-| **RateLimitBucket** | key (64, HMAC hex), scope, windowStart DateTime, count Int | unique (key, windowStart); index (windowStart) for pruning |
+| **RateLimitBucket** | key (64, HMAC hex), scope, windowStart DateTime, count Int | unique (key, scope, windowStart); index (windowStart) for pruning (ADR-039) |
 
 **Delete and archive behaviour:**
 - Categories and items are soft-archived. A hard delete is allowed only with zero references (OfferMenuItem / ItemRelation) and is protected by `Restrict` FKs.
@@ -172,7 +172,7 @@ erDiagram
 - `prisma migrate dev` is used on the **development** project only.
 - `prisma migrate deploy` runs on production, only with written approval (rule 14).
 - A hand-written SQL migration `…_security_rls` enables RLS on all tables, revokes privileges from `anon`/`authenticated`, and adds the CHECK constraints listed above.
-- Migrations use `DIRECT_URL`; runtime uses the pooled `DATABASE_URL`, configured in `prisma.config.ts` per Prisma 7 docs (verified in Phase 3).
+- Migrations use `DIRECT_URL` (`prisma.config.ts`); runtime uses the pooled `DATABASE_URL` through the pg driver adapter (`src/server/db.ts`). Verified in Phase 3 (ADR-033).
 
 ## 5. Auth and authorization design
 
@@ -206,14 +206,14 @@ erDiagram
 
 | Method & path | Auth | Request | Response `data` | Errors |
 |---|---|---|---|---|
-| GET `/api/health` | — | — | `{status:"ok", db:"ok"\|"down", version}` | 503 when DB down |
+| GET `/api/health` | — | — | `{status:"ok"\|"degraded", db:"ok"\|"down", version, time}` | 503 when DB down |
 | GET `/api/v1/home` | — | — | `{banners[], categories[], trending[≤4], featuredCombo?, studentOffers[≤2], reviews[≤3], gallery[≤6], cafe, hoursToday}` | 500 |
 | GET `/api/v1/categories` | — | — | `[{id, slug, name, iconKey, itemCount}]` | 500 |
-| GET `/api/v1/menu` | — | `q`(≤60), `category`(slug), `minPrice`,`maxPrice`(int ₹ 0–100000), `popular`(`1`), `offers`(`1`), `sort`(`popular`\|`price_asc`\|`price_desc`\|`name`), `page`(≥1), `pageSize`(1–48, default 12) | `[MenuItemCard]` + meta | 400 invalid params |
+| GET `/api/v1/menu` | — | `q`(≤60), `category`(slug), `minPrice`,`maxPrice`(int ₹ 0–100000, inclusive, min ≤ max), `popular`(`1`), `offers`(`1` = in an active offer), `sort`(`popular` default \|`price_asc`\|`price_desc`\|`name`), `page`(1–1000), `pageSize`(1–48, default 12) | `[MenuItemCard]` + meta | 400 invalid params |
 | GET `/api/v1/menu/[slug]` | — | slug `^[a-z0-9-]{1,90}$` | `MenuItemDetail` (images, addOnGroups, related[], fbt[], combos[], activeDiscount?) | 400, 404 |
 | GET `/api/v1/offers` | — | `kind`?, `student`(`1`)? | `{active[], scheduled[]}` (never expired) | 400 |
 | GET `/api/v1/offers/[slug]` | — | slug | `OfferDetail` | 404 (incl. expired/unpublished) |
-| GET `/api/v1/cafe` | — | — | `{name, address…, phone?, email?, whatsappUrl?, socials, lat?, lng?, hours[7], openNow, texts, isPureVegConfirmed}` | 500 |
+| GET `/api/v1/cafe` | — | — | `{name, addressLine, city, postalCode?, phone?, email?, whatsappUrl?, instagramUrl?, facebookUrl?, latitude?, longitude?, directionsUrl?, aboutText?, studentZoneText?, offerTerms?, isPureVegConfirmed, verified{address,contact,hours,map,social}, isDemo, hours[{dayOfWeek, isClosed, opensAt "HH:MM"?, closesAt?}], openNow}` | 404 not set up |
 | GET `/api/v1/gallery` | — | `page`,`pageSize` | `[{id, url, altText, caption?}]` + meta | 400 |
 | GET `/api/v1/reviews` | — | `page`,`pageSize`(≤20) | `[{id, displayName\|"Guest", message, createdAt}]` (APPROVED only) | 400 |
 | POST `/api/v1/feedback` | — (Origin check) | `{displayName?, message, website:""}` (honeypot), ≤8 KB | `{status:"PENDING"}` 201 | 400, 403 BAD_ORIGIN, 413, 429 |
@@ -223,6 +223,14 @@ erDiagram
 **Admin Server Actions** (all: `requireAdmin` → Zod `.strict()` → service in a transaction → audit → revalidate → `{ok:true, data?}` or `{ok:false, error:{code, message, fields?}}`):
 
 `category.create/update/archive/unarchive/delete/reorder` · `item.create/update/archive/unarchive/delete/setAvailability/setFlags` · `item.images.attach/reorder/updateAlt/remove` · `item.addOns.save` (replaces the groups of one item in one transaction) · `item.relations.add/remove` · `offer.create/update/publish/expire/delete` · `banner.create/update/reorder/delete` · `cafe.update` · `hours.update` · `gallery.attach/update/reorder/delete` · `feedback.approve/reject/delete` · `audit.list` (read).
+
+**Implemented in Phase 3:** health, categories, menu, menu/[slug], offers, offers/[slug], cafe. All are uncached (`no-store`, ADR-035) and send an `X-Request-Id` header; any non-GET method returns 405. Other endpoints arrive in the phases named in PROGRESS.md.
+
+**DTO shapes (Phase 3):**
+- `MenuItemCard` = `{id, slug, name, description, pricePaise, priceLabel, dietType, isAvailable, isBestSeller, isTrending, isFeatured, hasActiveOffer, category{slug,name}, image{url,altText}|null}`.
+- `MenuItemDetail` = the card without `image`, plus `images[]`, `addOnGroups[{name,minSelect,maxSelect,isRequired,options[{name,priceDeltaPaise,priceLabel,isAvailable}]}]`, `related[card]`, `frequentlyBoughtTogether[card]`, `combos[OfferSummary]` and `activeDiscount: OfferSummary|null`.
+- `OfferDetail` = `{slug, kind, status:"active"|"scheduled", title, description, image?, promoPricePaise?, priceLabel?, regularPricePaise?, regularPriceLabel?, savingsPaise?, startsAt, endsAt, isStudentOffer, isFeatured, items[{slug,name,quantity,isAvailable}]}`.
+- Contract tests (`tests/integration/api.test.ts`) pin these shapes with `.strict()` Zod schemas.
 
 **DTO rule:** services return explicit `select`ed fields only. Internal flags (`isDemo` excepted), audit data and admin IDs never appear in public DTOs.
 

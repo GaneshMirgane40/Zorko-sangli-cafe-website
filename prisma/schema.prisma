@@ -1,0 +1,337 @@
+// ZORKO Sangli — database schema (TRD §4).
+//
+// Conventions:
+// - IDs are cuid strings; every content model has createdAt/updatedAt.
+// - Money is always an Int in paise (₹1 = 100 paise). Never floats.
+// - `isDemo` marks seeded demonstration rows so they can be found and replaced (CLAUDE.md §14).
+// - CHECK constraints and Row Level Security live in the hand-written
+//   migration `*_security_rls` because Prisma cannot express them.
+// - Connection URLs live in prisma.config.ts (migrations) and src/server/db.ts (runtime), per Prisma 7.
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum CategoryIcon {
+  BURGER
+  PIZZA
+  PASTA
+  SNACKS
+  SANDWICH
+  BEVERAGE
+  COFFEE
+  DESSERT
+  MEAL
+  GENERAL
+}
+
+enum DietType {
+  VEG
+  NON_VEG
+  EGG
+}
+
+enum ItemRelationType {
+  RELATED
+  FREQUENTLY_BOUGHT_TOGETHER
+}
+
+enum OfferKind {
+  DISCOUNT
+  COMBO
+  INFO
+}
+
+enum FeedbackStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+model MenuCategory {
+  id          String       @id @default(cuid())
+  name        String       @db.VarChar(60)
+  slug        String       @unique @db.VarChar(70)
+  description String?      @db.VarChar(200)
+  iconKey     CategoryIcon @default(GENERAL)
+  sortOrder   Int          @default(0)
+  isArchived  Boolean      @default(false)
+  isDemo      Boolean      @default(false)
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  items MenuItem[]
+
+  @@index([isArchived, sortOrder])
+}
+
+model MenuItem {
+  id           String   @id @default(cuid())
+  categoryId   String
+  name         String   @db.VarChar(80)
+  slug         String   @unique @db.VarChar(90)
+  description  String   @db.VarChar(600)
+  pricePaise   Int
+  dietType     DietType @default(VEG)
+  isAvailable  Boolean  @default(true)
+  isPublished  Boolean  @default(true)
+  isArchived   Boolean  @default(false)
+  isBestSeller Boolean  @default(false)
+  isTrending   Boolean  @default(false)
+  isFeatured   Boolean  @default(false)
+  sortOrder    Int      @default(0)
+  isDemo       Boolean  @default(false)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  category      MenuCategory    @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  images        MenuItemImage[]
+  addOnGroups   AddOnGroup[]
+  relationsFrom ItemRelation[]  @relation("RelationFrom")
+  relationsTo   ItemRelation[]  @relation("RelationTo")
+  offers        OfferMenuItem[]
+
+  @@index([isPublished, isArchived, categoryId, sortOrder])
+  @@index([isBestSeller, isTrending])
+  @@index([pricePaise])
+}
+
+model MenuItemImage {
+  id          String   @id @default(cuid())
+  menuItemId  String
+  storagePath String   @db.VarChar(200)
+  altText     String   @db.VarChar(150)
+  sortOrder   Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  menuItem MenuItem @relation(fields: [menuItemId], references: [id], onDelete: Cascade)
+
+  @@unique([menuItemId, sortOrder])
+}
+
+model AddOnGroup {
+  id         String   @id @default(cuid())
+  menuItemId String
+  name       String   @db.VarChar(60)
+  minSelect  Int      @default(0)
+  maxSelect  Int      @default(1)
+  isRequired Boolean  @default(false)
+  sortOrder  Int      @default(0)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  menuItem MenuItem      @relation(fields: [menuItemId], references: [id], onDelete: Cascade)
+  options  AddOnOption[]
+
+  @@index([menuItemId, sortOrder])
+}
+
+model AddOnOption {
+  id              String   @id @default(cuid())
+  groupId         String
+  name            String   @db.VarChar(60)
+  priceDeltaPaise Int      @default(0)
+  isAvailable     Boolean  @default(true)
+  sortOrder       Int      @default(0)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  group AddOnGroup @relation(fields: [groupId], references: [id], onDelete: Cascade)
+
+  @@index([groupId, sortOrder])
+}
+
+/// Admin-managed associations ("Related", "Frequently Bought Together"). Not analytics.
+model ItemRelation {
+  id         String           @id @default(cuid())
+  fromItemId String
+  toItemId   String
+  type       ItemRelationType
+  sortOrder  Int              @default(0)
+  createdAt  DateTime         @default(now())
+  updatedAt  DateTime         @updatedAt
+
+  fromItem MenuItem @relation("RelationFrom", fields: [fromItemId], references: [id], onDelete: Cascade)
+  toItem   MenuItem @relation("RelationTo", fields: [toItemId], references: [id], onDelete: Cascade)
+
+  @@unique([fromItemId, toItemId, type])
+  @@index([toItemId])
+}
+
+model Offer {
+  id              String    @id @default(cuid())
+  kind            OfferKind
+  title           String    @db.VarChar(80)
+  slug            String    @unique @db.VarChar(90)
+  description     String    @db.VarChar(600)
+  imagePath       String?   @db.VarChar(200)
+  /// Null only for INFO offers (enforced by a CHECK constraint).
+  promoPricePaise Int?
+  startsAt        DateTime
+  endsAt          DateTime
+  /// Set when an admin expires an offer early; an offer is expired if now >= endsAt or expiredAt is set.
+  expiredAt       DateTime?
+  isPublished     Boolean   @default(false)
+  isStudentOffer  Boolean   @default(false)
+  isFeatured      Boolean   @default(false)
+  sortOrder       Int       @default(0)
+  isDemo          Boolean   @default(false)
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  items OfferMenuItem[]
+
+  @@index([isPublished, startsAt, endsAt])
+}
+
+model OfferMenuItem {
+  offerId    String
+  menuItemId String
+  quantity   Int    @default(1)
+
+  offer    Offer    @relation(fields: [offerId], references: [id], onDelete: Cascade)
+  menuItem MenuItem @relation(fields: [menuItemId], references: [id], onDelete: Restrict)
+
+  @@id([offerId, menuItemId])
+  @@index([menuItemId])
+}
+
+model PromotionalBanner {
+  id          String    @id @default(cuid())
+  title       String    @db.VarChar(80)
+  subtitle    String?   @db.VarChar(160)
+  imagePath   String    @db.VarChar(200)
+  altText     String    @db.VarChar(150)
+  ctaLabel    String?   @db.VarChar(30)
+  ctaHref     String?   @db.VarChar(300)
+  startsAt    DateTime?
+  endsAt      DateTime?
+  isPublished Boolean   @default(false)
+  sortOrder   Int       @default(0)
+  isDemo      Boolean   @default(false)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([isPublished, sortOrder])
+}
+
+/// Singleton row with id "cafe". Every value is configurable; `*Verified` flags say whether the
+/// café has confirmed it, so the UI can label unverified values as placeholders.
+model CafeInformation {
+  id                 String   @id @default("cafe")
+  name               String   @db.VarChar(80)
+  addressLine        String   @db.VarChar(200)
+  city               String   @db.VarChar(60)
+  postalCode         String?  @db.VarChar(10)
+  phone              String?  @db.VarChar(20)
+  email              String?  @db.VarChar(120)
+  /// E.164 digits only, no "+" (used to build https://wa.me/<digits>).
+  whatsappNumber     String?  @db.VarChar(15)
+  instagramUrl       String?  @db.VarChar(300)
+  facebookUrl        String?  @db.VarChar(300)
+  latitude           Decimal? @db.Decimal(9, 6)
+  longitude          Decimal? @db.Decimal(9, 6)
+  aboutText          String?  @db.VarChar(1000)
+  studentZoneText    String?  @db.VarChar(1000)
+  offerTerms         String?  @db.VarChar(1000)
+  isPureVegConfirmed Boolean  @default(false)
+  addressVerified    Boolean  @default(false)
+  contactVerified    Boolean  @default(false)
+  hoursVerified      Boolean  @default(false)
+  mapVerified        Boolean  @default(false)
+  socialVerified     Boolean  @default(false)
+  isDemo             Boolean  @default(false)
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+}
+
+/// One row per weekday (0 = Sunday). Minutes from midnight, IST.
+model OpeningHours {
+  id          String   @id @default(cuid())
+  dayOfWeek   Int      @unique
+  opensAtMin  Int      @default(0)
+  closesAtMin Int      @default(0)
+  isClosed    Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model GalleryImage {
+  id          String   @id @default(cuid())
+  storagePath String   @db.VarChar(200)
+  altText     String   @db.VarChar(150)
+  caption     String?  @db.VarChar(120)
+  sortOrder   Int      @default(0)
+  isPublished Boolean  @default(false)
+  isDemo      Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([isPublished, sortOrder])
+}
+
+model Feedback {
+  id            String         @id @default(cuid())
+  displayName   String?        @db.VarChar(40)
+  message       String         @db.VarChar(1000)
+  status        FeedbackStatus @default(PENDING)
+  moderatedAt   DateTime?
+  moderatedById String?
+  isDemo        Boolean        @default(false)
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+
+  moderatedBy AdminUser? @relation(fields: [moderatedById], references: [id], onDelete: SetNull)
+
+  @@index([status, createdAt])
+}
+
+/// Admin allowlist. A Supabase login alone is not enough; the user must have an active row here.
+model AdminUser {
+  id          String    @id @default(cuid())
+  authUserId  String    @unique @db.Uuid
+  email       String    @unique @db.VarChar(254)
+  displayName String?   @db.VarChar(60)
+  isActive    Boolean   @default(true)
+  lastLoginAt DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  auditLogs         AuditLog[]
+  moderatedFeedback Feedback[]
+}
+
+/// Append-only record of admin actions (no updatedAt). Never contains secrets.
+model AuditLog {
+  id          String   @id @default(cuid())
+  adminUserId String?
+  action      String   @db.VarChar(40)
+  entityType  String   @db.VarChar(40)
+  entityId    String?  @db.VarChar(40)
+  summary     String   @db.VarChar(300)
+  createdAt   DateTime @default(now())
+
+  adminUser AdminUser? @relation(fields: [adminUserId], references: [id], onDelete: SetNull)
+
+  @@index([createdAt(sort: Desc)])
+  @@index([entityType, entityId])
+}
+
+/// Shared fixed-window rate-limit counters (ADR: Postgres-backed limiter, works on serverless).
+model RateLimitBucket {
+  id          String   @id @default(cuid())
+  /// HMAC-SHA256 hex of the client key; raw IPs are never stored.
+  key         String   @db.VarChar(64)
+  scope       String   @db.VarChar(30)
+  windowStart DateTime
+  count       Int      @default(0)
+
+  @@unique([key, scope, windowStart])
+  @@index([windowStart])
+}

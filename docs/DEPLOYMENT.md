@@ -40,22 +40,37 @@ git clone <repo> && cd zorko-sangli
 npm ci
 cp .env.example .env.local   # then fill values (Phase 3+ needs Supabase values)
 npm run dev                  # http://localhost:3000
-curl http://localhost:3000/api/health   # {"status":"ok","version":"0.1.0","time":"…"}
+curl http://localhost:3000/api/health   # {"status":"ok","db":"ok",…}; 503 + "db":"down" without a database
 ```
 
 - **Local production build:** `npm run build && npm start`. To see `/dev/styleguide` in a production build, set `ENABLE_STYLEGUIDE=true` for **both** commands: the page re-checks the flag at request time.
 - **Safari note:** HSTS and `upgrade-insecure-requests` are sent only when `NEXT_PUBLIC_SITE_URL` is https (ADR-028), so http://localhost works in Safari.
 - **If `npm ci` reports "Missing … from lock file" or `EACCES` under `~/.npm`:** your npm cache has files owned by another user. Fix it once with `sudo chown -R $(whoami) ~/.npm` (ADR-030).
 
-## 5. Database setup *(Phase 3)*
+## 5. Database setup *(verified in Phase 3 against a local Postgres; run by the team on the dev project)*
+
+**Connection strings** (Supabase dashboard → *Connect*), placed in `.env.local` by the team, never pasted in chat:
+
+| Variable | Which Supabase string | Used by |
+|---|---|---|
+| `DATABASE_URL` | **Transaction pooler** (port 6543) | the running app (`src/server/db.ts`, pg driver adapter) |
+| `DIRECT_URL` | **Direct connection** (port 5432), or the **Session pooler** if your network has no IPv6 | Prisma CLI (migrations) and the seed (`prisma.config.ts`) |
 
 ```bash
-npx prisma migrate dev           # DEV project only: applies migrations incl. RLS/REVOKE SQL
-ALLOW_DEMO_SEED=true npm run db:seed   # demo data, refuses in production
+npm run db:migrate:deploy               # applies prisma/migrations (init + security_rls) to DIRECT_URL
+npm run db:migrate:status               # "Database schema is up to date!"
+ALLOW_DEMO_SEED=true npm run db:seed    # demo data; refuses without the flag and in production
 ```
-- Production: `npx prisma migrate deploy`, **only with written approval**, after a backup (§9).
-- `prisma migrate reset` (destructive) only on the dev project and only with team approval.
-- **Replacing demo data with real data:** edit through the admin panel (preferred), or run `npm run db:clear-demo` *(Phase 3, deletes only `isDemo=true` rows after an interactive confirmation)*.
+- Use `db:migrate:deploy` for an existing project. `npm run db:migrate:dev` (creates new migrations) is for schema changes during development only.
+- The `security_rls` migration enables RLS on every table and revokes `anon`/`authenticated` privileges. Verify with `npm run test:supabase` (needs `NEXT_PUBLIC_SUPABASE_URL` + `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`).
+- **The seed is create-only:** rows whose slug already exists are left unchanged, so re-running is safe. Demo offer dates are relative to the first seed run (active offers expire 30 days later; re-seeding does not refresh existing rows).
+- Production: `npm run db:migrate:deploy`, **only with written approval**, after a backup (§9). Never seed production.
+- `prisma migrate reset` (destructive) only on the dev project and only with team approval (Prisma also refuses to run it from an AI agent without explicit consent).
+- **Replacing demo data with real data:** edit through the admin panel (Phase 5, preferred), or run `npm run db:remove-demo -- --confirm`. It deletes only `isDemo = true` offers, banners, gallery images, feedback, items and categories (items still used by a real offer are kept). Café info and hours are kept: edit them instead.
+- **Placeholder images** live in `public/demo/` (regenerate with `node scripts/make-demo-images.mjs`).
+
+### 5.1 Local test database (automated tests only)
+`npm run test:integration` and `npm run test:e2e` start a throwaway Docker container `zorko-test-db` on `127.0.0.1:54329` (`scripts/test-db.sh`), recreate it, apply the migrations and seed it. It mimics Supabase's `anon`/`authenticated` roles. It never touches a Supabase project. Remove it with `npm run test:db:down`. Requires Docker Desktop to be running.
 
 ## 6. First-admin provisioning *(Phase 5A)*
 
