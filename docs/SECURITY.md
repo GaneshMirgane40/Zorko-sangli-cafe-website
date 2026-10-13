@@ -95,6 +95,8 @@ Scales: L(ikelihood) and I(mpact) are 1–3; Risk = L×I.
 | R-09 | Free-tier pause or outage during demo | 2 | 2 | 4 | Wake before the demo; health check | Low |
 | R-10 | Vulnerable dependency | 2 | 2 | 4 | `npm audit` in CI, pinned lockfile, minimal deps | Low–Med |
 | R-11 | Feedback contains personal data | 2 | 1 | 2 | Moderation, no contact fields, retention rule | Low |
+| R-12 | Dev-only advisory `braces` ≤3.0.3 via ESLint tooling, no patch available (ADR-032) | 1 | 1 | 1 | Not shipped; prod audit clean; re-check each phase | Low (accepted) |
+| R-13 | HSTS/upgrade on http hosts breaking Safari (found in Phase 2) | — | — | — | Fixed (ADR-028), regression-tested | Closed |
 
 ## 8. OWASP Top 10:2025 checklist
 
@@ -141,6 +143,13 @@ Scales: L(ikelihood) and I(mpact) are 1–3; Risk = L×I.
 
 | Test group | Phase | Result |
 |---|---|---|
-| — | — | No security tests executed yet (Phase 1 is documentation only). |
+| Security headers (unit: CSP directives, HSTS only on https, no Supabase in script-src) | 2 | PASS (5 tests) |
+| Security headers on `/`, `/api/health`, 404 (E2E, Chromium + WebKit): CSP, XFO, nosniff, Referrer-Policy, Permissions-Policy, no X-Powered-By, no CORS header (TC-SEC-110/111) | 2 | PASS |
+| Env validation never echoes values (TC-UNIT-002/003 for `NEXT_PUBLIC_SITE_URL`) | 2 | PASS |
+| Client bundle scan for secret names/values (TC-SEC-100) | 2 | PASS: 0 matches in `.next/static` |
+| gitleaks 'dir' scan of the working tree (Docker `ghcr.io/gitleaks/gitleaks:latest`) | 2 | PASS for project files. 8 hits only in git-ignored `.next/` (per-build Next.js preview/encryption keys, server-side, never committed) |
+| gitleaks scan of git history (TC-SEC-101) | 2 | See phase-2 report |
+| `npm audit --omit=dev` (TC-SEC-102) | 2 | PASS: 0 vulnerabilities. Full audit: 5 high, all one dev-only chain (R-12, ADR-032) |
+| ESLint `react/no-danger` enforced | 2 | PASS (lint clean) |
 
 Manual threat-model review: initial version written in Phase 1; to be re-reviewed with the team in Phase 7. Automated scans cannot prove security.

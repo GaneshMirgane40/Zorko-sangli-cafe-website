@@ -1,0 +1,16 @@
+# Generated / vendored / reference material — not formatted
+node_modules
+.next
+coverage
+playwright-report
+test-results
+package-lock.json
+design/
+docs/
+CLAUDE.md
+AGENTS.md
+README.md
+next-env.d.ts
+
+# Assistant permission settings — keep byte-for-byte as written by the team
+.claude/
