@@ -357,7 +357,8 @@ Default size is 18–20 px (16 px inside small buttons), `stroke-width` 2, inher
   - A "Filters" button (badge with the active count) opens a bottom sheet holding filters and sort, with "Apply" and "Reset".
   - Grid of **2 columns** (DESIGN.md), compact card: image `aspect-square`, title `text-[15px] font-bold` 2-line clamp, description hidden, price + availability, the whole card links.
   - Status card collapses to a one-line strip.
-- **State:** all filters live in the URL (`?q=&category=&price=&popular=1&offers=1&sort=&page=`), so they are shareable and the back button works. The server renders results.
+- **State:** all filters live in the URL (`?q=&category=&price=&popular=1&offers=1&sort=&view=list&page=`), so they are shareable and the back button works. The server renders results. Price bands: `under-100` (< ₹100), `100-200` (inclusive), `200-plus` (> ₹200). Invalid URL values are ignored by the page (the JSON API answers 400).
+- **Implemented in Phase 4A:** filters auto-apply on change (`next/form`, client navigation) and still work without JavaScript (an Apply button appears inside `<noscript>`).
 - **Removed:** Curated Tags, dietary-customisation banner, sticky table/tray bar, "Call Café Staff", ADD buttons.
 
 ### 12.3 Item details (`/menu/[slug]`) — Stitch `desktop_item_details`
@@ -447,6 +448,9 @@ Empty-state layout with a large `display-hero` "404" in `text-primary`, the mess
 | V-11 | Fixed 40 px page margins at all widths | 16 / 24 / 40 px | DESIGN.md grid |
 | V-12 | "100% VEG" pill text `#15803D` on the light-emerald tint (DESIGN.md) | Text `tertiary` `#006947` | axe colour-contrast failure found in Phase 2 |
 | V-13 | Sold-out card `opacity-60` on the whole card (Stitch menu screen) | Dim and greyscale the **image only**; the label sits on a solid `bg-inverse-surface`; text keeps full contrast | axe colour-contrast failure found in Phase 2 |
+| V-15 | Header "QR Menu" button, "View Offers" CTA, Student Zone/offer CTAs, bottom-nav Offers/Students/More | Rendered only once the target page exists (4B / 6) | No dead links between phases (ADR-042) |
+| V-16 | Menu card struck-through regular price for discounts | "Offer" badge on the card; the item page names the offer and its price | Seeded/admin discount prices apply to a bundle (e.g. 2× pizza), not to one item |
+| V-17 | Breadcrumb links ~14 px tall | `min-h-12 min-w-12` under 1024 px | 48 px touch-target rule (TC-RESP-002) |
 | V-14 | Small buttons, pills, chip remove `×` (28–40 px) | `min-h-12` under 1024 px (`lg:` compact size kept); whole filter chip is the remove link; dialog/toast close 48 px | 48 px touch-target rule (§11), TC-RESP-002 |
 
 ## 15. Derived screens (no Stitch source)

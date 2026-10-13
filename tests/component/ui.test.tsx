@@ -1,3 +1,4 @@
+import Link from 'next/link'
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { describe, expect, it, vi } from 'vitest'
@@ -85,7 +86,7 @@ describe('States (TC-COMP-005)', () => {
     render(
       <EmptyState
         title="No dishes match these filters"
-        action={<a href="/menu">Clear all filters</a>}
+        action={<Link href="/menu">Clear all filters</Link>}
       />,
     )
     expect(

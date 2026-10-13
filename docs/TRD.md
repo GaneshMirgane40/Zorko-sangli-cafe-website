@@ -120,6 +120,8 @@ sequenceDiagram
 | `lib/format.ts` | `formatRupees(paise)`, IST date helpers, `offerStatus()`, `isOpenNow()` (pure, unit-tested). `lib/media.ts`: `mediaUrl()` (demo paths → `/demo/…`, storage paths → public bucket URL). |
 | `server/http.ts` | `ok()`, `fail()`, `ApiError`, `toApiError()` (safe error mapping), `apiRoute()` wrapper (request id, `connection()`, logging), `parseQuery()`. `assertSameOrigin()` arrives with the first POST (Phase 6). *(Moved from `lib/` in Phase 3: it is server-only.)* |
 | `components/`, `features/` | UI (UI_SPEC §16). Never import `server/*` from client components. |
+| `server/public-data.ts` | Cached (`'use cache'`, 30 s, tagged) loaders used by public pages (ADR-040). Pages call these, not the HTTP API. |
+| `lib/site/nav.ts` | Navigation with per-page `live` flags (ADR-042). |
 
 ## 4. Database schema
 
@@ -209,7 +211,7 @@ erDiagram
 | GET `/api/health` | — | — | `{status:"ok"\|"degraded", db:"ok"\|"down", version, time}` | 503 when DB down |
 | GET `/api/v1/home` | — | — | `{banners[], categories[], trending[≤4], featuredCombo?, studentOffers[≤2], reviews[≤3], gallery[≤6], cafe, hoursToday}` | 500 |
 | GET `/api/v1/categories` | — | — | `[{id, slug, name, iconKey, itemCount}]` | 500 |
-| GET `/api/v1/menu` | — | `q`(≤60), `category`(slug), `minPrice`,`maxPrice`(int ₹ 0–100000, inclusive, min ≤ max), `popular`(`1`), `offers`(`1` = in an active offer), `sort`(`popular` default \|`price_asc`\|`price_desc`\|`name`), `page`(1–1000), `pageSize`(1–48, default 12) | `[MenuItemCard]` + meta | 400 invalid params |
+| GET `/api/v1/menu` | — | `q`(≤60), `category`(slug), `minPrice`,`maxPrice`(int ₹ 0–100000, inclusive, min ≤ max), `price`(`under-100`\|`100-200`\|`200-plus`, Phase 4A), `popular`(`1`), `offers`(`1` = in an active offer), `sort`(`popular` default \|`price_asc`\|`price_desc`\|`name`), `page`(1–1000), `pageSize`(1–48, default 12) | `[MenuItemCard]` + meta | 400 invalid params |
 | GET `/api/v1/menu/[slug]` | — | slug `^[a-z0-9-]{1,90}$` | `MenuItemDetail` (images, addOnGroups, related[], fbt[], combos[], activeDiscount?) | 400, 404 |
 | GET `/api/v1/offers` | — | `kind`?, `student`(`1`)? | `{active[], scheduled[]}` (never expired) | 400 |
 | GET `/api/v1/offers/[slug]` | — | slug | `OfferDetail` | 404 (incl. expired/unpublished) |

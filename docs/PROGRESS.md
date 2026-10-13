@@ -9,9 +9,9 @@ Single source of truth for project state (CLAUDE.md Section 0.1).
 | Field | Value |
 |---|---|
 | Current phase | **Phase 4A — Public site core** |
-| Status | **IN PROGRESS** |
+| Status | **AWAITING TEAM VERIFICATION** |
 | Branch | `phase-4a` (local only, not pushed) |
-| Latest report | `docs/PHASE_REPORTS/phase-3.md` |
+| Latest report | `docs/PHASE_REPORTS/phase-4a.md` |
 | Last updated | 2026-10-14 |
 
 ## Approved phases
@@ -39,6 +39,9 @@ None.
 - Remove the `deepmerge-ts` / `mysql2` npm overrides once Prisma ships patched dependencies (ADR-036, review in Phase 7).
 - Page-level caching + on-demand revalidation (≤30 s freshness) is designed with the pages in 4A/5B (ADR-035).
 - Real menu, prices, hours, address and offers: still demo placeholders (Q-01…Q-08).
+- Visual baselines exist only for macOS (`-darwin`); record Linux baselines when CI is set up (Q-16).
+- Switch on `/offers`, `/student-zone`, `/gallery`, `/contact` in `src/lib/site/nav.ts` in Phase 4B, and `/feedback`, `/qr` in Phase 6 (ADR-042).
+- Admin actions must call `updateTag`/`revalidateTag` for the `menu`/`offers`/`cafe`/`home`/`item:<slug>` tags (Phase 5B/5C, ADR-040).
 
 ## Assumptions waiting for team confirmation
 

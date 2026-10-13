@@ -31,6 +31,18 @@ const rupees = z.coerce
 const flag = z.literal('1', { message: 'use 1 to enable' })
 
 export const MENU_SORTS = ['popular', 'price_asc', 'price_desc', 'name'] as const
+
+/**
+ * Menu price bands (UI_SPEC §12.2, TC-UNIT-012): Under ₹100 is < ₹100; ₹100–₹200 includes both
+ * ends; ₹200+ is > ₹200. Applied on the server in paise, so ₹99.99 and ₹200.01 fall correctly.
+ */
+export const PRICE_BANDS = {
+  'under-100': { label: 'Under ₹100', maxPaiseExclusive: 10_000 },
+  '100-200': { label: '₹100–₹200', minPaise: 10_000, maxPaise: 20_000 },
+  '200-plus': { label: '₹200+', minPaiseExclusive: 20_000 },
+} as const
+export type PriceBand = keyof typeof PRICE_BANDS
+export const PRICE_BAND_KEYS = Object.keys(PRICE_BANDS) as PriceBand[]
 export const MAX_PAGE_SIZE = 48
 
 export const menuQuerySchema = z
@@ -39,6 +51,7 @@ export const menuQuerySchema = z
     category: optional(slugSchema),
     minPrice: optional(rupees),
     maxPrice: optional(rupees),
+    price: optional(z.enum(PRICE_BAND_KEYS as [PriceBand, ...PriceBand[]])),
     popular: optional(flag),
     offers: optional(flag),
     sort: optional(z.enum(MENU_SORTS)).transform((v) => v ?? 'popular'),

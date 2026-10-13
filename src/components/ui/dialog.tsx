@@ -13,6 +13,8 @@ type DialogProps = {
   children?: ReactNode
   footer?: ReactNode
   className?: string
+  /** `sheet`: bottom sheet for mobile menus and filters (UI_SPEC §7.7 drawer). */
+  placement?: 'center' | 'sheet'
 }
 
 /**
@@ -27,6 +29,7 @@ export function Dialog({
   children,
   footer,
   className,
+  placement = 'center',
 }: DialogProps) {
   const ref = useRef<HTMLDialogElement>(null)
   const titleId = useId()
@@ -78,7 +81,10 @@ export function Dialog({
         if (event.target === ref.current) onClose()
       }}
       className={cn(
-        'm-auto w-[calc(100%-2rem)] max-w-md rounded-3xl bg-surface p-0 text-on-surface shadow-2xl backdrop:bg-transparent',
+        'bg-surface p-0 text-on-surface shadow-2xl backdrop:bg-transparent',
+        placement === 'center'
+          ? 'm-auto w-[calc(100%-2rem)] max-w-md rounded-3xl'
+          : 'mx-auto mt-auto mb-0 max-h-[85dvh] w-full max-w-lg overflow-y-auto rounded-t-3xl pb-[env(safe-area-inset-bottom)]',
         className,
       )}
     >

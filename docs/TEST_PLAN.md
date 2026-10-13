@@ -69,6 +69,8 @@ Added in Phase 3:
 | TC-UNIT-071 | `mediaUrl`: demo path, storage path, traversal, absolute/external URL, SVG, Storage unconfigured | Local/bucket URL or null |
 | TC-UNIT-080 | Error mapping: Prisma P2002/P2025/P2003/P1001/unknown, Zod, ApiError | 409/404/409/503/500/400; no internal text |
 
+Added in Phase 4A: menu URL state (invalid values dropped, hrefs keep filters, chips), navigation gating (`liveNav`, `isActivePath`), 12-hour time formatting, price-band `where` clauses (TC-UNIT-012), in `tests/unit/menu-page.test.ts`. Menu card states (TC-COMP-002) in `tests/component/menu-card.test.tsx`.
+
 ### 4.2 Component (TC-COMP)
 
 | ID | Case | Expected |
@@ -225,4 +227,6 @@ npm run test:e2e          # Docker test DB + Playwright (builds + starts app), C
 npm run test:supabase     # TC-SEC-020 against the DEV Supabase project (needs URL + publishable key)
 npm run test:db:down      # remove the test container
 ```
+Phase 4A notes: `tests/e2e/public-site.spec.ts` covers the homepage, menu, item pages, internal-link validation, axe at 390/1440 px, no horizontal scroll at all five widths, touch targets, header/drawer/bottom nav and **visual baselines** (Chromium, `tests/e2e/public-site.spec.ts-snapshots/`; time-dependent text masked via `[data-volatile]`). Update baselines only for reviewed design changes: `npx playwright test -g "visual baselines" --update-snapshots`.
+
 Phase 3 notes: integration and E2E need Docker Desktop running. `test:supabase` reports "skipped" (= NOT RUN) when the keys are missing; it never passes without running.

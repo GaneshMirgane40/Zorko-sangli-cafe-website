@@ -6,19 +6,19 @@ Requirement → design/module → implementation location (planned) → tests �
 
 | Req | Pri | Design / module | Implementation (planned) | Tests | Phase | Status | Evidence |
 |---|---|---|---|---|---|---|---|
-| FR-001 Homepage | M | UI_SPEC §12.1; services home/menu/offers/cafe | `src/app/(public)/page.tsx`, `src/server/services/home.ts` | TC-E2E-001, TC-VIS-001, TC-A11Y-001 | 4A | Planned | — |
-| FR-002 Navigation | M | UI_SPEC §8 | `src/components/layout/*` | TC-RESP-003, TC-A11Y-003 | 4A | Planned | — |
-| FR-003 Menu listing | M | UI_SPEC §12.2; TRD §6 | `src/app/(public)/menu/page.tsx`, `services/menu.ts` | TC-INT-010, TC-INT-012, TC-E2E-010 | 3, 4A | In progress (Phase 3 backend/API verified; UI in 4A) | phase-3.md |
-| FR-004 Search | M | ADR-012 | `lib/validation/public.ts`, `services/menu.ts` | TC-UNIT-010/011, TC-SEC-090, TC-E2E-010 | 3, 4A | In progress (Phase 3 backend/API verified; UI in 4A) | phase-3.md |
-| FR-005 Combined filters | M | ADR-021, ADR-022 | same | TC-UNIT-011/012, TC-INT-010, TC-E2E-010 | 3, 4A | In progress (Phase 3 backend/API verified; UI in 4A) | phase-3.md |
-| FR-006 Sort & reset | M | UI_SPEC §12.2 | same + `features/menu/SortSelect` | TC-INT-013, TC-E2E-011/012 | 3, 4A | In progress (Phase 3 backend/API verified; UI in 4A) | phase-3.md |
-| FR-007 Pagination | M | TRD §4 | same + `ui/Pagination` | TC-INT-011, TC-E2E-012 | 3, 4A | In progress (Phase 3 backend/API verified; UI in 4A) | phase-3.md |
-| FR-008 List states | M | UI_SPEC §7.7 | `menu/loading.tsx`, `error.tsx`, `EmptyState` | TC-COMP-005, TC-E2E-011/013 | 4A | Planned | — |
-| FR-009 Availability display | M | UI_SPEC §7.6 | `features/menu/MenuCard` | TC-COMP-002, TC-E2E-021 | 4A | Planned | — |
-| FR-010 Item details | M | UI_SPEC §12.3 | `src/app/(public)/menu/[slug]/page.tsx` | TC-INT-020, TC-E2E-020 | 3, 4A | In progress (Phase 3 backend/API verified; UI in 4A) | phase-3.md |
-| FR-011 Add-ons display | M | ADR-019 | `features/menu/AddOnList` | TC-COMP-007, TC-E2E-020 | 4A | Planned | — |
-| FR-012 Related / FBT / combos | M | TRD §4 ItemRelation | `services/menu.ts#getItemDetail` | TC-INT-021, TC-E2E-020 | 3, 4A | In progress (Phase 3 backend/API verified; UI in 4A) | phase-3.md |
-| FR-013 Best sellers / trending | M | ADR-021 | flags + home section | TC-INT-010, TC-E2E-001 | 3, 4A | In progress (Phase 3 backend/API verified; UI in 4A) | phase-3.md |
+| FR-001 Homepage | M | UI_SPEC §12.1; services home/menu/offers/cafe | `src/app/(public)/page.tsx`, `src/server/services/home.ts` | TC-E2E-001, TC-VIS-001, TC-A11Y-001 | 4A | In progress (4A: hero, categories, popular picks, featured combo, student teaser, visit-us verified; banner/review/gallery data comes with 5C/6) | phase-4a.md |
+| FR-002 Navigation | M | UI_SPEC §8 | `src/components/layout/*` | TC-RESP-003, TC-A11Y-003 | 4A | In progress (4A: header, drawer, bottom nav, footer verified for live pages; other pages switch on in 4B/6, ADR-042) | phase-4a.md |
+| FR-003 Menu listing | M | UI_SPEC §12.2; TRD §6 | `src/app/(public)/menu/page.tsx`, `services/menu.ts` | TC-INT-010, TC-INT-012, TC-E2E-010 | 3, 4A | Verified | phase-3.md, phase-4a.md |
+| FR-004 Search | M | ADR-012 | `lib/validation/public.ts`, `services/menu.ts` | TC-UNIT-010/011, TC-SEC-090, TC-E2E-010 | 3, 4A | Verified | phase-3.md, phase-4a.md |
+| FR-005 Combined filters | M | ADR-021, ADR-022 | same | TC-UNIT-011/012, TC-INT-010, TC-E2E-010 | 3, 4A | Verified | phase-3.md, phase-4a.md |
+| FR-006 Sort & reset | M | UI_SPEC §12.2 | same + `features/menu/SortSelect` | TC-INT-013, TC-E2E-011/012 | 3, 4A | Verified | phase-3.md, phase-4a.md |
+| FR-007 Pagination | M | TRD §4 | same + `ui/Pagination` | TC-INT-011, TC-E2E-012 | 3, 4A | Verified | phase-3.md, phase-4a.md |
+| FR-008 List states | M | UI_SPEC §7.7 | `menu/loading.tsx`, `error.tsx`, `EmptyState` | TC-COMP-005, TC-E2E-011/013 | 4A | Verified (loading skeletons, empty state, error boundary) | phase-4a.md |
+| FR-009 Availability display | M | UI_SPEC §7.6 | `features/menu/MenuCard` | TC-COMP-002, TC-E2E-021 | 4A | Verified | phase-4a.md |
+| FR-010 Item details | M | UI_SPEC §12.3 | `src/app/(public)/menu/[slug]/page.tsx` | TC-INT-020, TC-E2E-020 | 3, 4A | Verified | phase-3.md, phase-4a.md |
+| FR-011 Add-ons display | M | ADR-019 | `features/menu/AddOnList` | TC-COMP-007, TC-E2E-020 | 4A | Verified | phase-4a.md |
+| FR-012 Related / FBT / combos | M | TRD §4 ItemRelation | `services/menu.ts#getItemDetail` | TC-INT-021, TC-E2E-020 | 3, 4A | Verified | phase-3.md, phase-4a.md |
+| FR-013 Best sellers / trending | M | ADR-021 | flags + home section | TC-INT-010, TC-E2E-001 | 3, 4A | Verified | phase-3.md, phase-4a.md |
 | FR-014 Offers & combos | M | ADR-020; UI_SPEC §12.4–12.5 | `src/app/(public)/offers/*`, `services/offers.ts`, `lib/format.ts#offerStatus` | TC-UNIT-020/021, TC-INT-030, TC-E2E-030 | 3, 4B | In progress (Phase 3 backend/API verified; UI in 4B) | phase-3.md |
 | FR-015 Student Zone | M | UI_SPEC §12.6 | `src/app/(public)/student-zone/page.tsx` | TC-E2E-031 | 4B | Planned | — |
 | FR-016 Gallery | M | UI_SPEC §12.7 | `src/app/(public)/gallery/page.tsx` | TC-E2E-040 | 4B | Planned | — |
@@ -29,7 +29,7 @@ Requirement → design/module → implementation location (planned) → tests �
 | FR-021 SEO | M | — | `generateMetadata`, `app/sitemap.ts`, `app/robots.ts` | TC-E2E (metadata checks in 4B) | 4B | Planned | — |
 | FR-022 Live availability ≤30 s | M | ADR-013 | `server/revalidate.ts` + page revalidate | TC-E2E-050/051 | 5B | Planned | — |
 | FR-023 Structured data | C | — | — | — | after Q-01…04 | Planned | — |
-| FR-024 Demo labelling | M | ADR-025 | `layout/DemoRibbon`, `isDemo` | TC-E2E-001 | 3, 4A | In progress (Phase 3 backend/API verified; UI in 4A) | phase-3.md |
+| FR-024 Demo labelling | M | ADR-025 | `layout/DemoRibbon`, `isDemo` | TC-E2E-001 | 3, 4A | Verified | phase-3.md, phase-4a.md |
 | FR-025 Error pages | M | UI_SPEC §12.11 | `src/app/not-found.tsx`, `error.tsx`, `global-error.tsx` | E2E foundation "unknown routes return 404", axe on 404 | 2, 4A | Implemented (404 verified; per-page error states in 4A) | phase-2.md |
 | FR-030 Admin login/logout | M | TRD §5 | `src/app/(admin)/admin/login/*`, `api/admin/logout` | TC-E2E-060, TC-SEC-009 | 5A | Planned | — |
 | FR-031 Allowlist authorization | M | ADR-010 | `server/auth/requireAdmin.ts` | TC-SEC-001…005, 031 | 5A | Planned | — |
@@ -49,18 +49,18 @@ Requirement → design/module → implementation location (planned) → tests �
 | FR-045 Audit log | M | TRD §4 | `server/audit.ts`, `admin/audit` | TC-INT-071, TC-E2E-075 | 5A–6 | Planned | — |
 | FR-046 Preview | S | UI_SPEC §13 | editor links | TC-E2E-070 | 5B | Planned | — |
 | FR-047 Revalidation | M | ADR-013 | `server/revalidate.ts` | TC-E2E-050/051/071/072 | 5B–5C | Planned | — |
-| FR-048 Veg marking | S | UI_SPEC §7.5 | `VegMark`, `dietType`, `isPureVegConfirmed` | TC-COMP-004 | 3, 4A | In progress (Phase 3 backend/API verified; UI in 4A) | phase-3.md |
+| FR-048 Veg marking | S | UI_SPEC §7.5 | `VegMark`, `dietType`, `isPureVegConfirmed` | TC-COMP-004 | 3, 4A | Verified (per-item mark; "100% VEG" only when the café flag is set) | phase-3.md, phase-4a.md |
 | FR-049 Admin QR | M | ADR-018 | `admin/qr` | TC-E2E-043 | 6 | Planned | — |
 | FR-050 Admin usability | M | UI_SPEC §8.4, §13 | `layout/AdminShell` etc. | TC-A11Y-002, TC-RESP-004 | 5A–6 | Planned | — |
-| NFR-001 Responsive | M | UI_SPEC §17 | all pages | TC-RESP-001…004 | 4A–7 | Planned | — |
-| NFR-002 Accessibility | M | UI_SPEC §2.3, §11 | all | TC-A11Y-001…006 | 4A–7 | Planned | — |
+| NFR-001 Responsive | M | UI_SPEC §17 | all pages | TC-RESP-001…004 | 4A–7 | In progress (core pages verified at 375/430/768/1024/1440) | phase-4a.md |
+| NFR-002 Accessibility | M | UI_SPEC §2.3, §11 | all | TC-A11Y-001…006 | 4A–7 | In progress (core pages: axe 0 serious/critical at 390 and 1440, keyboard dialog checks) | phase-4a.md |
 | NFR-003 Performance | S | TRD §13 | — | TC-PERF-001/002 | 7 | Planned | — |
 | NFR-004 Security | M | SECURITY.md | — | TC-SEC-* | 3–7 | In progress (Phase 3: RLS deny-all, injection, safe errors, bundle scan verified; full review in 7) | phase-3.md |
 | NFR-005 Privacy | M | SECURITY §10 | feedback, rate-limit pruning | TC-SEC-130, TC-INT-060 | 3, 6 | In progress (Phase 3 schema: no contact fields, HMAC-only rate-limit keys; retention in 6) | phase-3.md |
 | NFR-006 Maintainability | M | TRD §3 | `eslint.config.mjs`, `tsconfig.json` (strict), Prettier, CI workflow | lint, typecheck, format:check | 2+ | In progress (tooling verified) | phase-2.md |
 | NFR-007 Reliability | M | TRD §7 | `src/app/api/health/route.ts`, error boundaries | E2E health tests; TC-INT-080 (DB up/down) | 2–3 | Verified (app + DB health) | phase-2.md, phase-3.md |
-| NFR-008 Freshness | M | ADR-013 | — | TC-E2E-050 | 5B | Planned | — |
-| NFR-009 Browser support | M | TEST_PLAN §1 | `playwright.config.ts` (Chromium + WebKit) | All E2E on both engines | 2+ | In progress (56/56 on both engines in Phase 2) | phase-2.md |
+| NFR-008 Freshness | M | ADR-013 | — | TC-E2E-050 | 5B | In progress (30 s tagged cache implemented, ADR-040; timing test in 5B) | phase-4a.md |
+| NFR-009 Browser support | M | TEST_PLAN §1 | `playwright.config.ts` (Chromium + WebKit) | All E2E on both engines | 2+ | In progress (all E2E on Chromium + WebKit through Phase 4A) | phase-2.md … phase-4a.md |
 | NFR-010 Content honesty | M | CLAUDE.md 6.2 | seed + UI | TC-E2E-090, review | 3–7 | In progress (Phase 3: isDemo + verified flags in data and API; UI labelling in 4A/4B) | phase-3.md |
 | NFR-011 Deployability | M | DEPLOYMENT.md | — | Phase 8 checklist | 8 | Planned | — |
 | NFR-012 Data integrity | M | TRD §4 | Prisma schema + SQL CHECKs | TC-INT-001…003, 070 | 3 | In progress (DB CHECK/UNIQUE/FK verified, TC-INT-001…004; admin transactions TC-INT-070 in 5B) | phase-3.md |
