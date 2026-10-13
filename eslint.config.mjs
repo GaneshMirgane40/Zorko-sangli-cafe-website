@@ -12,6 +12,11 @@ const eslintConfig = defineConfig([
       'no-console': ['warn', { allow: ['warn', 'error'] }],
     },
   },
+  {
+    // CLI scripts (seed, image generator) report progress on stdout.
+    files: ['prisma/**', 'scripts/**'],
+    rules: { 'no-console': 'off' },
+  },
   globalIgnores([
     '.next/**',
     'out/**',
@@ -21,6 +26,7 @@ const eslintConfig = defineConfig([
     'test-results/**',
     'design/**',
     'next-env.d.ts',
+    'src/generated/**',
   ]),
 ])
 

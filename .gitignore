@@ -37,3 +37,6 @@ blob-report/
 
 # Playwright browser cache (if installed locally)
 /playwright/.cache/
+
+# Prisma generated client (rebuilt by `prisma generate`)
+/src/generated/

@@ -8,11 +8,11 @@ Single source of truth for project state (CLAUDE.md Section 0.1).
 
 | Field | Value |
 |---|---|
-| Current phase | **Phase 3 — Database and backend foundation** |
+| Current phase | **Phase 4A — Public site core** |
 | Status | **IN PROGRESS** |
-| Branch | `phase-3` (local only, not pushed) |
-| Latest report | `docs/PHASE_REPORTS/phase-2.md` |
-| Last updated | 2026-10-13 |
+| Branch | `phase-4a` (local only, not pushed) |
+| Latest report | `docs/PHASE_REPORTS/phase-3.md` |
+| Last updated | 2026-10-14 |
 
 ## Approved phases
 
@@ -21,6 +21,7 @@ Single source of truth for project state (CLAUDE.md Section 0.1).
 | Phase 0 | 2026-10-13 | "approved, go to Phase 1" |
 | Phase 1 | 2026-10-13 | "approved, go to Phase 2" |
 | Phase 2 | 2026-10-13 | "approved, go to Phase 3" |
+| Phase 3 | 2026-10-14 | "approved, go to Phase 4A" |
 
 ## Open bugs
 
@@ -35,6 +36,9 @@ None.
 - Team machine: `~/.npm` cache has root-owned files; fix with `sudo chown -R $(whoami) ~/.npm` (ADR-030).
 - Visual regression baselines start in Phase 4A.
 - Finalise CSP script policy in Phase 7 (ADR-016).
+- Remove the `deepmerge-ts` / `mysql2` npm overrides once Prisma ships patched dependencies (ADR-036, review in Phase 7).
+- Page-level caching + on-demand revalidation (≤30 s freshness) is designed with the pages in 4A/5B (ADR-035).
+- Real menu, prices, hours, address and offers: still demo placeholders (Q-01…Q-08).
 
 ## Assumptions waiting for team confirmation
 

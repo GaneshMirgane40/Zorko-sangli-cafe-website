@@ -14,3 +14,5 @@ next-env.d.ts
 
 # Assistant permission settings — keep byte-for-byte as written by the team
 .claude/
+/src/generated/
+prisma/migrations/

@@ -137,6 +137,7 @@ Scales: L(ikelihood) and I(mpact) are 1–3; Risk = L×I.
   - `.claude/settings.json` denies the assistant reading `.env` files.
   - Values are never printed in reports.
   - If a secret is exposed: rotate it in Supabase (keys / DB password), update Vercel env, redeploy, and record it in the phase report.
+- **Database (Phase 3):** Prisma connects as the privileged `postgres` role and bypasses RLS, so authorization is in server code. RLS is enabled on every table with **no policies**, and all table/sequence/function privileges are revoked from `anon` and `authenticated` (plus default privileges for future objects), so the Supabase REST/GraphQL APIs expose nothing. A test fails if any future table lacks RLS. Queries have a 10 s `statement_timeout`; the pool is capped at 5 connections per server instance.
 - **Privacy:** feedback has no contact fields; rate-limit buckets hold HMACs only and are pruned after 24 h; rejected feedback is deleted after 90 days; the map iframe discloses that it loads from Google.
 
 ## 11. Verification results
@@ -151,5 +152,15 @@ Scales: L(ikelihood) and I(mpact) are 1–3; Risk = L×I.
 | gitleaks scan of git history (TC-SEC-101) | 2 | See phase-2 report |
 | `npm audit --omit=dev` (TC-SEC-102) | 2 | PASS: 0 vulnerabilities. Full audit: 5 high, all one dev-only chain (R-12, ADR-032) |
 | ESLint `react/no-danger` enforced | 2 | PASS (lint clean) |
+| RLS enabled on **every** `public` table (17/17), zero policies; `anon` and `authenticated` get `permission denied` on SELECT/DELETE of every table and on INSERT (TC-SEC-022, local Postgres with Supabase roles) | 3 | PASS |
+| Supabase REST API denial against the real dev project (TC-SEC-020) | 3 (Round 2) | **PASS**: 34/34 against the dev project after migrations (17 tables × read / write attempts) |
+| Injection payloads (SQL, LIKE wildcards, template, NoSQL-style, XSS strings) in `q`, slugs and `category` (TC-SEC-090) | 3 | PASS: search treats them as text (0 results, 200); slugs/category rejected with 400 before the DB |
+| LIKE wildcard escaping (`%`, `_`, `\` in search) — defect found and fixed in Phase 3 (TC-UNIT-013) | 3 | PASS |
+| Error responses never contain stack traces, SQL, Prisma codes or connection details; DB outage → 503 generic (TC-UNIT-080, TC-INT-080) | 3 | PASS |
+| Public DTO contracts are `.strict()` Zod schemas: no internal fields (`isDemo` on items, `isArchived`, `isPublished`, `createdAt`, admin IDs) leak (TC-INT-050) | 3 | PASS |
+| Database CHECK/UNIQUE/FK constraints enforced independently of app validation (TC-INT-001…003) | 3 | PASS (one constraint defect found and fixed: NULL promo price passed the CHECK) |
+| Client bundle scan for `DATABASE_URL`, `DIRECT_URL`, `postgresql://`, `PrismaClient`, `SUPABASE_SECRET` (TC-SEC-100) | 3 | PASS: 0 matches in `.next/static` |
+| gitleaks `dir` scan | 3 | PASS for project files; 12 hits only in git-ignored `.next/` (per-build keys, as in Phase 2) |
+| `npm audit --omit=dev` (TC-SEC-102) | 3 | PASS: 0. Full audit: only the accepted dev-only `braces` chain (ADR-032). Prisma CLI advisories fixed with overrides (ADR-036) |
 
 Manual threat-model review: initial version written in Phase 1; to be re-reviewed with the team in Phase 7. Automated scans cannot prove security.

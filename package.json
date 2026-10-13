@@ -7,20 +7,34 @@
   },
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "prisma generate && next build",
     "start": "next start",
     "lint": "eslint --max-warnings=0",
-    "typecheck": "next typegen && tsc --noEmit",
+    "typecheck": "prisma generate && next typegen && tsc --noEmit",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "test": "vitest run",
     "test:watch": "vitest",
-    "test:e2e": "playwright test",
-    "check": "npm run lint && npm run typecheck && npm run format:check && npm test && npm run build"
+    "test:integration": "npm run test:db:reset && vitest run --config vitest.integration.config.mts tests/integration",
+    "test:supabase": "vitest run --config vitest.integration.config.mts tests/supabase",
+    "test:e2e": "npm run test:db:reset && playwright test",
+    "check": "npm run lint && npm run typecheck && npm run format:check && npm test && npm run build",
+    "postinstall": "prisma generate",
+    "db:migrate:dev": "prisma migrate dev",
+    "db:migrate:deploy": "prisma migrate deploy",
+    "db:migrate:status": "prisma migrate status",
+    "db:seed": "prisma db seed",
+    "db:remove-demo": "tsx prisma/remove-demo.ts",
+    "test:db:up": "./scripts/test-db.sh up",
+    "test:db:reset": "./scripts/test-db.sh reset",
+    "test:db:down": "./scripts/test-db.sh down"
   },
   "dependencies": {
+    "@prisma/adapter-pg": "7.10.0",
+    "@prisma/client": "7.10.0",
     "lucide-react": "1.56.0",
     "next": "16.4.0",
+    "pg": "8.23.1",
     "react": "19.3.0",
     "react-dom": "19.3.0",
     "server-only": "0.0.1",
@@ -34,6 +48,7 @@
     "@testing-library/react": "16.3.3",
     "@testing-library/user-event": "14.6.8",
     "@types/node": "22.20.5",
+    "@types/pg": "8.23.1",
     "@types/react": "19.3.0",
     "@types/react-dom": "19.3.0",
     "@vitejs/plugin-react": "6.1.2",
@@ -42,8 +57,14 @@
     "jsdom": "29.1.1",
     "prettier": "3.9.10",
     "prettier-plugin-tailwindcss": "0.8.1",
+    "prisma": "7.10.0",
     "tailwindcss": "4.3.3",
+    "tsx": "4.23.15",
     "typescript": "5.9.3",
     "vitest": "5.0.4"
+  },
+  "overrides": {
+    "deepmerge-ts": "8.0.2",
+    "mysql2": "3.24.6"
   }
 }
