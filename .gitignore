@@ -1,0 +1,32 @@
+# Dependencies
+node_modules/
+
+# Build output
+.next/
+out/
+build/
+dist/
+coverage/
+*.tsbuildinfo
+next-env.d.ts
+
+# Test output
+playwright-report/
+test-results/
+blob-report/
+
+# Environment files (never commit secrets; .env.example is allowed)
+.env
+.env.*
+!.env.example
+
+# Local tool settings
+.claude/settings.local.json
+.vercel/
+.supabase/
+
+# OS / editor
+.DS_Store
+*.log
+.idea/
+.vscode/

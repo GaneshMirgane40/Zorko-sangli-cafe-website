@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+
+<html lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/><meta content="mobile_tab" name="shell-type"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;700;800&amp;family=Sora:wght@600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { "colors": { "outline-variant": "#e2bfb4", "on-primary-fixed": "#3a0b00", "surface-tint": "#ad3300", "inverse-on-surface": "#f3f0ef", "smart-cyan": "#04ADED", "on-secondary-container": "#6a4b00", "surface-variant": "#e5e2e1", "on-primary-container": "#fffbff", "secondary": "#7c5800", "on-tertiary-fixed": "#002113", "on-error": "#ffffff", "error": "#ba1a1a", "surface-warm-cream": "#FFFBF5", "on-surface-variant": "#5a4139", "tertiary": "#006947", "on-error-container": "#93000a", "veg-pure-green": "#15803D", "on-primary": "#ffffff", "tertiary-fixed": "#6ffbbe", "tertiary-container": "#00855b", "surface-container": "#f0eded", "on-secondary-fixed": "#271900", "surface-dim": "#dcd9d9", "mustard-gold": "#FFA000", "culinary-orange-deep": "#E64A19", "primary": "#a93200", "surface-container-high": "#eae7e7", "inverse-surface": "#313030", "surface-container-low": "#f6f3f2", "surface-container-highest": "#e5e2e1", "surface-container-lowest": "#ffffff", "on-tertiary": "#ffffff", "inverse-primary": "#ffb59e", "on-tertiary-container": "#f5fff6", "secondary-container": "#fcb812", "on-secondary-fixed-variant": "#5e4200", "tertiary-fixed-dim": "#4edea3", "primary-fixed-dim": "#ffb59e", "on-primary-fixed-variant": "#842500", "surface": "#fcf9f8", "surface-bright": "#fcf9f8", "surface-canvas-subtle": "#F7F8FA", "on-secondary": "#ffffff", "on-tertiary-fixed-variant": "#005236", "on-background": "#1c1b1b", "error-container": "#ffdad6", "secondary-fixed-dim": "#ffbb1e", "on-surface": "#1c1b1b", "secondary-fixed": "#ffdea7", "primary-container": "#d1430a", "primary-fixed": "#ffdbd0", "outline": "#8e7067", "background": "#fcf9f8" }, "borderRadius": { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" }, "spacing": { "space-md": "1rem", "space-xl": "2.25rem", "margin-desktop": "2.5rem", "space-sm": "0.5rem", "space-xs": "0.25rem", "gutter-desktop": "1.5rem", "space-2xl": "3.5rem", "margin-tablet": "1.5rem", "gutter": "1rem", "space-lg": "1.5rem", "margin": "1rem" }, "fontFamily": { "label-md": ["Plus Jakarta Sans"], "display-hero": ["Sora"], "label-sm": ["Plus Jakarta Sans"], "body-md": ["Plus Jakarta Sans"], "headline-lg-mobile": ["Sora"], "display-hero-mobile": ["Sora"], "headline-md": ["Sora"], "title-price": ["Sora"], "body-sm": ["Plus Jakarta Sans"], "headline-lg": ["Sora"], "body-lg": ["Plus Jakarta Sans"], "label-lg": ["Plus Jakarta Sans"], "headline-sm": ["Sora"] }, "fontSize": { "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.03em", "fontWeight": "700"}], "display-hero": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.03em", "fontWeight": "800"}], "label-sm": ["10px", {"lineHeight": "12px", "letterSpacing": "0.05em", "fontWeight": "800"}], "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}], "headline-lg-mobile": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "700"}], "display-hero-mobile": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "800"}], "headline-md": ["22px", {"lineHeight": "28px", "letterSpacing": "-0.01em", "fontWeight": "700"}], "title-price": ["20px", {"lineHeight": "24px", "letterSpacing": "-0.01em", "fontWeight": "800"}], "body-sm": ["12px", {"lineHeight": "16px", "fontWeight": "400"}], "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}], "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "500"}], "label-lg": ["14px", {"lineHeight": "18px", "letterSpacing": "0.02em", "fontWeight": "700"}], "headline-sm": ["18px", {"lineHeight": "24px", "fontWeight": "600"}] } } } };</script><style>@layer base{html,body{width:100vw;margin:0;padding:0;}body{overscroll-behavior:none;}.pb-safe{padding-bottom:env(safe-area-inset-bottom,0px);}.pt-safe{padding-top:env(safe-area-inset-top,0px);}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style></head><body class="bg-surface font-body-md text-body-md text-on-surface flex flex-col min-h-screen"><header class="fixed top-0 w-full z-50 bg-surface/90 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)] pt-safe"><div class="h-20 px-4 flex items-center justify-between"><div class="flex items-center gap-2.5"><img alt="ZORKO Brand Logo" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB2qBjBtzV-Z04wzdO1vn2mwk293vWtPhF30pIO88iBO9y-jhI8ZzEbLluADtbWUBqMQAqiZntXxvmFr2_4zQjwQ0VSgCIlYsgVRw08ebsXfRu_hsGEz3-PISCCwYmVGQXBcraEbYb1Jx2X1wSvqzaSIRhkq-FiR6b0r6jY5cGiEcerH-cXbH9l0FwNzllrR5VM5Nvatm-MCl7JZkgIoKUX9MSLBgSH-gLEnupz35HHOTbFOLH6HOdMhQ"/><div class="flex flex-col"><div class="flex items-center gap-1.5"><span class="font-headline-sm text-headline-sm text-on-surface tracking-tight leading-none">ZORKO Sangli</span><span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-tertiary/10 text-veg-pure-green font-label-sm text-label-sm"><span class="w-1.5 h-1.5 rounded-full bg-veg-pure-green"></span>100% VEG</span></div><div class="flex items-center gap-1 mt-0.5"><span class="material-symbols-outlined text-culinary-orange-deep text-[13px]">location_on</span><span class="font-label-sm text-label-sm text-on-surface-variant">Sangli Outlet • <span class="text-veg-pure-green font-bold">Open now</span></span></div></div></div><div class="flex items-center gap-1.5"><button aria-label="Search Menu" class="w-11 h-11 flex items-center justify-center rounded-full text-on-surface-variant hover:text-primary hover:bg-surface-container-high transition-colors" type="button"><span class="material-symbols-outlined text-[22px]">search</span></button><button aria-label="Notifications and Offers" class="relative w-11 h-11 flex items-center justify-center rounded-full text-on-surface-variant hover:text-primary hover:bg-surface-container-high transition-colors" type="button"><span class="material-symbols-outlined text-[22px]">notifications</span><span class="absolute top-2.5 right-2.5 w-2 h-2 rounded-full bg-culinary-orange-deep"></span></button><div class="flex items-center pl-1"><img alt="Profile" class="w-8 h-8 rounded-full object-cover ring-2 ring-primary/20" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB_mp26wvCWJzv3YmhDqaaeEAwCzDjlxdwfN2CWNWPL1oFTJcrKmgKGPIBRYSnB3MoHl5RVA9PSx2CzlQbR00zAx-QiuFY7nnPdnemFIRZkevlvUiAoJbCrE_uSQJWp7WiIkkPKe5iKdcHd36iGYGu1soynuKNXYz1UpO2QvhgMODUTIoaHgtd2FohVkBjx4ZRXcKivPwkq03HS7JOm0JWZ4Kzu_s9JfdqmRG5PO78nt3aUMiejE0CtOg"/></div></div></div></header><main class="flex flex-col relative w-full pt-20 pb-24 bg-surface min-h-screen"><div class="flex flex-col w-full">
+<!-- Promotional Header & Hero Notice -->
+<section class="px-4 pt-2 pb-4">
+<div class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-primary-container via-culinary-orange-deep to-primary p-5 text-on-primary shadow-lg">
+<div class="absolute -right-10 -bottom-10 w-40 h-40 rounded-full bg-secondary-container/20 blur-2xl pointer-events-none"></div>
+<div class="absolute top-2 right-3 opacity-15">
+<span class="material-symbols-outlined text-[80px] leading-none">local_activity</span>
+</div>
+<div class="relative z-10 flex flex-col gap-2">
+<div class="inline-flex items-center gap-1.5 self-start px-2.5 py-1 rounded-full bg-surface-container-lowest/20 backdrop-blur-md text-on-primary">
+<span class="w-2 h-2 rounded-full bg-mustard-gold animate-pulse"></span>
+<span class="font-label-sm text-label-sm tracking-wide">Valid for Dine-in &amp; Takeaway at Sangli Outlet</span>
+</div>
+<h1 class="font-headline-lg-mobile text-headline-lg-mobile tracking-tight text-surface-container-lowest drop-shadow-sm">
+          Hot Deals &amp; Combo Feasts
+        </h1>
+<p class="font-body-md text-body-md text-primary-fixed leading-snug">
+          Handcrafted vegetarian fast-food combos at pocket-friendly Sangli prices.
+        </p>
+<!-- Quick Code Pill Bar -->
+<div class="mt-2 flex items-center justify-between gap-3 bg-surface-container-lowest/15 backdrop-blur-md rounded-xl p-2.5">
+<div class="flex items-center gap-2 min-w-0">
+<span class="material-symbols-outlined text-secondary-fixed text-[20px] shrink-0">local_offer</span>
+<div class="flex flex-col min-w-0">
+<span class="font-label-sm text-label-sm text-primary-fixed uppercase tracking-wider">Universal Outlet Code</span>
+<span class="font-headline-sm text-headline-sm text-surface-container-lowest tracking-wider font-bold truncate">SANGLIZORKO</span>
+</div>
+</div>
+<button class="shrink-0 px-3 py-1.5 rounded-lg bg-surface-container-lowest text-primary font-label-md text-label-md shadow-sm active:scale-95 transition-all flex items-center gap-1" id="copyPromoBtn" onclick="copyCode()">
+<span class="material-symbols-outlined text-[16px]">content_copy</span>
+<span id="copyBtnText">Copy</span>
+</button>
+</div>
+</div>
+</div>
+</section>
+<!-- Live Deals Carousel / Filter Pills -->
+<section class="px-4 pb-3">
+<div class="flex items-center gap-2 overflow-x-auto no-scrollbar py-1">
+<button class="shrink-0 px-3.5 py-1.5 rounded-full bg-primary text-on-primary font-label-md text-label-md shadow-sm flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">whatshot</span>
+<span>All Feasts</span>
+</button>
+<button class="shrink-0 px-3.5 py-1.5 rounded-full bg-surface-container text-on-surface font-label-md text-label-md flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">group</span>
+<span>Squad Boxes</span>
+</button>
+<button class="shrink-0 px-3.5 py-1.5 rounded-full bg-surface-container text-on-surface font-label-md text-label-md flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">favorite</span>
+<span>Duos</span>
+</button>
+<button class="shrink-0 px-3.5 py-1.5 rounded-full bg-surface-container text-on-surface font-label-md text-label-md flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">timer</span>
+<span>Flash Perks</span>
+</button>
+</div>
+</section>
+<!-- Combo Feasts Grid / List -->
+<section class="px-4 flex flex-col gap-4 pb-5">
+<div class="flex items-center justify-between">
+<h2 class="font-headline-sm text-headline-sm text-on-surface flex items-center gap-1.5">
+<span>Featured Combo Meals</span>
+<span class="px-2 py-0.5 rounded-full bg-tertiary-container/15 text-veg-pure-green font-label-sm text-label-sm font-bold">100% PURE VEG</span>
+</h2>
+<span class="font-label-sm text-label-sm text-on-surface-variant font-medium">4 Hot Deals</span>
+</div>
+<!-- COMBO 1: ZORKO Duo Treat -->
+<article class="relative flex flex-col rounded-2xl bg-surface-container-lowest shadow-md overflow-hidden transition-transform duration-200">
+<div class="relative h-44 w-full overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="Two gourmet vegetarian burgers with crisp golden patties, fresh green lettuce, melted cheese slices, beside a tall bucket of golden salted French fries and two iced soda glasses against a warm vibrant cafe background in modern bright studio lighting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBgNnP-iSntH-bI0TpCKzU662nm2lHwFcW3irkv_v3jSsrs0-HdTmlBwsr-ZVu1HuzOGYnLL_opRCHig9h5CQn_Kkrh3THTnfPvFwlwhoXQ-rJNGccyjY6AiNiHDbtrX90tvgQKyVL9sOdYDSutTGsVdvtC9n2rZYU3YRRo5xgDH-p68UhF3ERwJXUzFxDznfMoET140ue5zAOmoOWCBNXvlJ0BLwmc2s1rmCfyYWB3awt_OEo9EigJCg"/>
+<div class="absolute inset-0 bg-gradient-to-t from-inverse-surface/80 via-transparent to-black/20"></div>
+<!-- Top Badges -->
+<div class="absolute top-2.5 left-2.5 flex items-center gap-1.5">
+<div class="w-4 h-4 rounded bg-surface-container-lowest p-0.5 flex items-center justify-center shadow-sm">
+<span class="w-2.5 h-2.5 rounded-full bg-veg-pure-green"></span>
+</div>
+<span class="px-2.5 py-1 rounded-full bg-secondary-container text-on-secondary-fixed font-label-sm text-label-sm shadow-sm flex items-center gap-1">
+<span>Most Popular Duo 👫</span>
+</span>
+</div>
+<div class="absolute top-2.5 right-2.5">
+<span class="px-2 py-1 rounded-lg bg-tertiary text-on-tertiary font-label-sm text-label-sm font-bold shadow-sm">
+            SAVE ₹71
+          </span>
+</div>
+<!-- Bottom Overlay on Image -->
+<div class="absolute bottom-2.5 left-3 right-3 flex items-end justify-between text-surface-container-lowest">
+<div>
+<h3 class="font-headline-md text-headline-md font-bold tracking-tight text-white drop-shadow-md">ZORKO Duo Treat</h3>
+<p class="font-label-sm text-label-sm text-surface-variant">Ideal for couples &amp; besties</p>
+</div>
+</div>
+</div>
+<!-- Combo Details -->
+<div class="p-4 flex flex-col gap-3">
+<div class="flex flex-col gap-1.5 bg-surface-container-low p-2.5 rounded-xl">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Included in this combo:</span>
+<ul class="flex flex-col gap-1 text-on-surface font-body-sm text-body-sm">
+<li class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[16px] shrink-0">check_circle</span>
+<span class="font-medium">2 Classic Veg Crispy Burgers</span>
+</li>
+<li class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[16px] shrink-0">check_circle</span>
+<span>1 Large Salted Crisp Fries</span>
+</li>
+<li class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[16px] shrink-0">check_circle</span>
+<span>2 Chilled Sparkling Soft Drinks</span>
+</li>
+</ul>
+</div>
+<!-- Pricing & Action Row -->
+<div class="flex items-center justify-between pt-1">
+<div class="flex items-baseline gap-2">
+<span class="font-title-price text-title-price text-culinary-orange-deep">₹249</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant line-through">₹320</span>
+</div>
+<button class="px-5 py-2.5 rounded-full bg-primary text-on-primary font-label-lg text-label-lg shadow-sm hover:bg-culinary-orange-deep active:scale-95 transition-all flex items-center gap-1.5" onclick="addToOrder(this, 'ZORKO Duo Treat', 249)">
+<span class="material-symbols-outlined text-[18px]">add_shopping_cart</span>
+<span>Claim Combo</span>
+</button>
+</div>
+</div>
+</article>
+<!-- COMBO 2: Sangli College Squad Platter -->
+<article class="relative flex flex-col rounded-2xl bg-surface-container-lowest shadow-md overflow-hidden transition-transform duration-200">
+<div class="relative h-44 w-full overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="A grand vegetarian student feast featuring a giant Cheese Volcano Burger dripping with melted cheese, a roasted paneer tikka wrap sliced diagonally, spicy peri peri fries, and two frosty glasses of thick cold coffee topped with cocoa powder on a modern rustic wood cafe table." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBEtmOAIvu5TEIANKTnYIS2sl8EHj1_RuJO1OeJUpSusKlSkoG70kX6khS59si1XKCnegtoV1L4fJySt0ArPUe6S-AkJSb5yoBozF-mr60ENI8KCXm7bHweqg1LDpbr-8CLCEZibU3Ed_wuiEIwtfajT-QVOxFuhIzHhC2WP-LcaUn0_esSBcvZymWc0KkhWQcFT8UzJs3Re3v7ohC9zj5FVae8qzHW6OkKXXjejy5EETFq1pX_IhIFmw"/>
+<div class="absolute inset-0 bg-gradient-to-t from-inverse-surface/80 via-transparent to-black/20"></div>
+<!-- Badges -->
+<div class="absolute top-2.5 left-2.5 flex items-center gap-1.5">
+<div class="w-4 h-4 rounded bg-surface-container-lowest p-0.5 flex items-center justify-center shadow-sm">
+<span class="w-2.5 h-2.5 rounded-full bg-veg-pure-green"></span>
+</div>
+<span class="px-2.5 py-1 rounded-full bg-mustard-gold text-on-secondary-fixed font-label-sm text-label-sm shadow-sm flex items-center gap-1">
+<span>Squad Value Pack 🎒</span>
+</span>
+</div>
+<div class="absolute top-2.5 right-2.5">
+<span class="px-2 py-1 rounded-lg bg-tertiary text-on-tertiary font-label-sm text-label-sm font-bold shadow-sm">
+            SAVE ₹101
+          </span>
+</div>
+<!-- Title On Image -->
+<div class="absolute bottom-2.5 left-3 right-3 flex items-end justify-between text-surface-container-lowest">
+<div>
+<h3 class="font-headline-md text-headline-md font-bold tracking-tight text-white drop-shadow-md">Sangli College Squad Platter</h3>
+<p class="font-label-sm text-label-sm text-surface-variant">Best pick for 3-4 campus friends</p>
+</div>
+</div>
+</div>
+<div class="p-4 flex flex-col gap-3">
+<div class="flex flex-col gap-1.5 bg-surface-container-low p-2.5 rounded-xl">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Included in this combo:</span>
+<ul class="flex flex-col gap-1 text-on-surface font-body-sm text-body-sm">
+<li class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[16px] shrink-0">check_circle</span>
+<span class="font-medium">1 Cheese Volcano Molten Burger</span>
+</li>
+<li class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[16px] shrink-0">check_circle</span>
+<span>1 Grilled Paneer Tikka Wrap</span>
+</li>
+<li class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[16px] shrink-0">check_circle</span>
+<span>1 Spicy Peri Peri Fries Basket</span>
+</li>
+<li class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[16px] shrink-0">check_circle</span>
+<span>2 Creamy Iced Cold Coffees</span>
+</li>
+</ul>
+</div>
+<div class="flex items-center justify-between pt-1">
+<div class="flex items-baseline gap-2">
+<span class="font-title-price text-title-price text-culinary-orange-deep">₹379</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant line-through">₹480</span>
+</div>
+<button class="px-5 py-2.5 rounded-full bg-primary text-on-primary font-label-lg text-label-lg shadow-sm hover:bg-culinary-orange-deep active:scale-95 transition-all flex items-center gap-1.5" onclick="addToOrder(this, 'Sangli College Squad Platter', 379)">
+<span class="material-symbols-outlined text-[18px]">add_shopping_cart</span>
+<span>Claim Combo</span>
+</button>
+</div>
+</div>
+</article>
+<!-- COMBO 3: Momo & Pizza Extravaganza -->
+<article class="relative flex flex-col rounded-2xl bg-surface-container-lowest shadow-md overflow-hidden transition-transform duration-200">
+<div class="relative h-44 w-full overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="A delicious spread of an authentic medium Paneer Makhani thin crust pizza loaded with cottage cheese and herbs, next to a bamboo steamer basket filled with steaming cheese corn momos, paired with two vibrant icy mint mojitos in transparent mason jars." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAjKORv093trOhJXLsTkaN_fWYol5ZTFsszKNiwOIkSxIe2mlpZZryGfIN4E1N_KTIhQ_-TiY_oEC9UFDPV3mykmkIzypCnWXnbQbTD4k8BYoD-wlO8pOs9hS7p0d1er9GTnias274CbZ__cZH8rb1mwqeYo_AnIzYxtbRkc_S0PsBRYEII5UiuFwXa1orIZKaUf3_CQXxG3RmLOtVC4uqs12S9Z5cJS0M8wsQIreY54PeND3yE1PJE0Q"/>
+<div class="absolute inset-0 bg-gradient-to-t from-inverse-surface/80 via-transparent to-black/20"></div>
+<div class="absolute top-2.5 left-2.5 flex items-center gap-1.5">
+<div class="w-4 h-4 rounded bg-surface-container-lowest p-0.5 flex items-center justify-center shadow-sm">
+<span class="w-2.5 h-2.5 rounded-full bg-veg-pure-green"></span>
+</div>
+<span class="px-2.5 py-1 rounded-full bg-surface-container-lowest/90 backdrop-blur-sm text-culinary-orange-deep font-label-sm text-label-sm font-bold shadow-sm flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">local_pizza</span>
+<span>Desi Fusion Hit</span>
+</span>
+</div>
+<div class="absolute top-2.5 right-2.5">
+<span class="px-2 py-1 rounded-lg bg-tertiary text-on-tertiary font-label-sm text-label-sm font-bold shadow-sm">
+            SAVE ₹101
+          </span>
+</div>
+<div class="absolute bottom-2.5 left-3 right-3 flex items-end justify-between text-surface-container-lowest">
+<div>
+<h3 class="font-headline-md text-headline-md font-bold tracking-tight text-white drop-shadow-md">Momo &amp; Pizza Extravaganza</h3>
+<p class="font-label-sm text-label-sm text-surface-variant">The supreme party pairing</p>
+</div>
+</div>
+</div>
+<div class="p-4 flex flex-col gap-3">
+<div class="flex flex-col gap-1.5 bg-surface-container-low p-2.5 rounded-xl">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Included in this combo:</span>
+<ul class="flex flex-col gap-1 text-on-surface font-body-sm text-body-sm">
+<li class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[16px] shrink-0">check_circle</span>
+<span class="font-medium">1 Medium Paneer Makhani Pizza</span>
+</li>
+<li class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[16px] shrink-0">check_circle</span>
+<span>1 Steamed Cheese Corn Momos (6 pcs)</span>
+</li>
+<li class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[16px] shrink-0">check_circle</span>
+<span>2 Chilled Fresh Mint Lemon Mojitos</span>
+</li>
+</ul>
+</div>
+<div class="flex items-center justify-between pt-1">
+<div class="flex items-baseline gap-2">
+<span class="font-title-price text-title-price text-culinary-orange-deep">₹429</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant line-through">₹530</span>
+</div>
+<button class="px-5 py-2.5 rounded-full bg-primary text-on-primary font-label-lg text-label-lg shadow-sm hover:bg-culinary-orange-deep active:scale-95 transition-all flex items-center gap-1.5" onclick="addToOrder(this, 'Momo &amp; Pizza Extravaganza', 429)">
+<span class="material-symbols-outlined text-[18px]">add_shopping_cart</span>
+<span>Claim Combo</span>
+</button>
+</div>
+</div>
+</article>
+<!-- COMBO 4: Snack & Shake Break -->
+<article class="relative flex flex-col rounded-2xl bg-surface-container-lowest shadow-md overflow-hidden transition-transform duration-200">
+<div class="relative h-44 w-full overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="Warm toasted golden cheese garlic bread with melted herb butter pull next to a decadent Belgian chocolate thick shake in a tall milkshake glass crowned with whipped cream and chocolate drizzle in soft warm restaurant illumination." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA5BOA743-Eg6KfIFkBna-qxxx2O1xTOYYDOnAaDETdqeDCZ_3gJnLUKb5l2UsgPzn6itWf2ZE90-YBDYLFlbFHQAnggIu_RiSDlwkTpGIyc6Kgig-4pPDmrDejJmj0SWuGOJRhFLF3Sd4K3D7RYEW3XsGNJ0ta6lxk7zR_nBMc4LbJqTq3Qc3cDjedwUgmYRqg7S_UFjMnX_Vvs1Jr_v5Y6zsc-OmS9j_f26LWlRPC9PXjH8ece7Y6EA"/>
+<div class="absolute inset-0 bg-gradient-to-t from-inverse-surface/80 via-transparent to-black/20"></div>
+<div class="absolute top-2.5 left-2.5 flex items-center gap-1.5">
+<div class="w-4 h-4 rounded bg-surface-container-lowest p-0.5 flex items-center justify-center shadow-sm">
+<span class="w-2.5 h-2.5 rounded-full bg-veg-pure-green"></span>
+</div>
+<span class="px-2.5 py-1 rounded-full bg-surface-container-lowest/90 backdrop-blur-sm text-secondary font-label-sm text-label-sm font-bold shadow-sm flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">bolt</span>
+<span>Evening Quick Bite</span>
+</span>
+</div>
+<div class="absolute top-2.5 right-2.5">
+<span class="px-2 py-1 rounded-lg bg-tertiary text-on-tertiary font-label-sm text-label-sm font-bold shadow-sm">
+            SAVE ₹51
+          </span>
+</div>
+<div class="absolute bottom-2.5 left-3 right-3 flex items-end justify-between text-surface-container-lowest">
+<div>
+<h3 class="font-headline-md text-headline-md font-bold tracking-tight text-white drop-shadow-md">Snack &amp; Shake Break</h3>
+<p class="font-label-sm text-label-sm text-surface-variant">The 4 PM sweet &amp; savoury recharge</p>
+</div>
+</div>
+</div>
+<div class="p-4 flex flex-col gap-3">
+<div class="flex flex-col gap-1.5 bg-surface-container-low p-2.5 rounded-xl">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Included in this combo:</span>
+<ul class="flex flex-col gap-1 text-on-surface font-body-sm text-body-sm">
+<li class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[16px] shrink-0">check_circle</span>
+<span class="font-medium">1 Crispy Cheese Pull Garlic Bread</span>
+</li>
+<li class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[16px] shrink-0">check_circle</span>
+<span>1 Rich Belgian Chocolate Thick Shake</span>
+</li>
+</ul>
+</div>
+<div class="flex items-center justify-between pt-1">
+<div class="flex items-baseline gap-2">
+<span class="font-title-price text-title-price text-culinary-orange-deep">₹189</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant line-through">₹240</span>
+</div>
+<button class="px-5 py-2.5 rounded-full bg-primary text-on-primary font-label-lg text-label-lg shadow-sm hover:bg-culinary-orange-deep active:scale-95 transition-all flex items-center gap-1.5" onclick="addToOrder(this, 'Snack &amp; Shake Break', 189)">
+<span class="material-symbols-outlined text-[18px]">add_shopping_cart</span>
+<span>Claim Combo</span>
+</button>
+</div>
+</div>
+</article>
+</section>
+<!-- Daily Special Offers & Limited-Time Deals -->
+<section class="px-4 py-2">
+<div class="flex flex-col gap-3">
+<div class="flex items-center justify-between">
+<h2 class="font-headline-sm text-headline-sm text-on-surface flex items-center gap-1.5">
+<span class="material-symbols-outlined text-culinary-orange-deep text-[22px]">auto_awesome</span>
+<span>Daily Limited-Time Specials</span>
+</h2>
+</div>
+<!-- Happy Hours Offer -->
+<div class="rounded-2xl bg-surface-warm-cream p-4 shadow-sm flex flex-col gap-2 relative overflow-hidden">
+<div class="flex items-start justify-between gap-3">
+<div class="flex flex-col gap-1 min-w-0">
+<div class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-secondary-container text-on-secondary-fixed font-label-sm text-label-sm font-bold w-fit">
+<span class="material-symbols-outlined text-[14px]">schedule</span>
+<span>HAPPY HOURS • 3:00 PM – 6:00 PM</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface font-bold pt-1">
+              Garlic Bread at 50% Off!
+            </h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant">
+              Buy any 2 handcrafted beverages or cold coffees and unlock our cheesy Garlic Bread at flat half price. (Mon – Fri only).
+            </p>
+</div>
+<div class="shrink-0 w-12 h-12 rounded-xl bg-primary-fixed flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-[28px]">local_cafe</span>
+</div>
+</div>
+<div class="flex items-center justify-between pt-1">
+<span class="font-label-sm text-label-sm text-on-surface-variant">Sangli In-Cafe Exclusive</span>
+<span class="font-label-md text-label-md text-culinary-orange-deep font-bold flex items-center gap-0.5">
+            Auto-applied at billing
+            <span class="material-symbols-outlined text-[16px]">chevron_right</span>
+</span>
+</div>
+</div>
+<!-- Weekend Family Box Offer -->
+<div class="rounded-2xl bg-surface-container-high p-4 shadow-sm flex flex-col gap-2 relative overflow-hidden">
+<div class="flex items-start justify-between gap-3">
+<div class="flex flex-col gap-1 min-w-0">
+<div class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-tertiary text-on-tertiary font-label-sm text-label-sm font-bold w-fit">
+<span class="material-symbols-outlined text-[14px]">weekend</span>
+<span>WEEKEND BIG SAVER</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface font-bold pt-1">
+              Weekend Family Box: Flat ₹100 Off
+            </h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant">
+              Gather the family! Enjoy flat ₹100 instant cash discount on any order total above ₹699 on Saturdays and Sundays.
+            </p>
+</div>
+<div class="shrink-0 w-12 h-12 rounded-xl bg-secondary-fixed flex items-center justify-center text-secondary">
+<span class="material-symbols-outlined text-[28px]">family_restroom</span>
+</div>
+</div>
+<div class="flex items-center justify-between pt-1">
+<span class="font-label-sm text-label-sm text-on-surface-variant">Use Code: <strong class="text-on-surface">WEEKEND100</strong></span>
+<button class="px-3 py-1 rounded-lg bg-surface-container-lowest text-primary font-label-sm text-label-sm font-bold shadow-sm active:scale-95 transition-all" onclick="copySpecificCode('WEEKEND100', this)">
+            Apply Now
+          </button>
+</div>
+</div>
+</div>
+</section>
+<!-- How to Claim Deal (3 Simple Steps) -->
+<section class="px-4 py-4">
+<div class="rounded-2xl bg-surface-container-low p-4 flex flex-col gap-4">
+<div class="flex flex-col">
+<h2 class="font-headline-sm text-headline-sm text-on-surface font-bold">
+          How to Claim Your Deal
+        </h2>
+<p class="font-body-sm text-body-sm text-on-surface-variant">
+          Simple 3-step redemption at ZORKO Sangli
+        </p>
+</div>
+<div class="grid grid-cols-1 gap-3">
+<!-- Step 1 -->
+<div class="flex items-start gap-3 bg-surface-container-lowest p-3 rounded-xl shadow-sm">
+<div class="w-8 h-8 rounded-full bg-primary text-on-primary flex items-center justify-center font-headline-sm text-headline-sm font-bold shrink-0">
+            1
+          </div>
+<div class="flex flex-col">
+<span class="font-label-lg text-label-lg text-on-surface">Browse &amp; Select Combo</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">
+              Pick your favourite feast on this screen or pick table combo items.
+            </span>
+</div>
+</div>
+<!-- Step 2 -->
+<div class="flex items-start gap-3 bg-surface-container-lowest p-3 rounded-xl shadow-sm">
+<div class="w-8 h-8 rounded-full bg-culinary-orange-deep text-on-primary flex items-center justify-center font-headline-sm text-headline-sm font-bold shrink-0">
+            2
+          </div>
+<div class="flex flex-col">
+<span class="font-label-lg text-label-lg text-on-surface">Show Code or Scan Table QR</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">
+              Mention code <strong class="text-primary font-bold">"SANGLIZORKO"</strong> to café cashier or scan the smart sticker on your table.
+            </span>
+</div>
+</div>
+<!-- Step 3 -->
+<div class="flex items-start gap-3 bg-surface-container-lowest p-3 rounded-xl shadow-sm">
+<div class="w-8 h-8 rounded-full bg-veg-pure-green text-on-primary flex items-center justify-center font-headline-sm text-headline-sm font-bold shrink-0">
+            3
+          </div>
+<div class="flex flex-col">
+<span class="font-label-lg text-label-lg text-on-surface">Enjoy Fresh Hot 100% Veg Food</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">
+              Freshly prepped within 8–12 minutes. Pure taste, crisp satisfaction guaranteed!
+            </span>
+</div>
+</div>
+</div>
+<!-- Terms & Conditions Note -->
+<div class="pt-2 flex items-start gap-2 text-on-surface-variant">
+<span class="material-symbols-outlined text-[18px] text-outline shrink-0 mt-0.5">info</span>
+<p class="font-body-sm text-body-sm leading-relaxed text-outline">
+<strong>Terms &amp; Conditions:</strong> Offers and combo prices valid exclusively at the ZORKO Sangli outlet for dine-in &amp; takeaway orders. Cannot be clubbed with existing institutional student cards or other third-party aggregators. Applicable taxes extra if requested on billing receipts.
+        </p>
+</div>
+</div>
+</section>
+<!-- Floating Sticky Action / Cart Preview Tray (Discreet & Interactive) -->
+<div class="fixed bottom-20 left-4 right-4 z-40 transform translate-y-32 transition-transform duration-300 ease-out" id="quickCartToast">
+<div class="flex items-center justify-between bg-inverse-surface text-inverse-on-surface px-4 py-3 rounded-full shadow-2xl backdrop-blur-md">
+<div class="flex items-center gap-2.5">
+<div class="w-7 h-7 rounded-full bg-secondary-container text-on-secondary-fixed flex items-center justify-center font-bold text-label-sm">
+<span id="comboCounter">1</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-md text-label-md text-white truncate max-w-[150px]" id="comboNameDisplay">Combo Claimed</span>
+<span class="font-label-sm text-label-sm text-secondary-fixed font-bold" id="comboPriceDisplay">₹249 added</span>
+</div>
+</div>
+<a class="px-4 py-1.5 rounded-full bg-culinary-orange-deep text-white font-label-md text-label-md hover:bg-primary transition-all flex items-center gap-1" data-path="menu" href="#">
+<span>View Order</span>
+<span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+</a>
+</div>
+</div>
+</div>
+<script>
+  function copyCode() {
+    navigator.clipboard.writeText("SANGLIZORKO").then(() => {
+      const btnText = document.getElementById("copyBtnText");
+      if (btnText) {
+        btnText.innerText = "Copied!";
+        setTimeout(() => {
+          btnText.innerText = "Copy";
+        }, 2200);
+      }
+    }).catch(() => {
+      const btnText = document.getElementById("copyBtnText");
+      if (btnText) btnText.innerText = "SANGLIZORKO";
+    });
+  }
+
+  function copySpecificCode(code, element) {
+    navigator.clipboard.writeText(code).then(() => {
+      const originalText = element.innerText;
+      element.innerText = "Applied!";
+      element.classList.add("bg-tertiary", "text-on-tertiary");
+      setTimeout(() => {
+        element.innerText = originalText;
+        element.classList.remove("bg-tertiary", "text-on-tertiary");
+      }, 2000);
+    });
+  }
+
+  let cartCount = 0;
+  function addToOrder(btn, comboName, price) {
+    cartCount++;
+    const toast = document.getElementById("quickCartToast");
+    const countDisplay = document.getElementById("comboCounter");
+    const nameDisplay = document.getElementById("comboNameDisplay");
+    const priceDisplay = document.getElementById("comboPriceDisplay");
+
+    if (countDisplay) countDisplay.innerText = cartCount;
+    if (nameDisplay) nameDisplay.innerText = comboName;
+    if (priceDisplay) priceDisplay.innerText = "₹" + price + " added";
+
+    // Visual button feedback
+    const originalContent = btn.innerHTML;
+    btn.innerHTML = '<span class="material-symbols-outlined text-[18px]">check</span><span>Claimed</span>';
+    btn.classList.remove("bg-primary");
+    btn.classList.add("bg-tertiary");
+
+    if (toast) {
+      toast.classList.remove("translate-y-32");
+      toast.classList.add("translate-y-0");
+    }
+
+    setTimeout(() => {
+      btn.innerHTML = originalContent;
+      btn.classList.remove("bg-tertiary");
+      btn.classList.add("bg-primary");
+    }, 1800);
+  }
+</script></main><nav class="fixed bottom-0 w-full z-50 pb-safe bg-surface/95 backdrop-blur-xl shadow-[0_-2px_12px_rgba(0,0,0,0.05)]" data-active-classes="text-culinary-orange-deep font-bold"><div class="flex justify-around items-center h-16 px-2"><a class="flex flex-col items-center justify-center min-w-[56px] min-h-[48px] py-1 text-on-surface-variant hover:text-primary transition-colors" data-path="home" href="#"><span class="material-symbols-outlined text-[24px]">home</span><span class="font-label-sm text-label-sm tracking-tight">Home</span></a><a class="flex flex-col items-center justify-center min-w-[56px] min-h-[48px] py-1 text-on-surface-variant hover:text-primary transition-colors" data-path="menu" href="#"><span class="material-symbols-outlined text-[24px]">restaurant_menu</span><span class="font-label-sm text-label-sm tracking-tight">Menu</span></a><a aria-current="page" class="flex flex-col items-center justify-center min-w-[56px] min-h-[48px] py-1 transition-colors text-culinary-orange-deep font-bold" data-path="offers-and-combos" href="#"><span class="material-symbols-outlined text-[24px]">auto_awesome</span><span class="font-label-sm text-label-sm tracking-tight">Offers</span></a><a class="flex flex-col items-center justify-center min-w-[56px] min-h-[48px] py-1 text-on-surface-variant hover:text-primary transition-colors" data-path="student-zone" href="#"><span class="material-symbols-outlined text-[24px]">school</span><span class="font-label-sm text-label-sm tracking-tight">Students</span></a><a class="flex flex-col items-center justify-center min-w-[56px] min-h-[48px] py-1 text-on-surface-variant hover:text-primary transition-colors" data-path="more" href="#"><span class="material-symbols-outlined text-[24px]">tune</span><span class="font-label-sm text-label-sm tracking-tight">More</span></a></div></nav></body></html>
