@@ -2,6 +2,8 @@
 
 Single source of truth for project state (CLAUDE.md Section 0.1).
 
+**Resuming after an interruption?** Read `docs/WORKLOG.md` → "RESUME HERE". It records the last completed task and the exact next action, and is updated after every task.
+
 ## Current phase
 
 | Field | Value |
