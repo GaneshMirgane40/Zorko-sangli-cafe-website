@@ -6,10 +6,10 @@ Single source of truth for project state (CLAUDE.md Section 0.1).
 
 | Field | Value |
 |---|---|
-| Current phase | **Phase 1 — Requirements, architecture, design spec** |
-| Status | **AWAITING TEAM VERIFICATION** |
-| Branch | `phase-1` (local only, not pushed) |
-| Latest report | `docs/PHASE_REPORTS/phase-1.md` |
+| Current phase | **Phase 2 — Application foundation** |
+| Status | **IN PROGRESS** |
+| Branch | `phase-2` (local only, not pushed) |
+| Latest report | `docs/PHASE_REPORTS/phase-1.md` (phase-2 in progress) |
 | Last updated | 2026-10-13 |
 
 ## Approved phases
@@ -17,6 +17,7 @@ Single source of truth for project state (CLAUDE.md Section 0.1).
 | Phase | Date | Approval message (quoted) |
 |---|---|---|
 | Phase 0 | 2026-10-13 | "approved, go to Phase 1" |
+| Phase 1 | 2026-10-13 | "approved, go to Phase 2" |
 
 ## Open bugs
 
@@ -31,6 +32,8 @@ None.
 - Finalise CSP script policy in Phase 7 (ADR-016).
 
 ## Assumptions waiting for team confirmation
+
+Phase 1 approval (2026-10-13) did not comment on A-09…A-11 / Q-19; they are applied as proposed and remain open for objection.
 
 See `docs/PHASE_REPORTS/phase-0.md` → "Synopsis vs CLAUDE.md differences". In short:
 
