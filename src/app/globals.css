@@ -1,0 +1,211 @@
+@import 'tailwindcss';
+
+/*
+ * Design tokens — docs/UI_SPEC.md §2–§6 (source: the Tailwind config in each design/stitch code.html).
+ * Token names match the Stitch export so its classes (bg-primary, font-headline-sm,
+ * px-margin-desktop, …) carry over unchanged. Radii use Tailwind v4 defaults (ADR-005).
+ */
+@theme {
+  /* Core palette */
+  --color-primary: #a93200;
+  --color-on-primary: #ffffff;
+  --color-primary-container: #d1430a;
+  --color-on-primary-container: #fffbff;
+  --color-primary-fixed: #ffdbd0;
+  --color-primary-fixed-dim: #ffb59e;
+  --color-on-primary-fixed: #3a0b00;
+  --color-on-primary-fixed-variant: #842500;
+  --color-inverse-primary: #ffb59e;
+  --color-surface-tint: #ad3300;
+
+  --color-secondary: #7c5800;
+  --color-on-secondary: #ffffff;
+  --color-secondary-container: #fcb812;
+  --color-on-secondary-container: #6a4b00;
+  --color-secondary-fixed: #ffdea7;
+  --color-secondary-fixed-dim: #ffbb1e;
+  --color-on-secondary-fixed: #271900;
+  --color-on-secondary-fixed-variant: #5e4200;
+
+  --color-tertiary: #006947;
+  --color-on-tertiary: #ffffff;
+  --color-tertiary-container: #00855b;
+  --color-on-tertiary-container: #f5fff6;
+  --color-tertiary-fixed: #6ffbbe;
+  --color-tertiary-fixed-dim: #4edea3;
+  --color-on-tertiary-fixed: #002113;
+  --color-on-tertiary-fixed-variant: #005236;
+
+  --color-error: #ba1a1a;
+  --color-on-error: #ffffff;
+  --color-error-container: #ffdad6;
+  --color-on-error-container: #93000a;
+
+  --color-background: #fcf9f8;
+  --color-on-background: #1c1b1b;
+  --color-surface: #fcf9f8;
+  --color-surface-dim: #dcd9d9;
+  --color-surface-bright: #fcf9f8;
+  --color-surface-container-lowest: #ffffff;
+  --color-surface-container-low: #f6f3f2;
+  --color-surface-container: #f0eded;
+  --color-surface-container-high: #eae7e7;
+  --color-surface-container-highest: #e5e2e1;
+  --color-surface-variant: #e5e2e1;
+  --color-on-surface: #1c1b1b;
+  --color-on-surface-variant: #5a4139;
+  --color-inverse-surface: #313030;
+  --color-inverse-on-surface: #f3f0ef;
+  --color-outline: #8e7067;
+  --color-outline-variant: #e2bfb4;
+
+  /* Extended accents (see UI_SPEC §2.2 for allowed uses) */
+  --color-culinary-orange-deep: #e64a19;
+  --color-mustard-gold: #ffa000;
+  --color-veg-pure-green: #15803d;
+  --color-non-veg-red: #8b1a1a;
+  --color-surface-warm-cream: #fffbf5;
+  --color-surface-canvas-subtle: #f7f8fa;
+  --color-smart-cyan: #04aded;
+
+  /* Fonts (CSS variables injected by next/font in layout.tsx) */
+  --font-sans: var(--font-jakarta), ui-sans-serif, system-ui, sans-serif;
+  --font-heading: var(--font-sora), ui-sans-serif, system-ui, sans-serif;
+  /* Stitch-compatible aliases: font-display-hero, font-headline-*, font-title-price → Sora */
+  --font-display-hero: var(--font-heading);
+  --font-display-hero-mobile: var(--font-heading);
+  --font-headline-lg: var(--font-heading);
+  --font-headline-lg-mobile: var(--font-heading);
+  --font-headline-md: var(--font-heading);
+  --font-headline-sm: var(--font-heading);
+  --font-title-price: var(--font-heading);
+  --font-body-lg: var(--font-sans);
+  --font-body-md: var(--font-sans);
+  --font-body-sm: var(--font-sans);
+  --font-label-lg: var(--font-sans);
+  --font-label-md: var(--font-sans);
+  --font-label-sm: var(--font-sans);
+
+  /* Type scale (UI_SPEC §3) */
+  --text-display-hero: 48px;
+  --text-display-hero--line-height: 56px;
+  --text-display-hero--letter-spacing: -0.03em;
+  --text-display-hero--font-weight: 800;
+  --text-display-hero-mobile: 32px;
+  --text-display-hero-mobile--line-height: 40px;
+  --text-display-hero-mobile--letter-spacing: -0.02em;
+  --text-display-hero-mobile--font-weight: 800;
+  --text-headline-lg: 32px;
+  --text-headline-lg--line-height: 40px;
+  --text-headline-lg--letter-spacing: -0.02em;
+  --text-headline-lg--font-weight: 700;
+  --text-headline-lg-mobile: 24px;
+  --text-headline-lg-mobile--line-height: 32px;
+  --text-headline-lg-mobile--letter-spacing: -0.01em;
+  --text-headline-lg-mobile--font-weight: 700;
+  --text-headline-md: 22px;
+  --text-headline-md--line-height: 28px;
+  --text-headline-md--letter-spacing: -0.01em;
+  --text-headline-md--font-weight: 700;
+  --text-headline-sm: 18px;
+  --text-headline-sm--line-height: 24px;
+  --text-headline-sm--font-weight: 600;
+  --text-title-price: 20px;
+  --text-title-price--line-height: 24px;
+  --text-title-price--letter-spacing: -0.01em;
+  --text-title-price--font-weight: 800;
+  --text-body-lg: 16px;
+  --text-body-lg--line-height: 24px;
+  --text-body-lg--font-weight: 500;
+  --text-body-md: 14px;
+  --text-body-md--line-height: 20px;
+  --text-body-md--font-weight: 400;
+  --text-body-sm: 12px;
+  --text-body-sm--line-height: 16px;
+  --text-body-sm--font-weight: 400;
+  --text-label-lg: 14px;
+  --text-label-lg--line-height: 18px;
+  --text-label-lg--letter-spacing: 0.02em;
+  --text-label-lg--font-weight: 700;
+  --text-label-md: 12px;
+  --text-label-md--line-height: 16px;
+  --text-label-md--letter-spacing: 0.03em;
+  --text-label-md--font-weight: 700;
+  --text-label-sm: 10px;
+  --text-label-sm--line-height: 12px;
+  --text-label-sm--letter-spacing: 0.05em;
+  --text-label-sm--font-weight: 800;
+
+  /* Named spacing (UI_SPEC §4) — usable as p-space-md, px-margin-desktop, gap-gutter, … */
+  --spacing-space-xs: 0.25rem;
+  --spacing-space-sm: 0.5rem;
+  --spacing-space-md: 1rem;
+  --spacing-space-lg: 1.5rem;
+  --spacing-space-xl: 2.25rem;
+  --spacing-space-2xl: 3.5rem;
+  --spacing-gutter: 1rem;
+  --spacing-gutter-desktop: 1.5rem;
+  --spacing-margin: 1rem;
+  --spacing-margin-tablet: 1.5rem;
+  --spacing-margin-desktop: 2.5rem;
+
+  /* Warm elevation from DESIGN.md (Level 1-warm / Level 2) */
+  --shadow-warm: 0 4px 16px -2px rgba(241, 90, 36, 0.2);
+  --shadow-header: 0 1px 8px rgba(0, 0, 0, 0.04);
+  --shadow-floating:
+    0 12px 28px -4px rgba(26, 26, 26, 0.12), 0 4px 10px -2px rgba(241, 90, 36, 0.12);
+}
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    @apply bg-surface font-sans text-body-md text-on-surface antialiased;
+  }
+
+  /* Headlines use Sora (UI_SPEC §3); body text stays Plus Jakarta Sans. */
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family: var(--font-heading);
+  }
+
+  ::selection {
+    @apply bg-primary-fixed text-on-primary-fixed;
+  }
+
+  /* Visible focus on every interactive element (UI_SPEC §7.1); never removed. */
+  :focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+  }
+
+  /* Native <dialog> backdrop matching UI_SPEC §7.7 */
+  dialog::backdrop {
+    background: rgb(28 27 27 / 0.4);
+    backdrop-filter: blur(4px);
+  }
+}
+
+/* Hide scrollbars on horizontal pill rows while keeping them scrollable. */
+@utility no-scrollbar {
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/* Reduced motion (UI_SPEC §11): disable animations/transitions/smooth scroll globally. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

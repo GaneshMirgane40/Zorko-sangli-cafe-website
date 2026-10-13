@@ -33,15 +33,19 @@ The full table is in TRD §8.
   - **`RATE_LIMIT_SALT`:** generate with `openssl rand -hex 32`.
   - **`NEXT_PUBLIC_SITE_URL`:** `http://localhost:3000` locally; the https production domain in production.
 
-## 4. Local setup *(Phase 2+)*
+## 4. Local setup *(verified in Phase 2)*
 
 ```bash
 git clone <repo> && cd zorko-sangli
 npm ci
 cp .env.example .env.local   # then fill values (Phase 3+ needs Supabase values)
 npm run dev                  # http://localhost:3000
-curl http://localhost:3000/api/health
+curl http://localhost:3000/api/health   # {"status":"ok","version":"0.1.0","time":"…"}
 ```
+
+- **Local production build:** `npm run build && npm start`. To see `/dev/styleguide` in a production build, set `ENABLE_STYLEGUIDE=true` for **both** commands: the page re-checks the flag at request time.
+- **Safari note:** HSTS and `upgrade-insecure-requests` are sent only when `NEXT_PUBLIC_SITE_URL` is https (ADR-028), so http://localhost works in Safari.
+- **If `npm ci` reports "Missing … from lock file" or `EACCES` under `~/.npm`:** your npm cache has files owned by another user. Fix it once with `sudo chown -R $(whoami) ~/.npm` (ADR-030).
 
 ## 5. Database setup *(Phase 3)*
 

@@ -9,8 +9,28 @@ Format: ID · decision · alternatives · rationale · consequences. Status: **A
 - **Rationale:** CLAUDE.md rule 25; npm 11.19.1 is installed; no existing lockfile.
 - **Consequences:** `package-lock.json` is committed; CI uses `npm ci`.
 
-## ADR-002 Runtime and library versions — Proposed (pinned in Phase 2)
-Versions looked up on the npm registry on 2026-10-13. Exact pins are written into `package.json` in Phase 2 after a clean install, lint, typecheck and build succeed; this table is then updated.
+## ADR-002 Runtime and library versions — Accepted (pinned in Phase 2, 2026-10-13)
+**Installed and verified in Phase 2** (`npm ci` from a clean state, then lint, typecheck, unit tests, build and E2E all pass). Direct dependencies are pinned exactly in `package.json`.
+
+| Package | Pinned | Note |
+|---|---|---|
+| next / eslint-config-next | 16.4.0 | Template default `cacheComponents: true`, `partialPrefetching: true`, Turbopack + `@tailwindcss/turbopack` (no PostCSS) |
+| react / react-dom | 19.3.0 | |
+| typescript | **5.9.3** | Official Next 16.4 template uses `^5`; TypeScript 7 **not** used |
+| eslint | **9.39.5** | Template uses `^9`; ESLint 10 not used |
+| tailwindcss / @tailwindcss/turbopack | 4.3.3 | |
+| zod | 4.6.7 | |
+| lucide-react | 1.56.0 | |
+| server-only | 0.0.1 | |
+| vitest / @vitejs/plugin-react / jsdom | 5.0.4 / 6.1.2 / 29.1.1 | |
+| @testing-library/react / jest-dom / user-event | 16.3.3 / 7.0.1 / 14.6.8 | |
+| @playwright/test / @axe-core/playwright | 1.64.0 / 4.13.0 | Browsers: Chromium headless shell 156, WebKit 27.2 |
+| prettier / prettier-plugin-tailwindcss | 3.9.10 / 0.8.1 | |
+| @types/node | 22.20.5 | Matches Node 22 LTS |
+
+Prisma (7.10.0), `@supabase/ssr`, `qrcode` and `sharp` are added in the phases that use them.
+
+Planning table from Phase 1, kept for reference:
 
 | Component | Planned | Notes |
 |---|---|---|
@@ -74,6 +94,8 @@ Prisma connects as a privileged role and bypasses RLS. A hand-written SQL migrat
 - The menu search/filter runs as one Prisma query with `where` conditions combined by AND, plus `skip/take` pagination. This differs from the synopsis pseudocode, which filters in memory (synopsis difference D-08).
 
 ## ADR-013 Freshness ≤ 30 s — Proposed (mechanism verified in Phase 4A/5B)
+
+**Phase 2 note:** Cache Components is enabled (Next 16.4 default). Data is dynamic by default, and caching is opted into with `'use cache'` + `cacheLife` + `cacheTag`. Request data (`searchParams`, `cookies()`) must be read inside `<Suspense>` so that the static shell can still be prerendered. Phase 4A will use `'use cache'` with `cacheTag` per entity and a `cacheLife` revalidate of ≤30 s; admin actions will call `revalidateTag`/`updateTag` (docs: `node_modules/next/dist/docs/01-app/03-api-reference/04-functions/`).
 - Every successful admin mutation calls on-demand revalidation for the affected tags/paths (for example `menu`, `item:<slug>`, `home`, `offers`).
 - Public pages also carry a time-based revalidate window of ≤ 30 s as a safety net.
 - Next 16's caching APIs (`revalidateTag`/`updateTag`, `cacheLife`, Cache Components) are checked against the installed version's docs before implementation; the exact calls are recorded here then.
@@ -150,3 +172,29 @@ Feedback is a message (10–1000 characters) plus an optional display name (≤ 
 
 ## ADR-027 Reference rendering tool kept outside the repo — Accepted
 The Phase 1 reference images in `design/reference/` were rendered with `playwright-core` 1.64.0 installed in a temporary folder (`/tmp/zorko-tools`). It drove the local Google Chrome with a throwaway profile, so no browser download or project dependency was needed. The project's own Playwright setup arrives in Phase 2.
+
+## ADR-028 HSTS and `upgrade-insecure-requests` only for https sites — Accepted (Phase 2 finding)
+- **Problem found by the WebKit E2E run:** the first header set sent HSTS and the CSP `upgrade-insecure-requests` directive for every production build. Safari/WebKit applies the upgrade even to `http://localhost`, so every CSS and JS request became `https://localhost` and failed with a TLS error (unstyled, non-interactive page). Chrome exempts localhost, which hid the bug there.
+- **Decision:** send both only when `NEXT_PUBLIC_SITE_URL` is https (`isHttps` in `src/lib/security/headers.ts`). Production on Vercel is required to be https (ADR-018 / env validation), so production still gets both.
+- **Tests:** unit tests for http and https; E2E asserts that they are absent on the http test server.
+
+## ADR-029 Production strictness keyed to `VERCEL_ENV`, not `NODE_ENV` — Accepted (refines ADR-018)
+`next build && next start` sets `NODE_ENV=production` on laptops and in CI too, where `http://localhost` is legitimate. The rules "https required" and "no localhost" for `NEXT_PUBLIC_SITE_URL` therefore apply when `VERCEL_ENV=production`. The variable is validated at server start through `src/instrumentation.ts`. Phase 8 will add a `npm run check:prod-config` script (TC-SEC-120) for non-Vercel production hosts.
+
+## ADR-030 Lockfile regenerated through a clean npm cache — Accepted (Phase 2 finding)
+- **Problem:** `npm ci` from a clean state failed with "Missing: @unrs/resolver-binding-linux-arm64-musl from lock file". The cause was 4 cache entries in the developer's `~/.npm/_cacache` owned by another user (likely an old `sudo npm`). npm could not read them and silently left that optional Linux binding out of `package-lock.json`. This would break CI on Linux.
+- **Decision:** regenerate the lockfile with `--cache /tmp/zorko-tools/.npm-cache` (a clean cache). The direct dependency versions are unchanged (verified by diff), and `npm ci` now succeeds.
+- **Recommendation to the team:** fix the local cache ownership once with `sudo chown -R $(whoami) ~/.npm`. This is not run automatically: it changes a system folder and needs your password.
+
+## ADR-031 Dialog focus management — Accepted
+Native `<dialog>` + `showModal()` provides inertness and Escape handling. Two additions:
+- **Tab wrapping:** Tab and Shift+Tab are wrapped inside the dialog, because native modals let Tab escape to the browser UI.
+- **Explicit focus restore:** the dialog stores the opener and returns focus to it on close. Safari does not focus buttons on mouse click, so this is only meaningful when the opener had focus (keyboard use), which is the case that matters.
+
+Verified on Chromium and WebKit (TC-COMP-006, now an E2E test because jsdom lacks `showModal`).
+
+## ADR-032 Accepted dev-only advisory: `braces` ≤3.0.3 (GHSA-vfj7-8cjw-p6xm) — Accepted, review in Phase 7
+- **Chain:** `eslint-config-next@16.4.0 → @next/eslint-plugin-next → fast-glob → micromatch → braces@3.0.3`. Severity high: stack exhaustion on deeply nested brace patterns. Published 2026-09-18; **no patched version exists**.
+- **Exposure:** lint tooling only. It processes our own config globs on developer and CI machines and is never shipped or reachable by user input.
+- npm's suggested "fix" downgrades `eslint-config-next` to 14.x, which is incompatible with Next 16 and is rejected.
+- **Controls:** `npm audit --omit=dev` = 0 vulnerabilities; CI gates on production dependencies at high or above. Re-check at each phase and adopt the patched release once published.

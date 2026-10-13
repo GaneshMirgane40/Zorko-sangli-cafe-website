@@ -30,7 +30,7 @@ Requirement → design/module → implementation location (planned) → tests �
 | FR-022 Live availability ≤30 s | M | ADR-013 | `server/revalidate.ts` + page revalidate | TC-E2E-050/051 | 5B | Planned | — |
 | FR-023 Structured data | C | — | — | — | after Q-01…04 | Planned | — |
 | FR-024 Demo labelling | M | ADR-025 | `layout/DemoRibbon`, `isDemo` | TC-E2E-001 | 3, 4A | Planned | — |
-| FR-025 Error pages | M | UI_SPEC §12.11 | `not-found.tsx`, `error.tsx` | TC-E2E-091 | 2, 4A | Planned | — |
+| FR-025 Error pages | M | UI_SPEC §12.11 | `src/app/not-found.tsx`, `error.tsx`, `global-error.tsx` | E2E foundation "unknown routes return 404", axe on 404 | 2, 4A | Implemented (404 verified; per-page error states in 4A) | phase-2.md |
 | FR-030 Admin login/logout | M | TRD §5 | `src/app/(admin)/admin/login/*`, `api/admin/logout` | TC-E2E-060, TC-SEC-009 | 5A | Planned | — |
 | FR-031 Allowlist authorization | M | ADR-010 | `server/auth/requireAdmin.ts` | TC-SEC-001…005, 031 | 5A | Planned | — |
 | FR-032 Login protection & expiry | M | ADR-014 | login action + `rate-limit.ts` | TC-SEC-008, TC-E2E-062, TC-UNIT-042 | 5A | Planned | — |
@@ -57,12 +57,14 @@ Requirement → design/module → implementation location (planned) → tests �
 | NFR-003 Performance | S | TRD §13 | — | TC-PERF-001/002 | 7 | Planned | — |
 | NFR-004 Security | M | SECURITY.md | — | TC-SEC-* | 3–7 | Planned | — |
 | NFR-005 Privacy | M | SECURITY §10 | feedback, rate-limit pruning | TC-SEC-130, TC-INT-060 | 3, 6 | Planned | — |
-| NFR-006 Maintainability | M | TRD §3 | lint/TS config | lint + typecheck in CI | 2+ | Planned | — |
-| NFR-007 Reliability | M | TRD §7 | `/api/health`, error boundaries | TC-INT-080 | 2–3 | Planned | — |
+| NFR-006 Maintainability | M | TRD §3 | `eslint.config.mjs`, `tsconfig.json` (strict), Prettier, CI workflow | lint, typecheck, format:check | 2+ | In progress (tooling verified) | phase-2.md |
+| NFR-007 Reliability | M | TRD §7 | `src/app/api/health/route.ts`, error boundaries | E2E health tests (DB check: TC-INT-080 in Phase 3) | 2–3 | In progress (app health verified; DB in 3) | phase-2.md |
 | NFR-008 Freshness | M | ADR-013 | — | TC-E2E-050 | 5B | Planned | — |
-| NFR-009 Browser support | M | TEST_PLAN §1 | Playwright projects | E2E on Chromium + WebKit | 4A+ | Planned | — |
+| NFR-009 Browser support | M | TEST_PLAN §1 | `playwright.config.ts` (Chromium + WebKit) | All E2E on both engines | 2+ | In progress (56/56 on both engines in Phase 2) | phase-2.md |
 | NFR-010 Content honesty | M | CLAUDE.md 6.2 | seed + UI | TC-E2E-090, review | 3–7 | Planned | — |
 | NFR-011 Deployability | M | DEPLOYMENT.md | — | Phase 8 checklist | 8 | Planned | — |
 | NFR-012 Data integrity | M | TRD §4 | Prisma schema + SQL CHECKs | TC-INT-001…003, 070 | 3 | Planned | — |
 
 **Phase 1 documentation deliverables** (CLAUDE.md §12): PRD, TRD, UI_SPEC, SECURITY, TEST_PLAN, TRACEABILITY, DEPLOYMENT, DECISIONS, OPEN_QUESTIONS, `design/reference/*` — Implemented in Phase 1; verified by team review.
+
+**Phase 2 foundation items** (CLAUDE.md §12 Phase 2): design tokens (`src/app/globals.css`), fonts (`layout.tsx`), UI primitives (`src/components/ui/*`), env validation (`src/lib/config/env.ts` + `src/instrumentation.ts`), security headers (`src/lib/security/headers.ts`), health endpoint, style guide (`/dev/styleguide`). Verified by 39 Vitest tests and 56 Playwright tests (28 per engine); see `docs/PHASE_REPORTS/phase-2.md`.

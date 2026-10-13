@@ -30,3 +30,10 @@ blob-report/
 *.log
 .idea/
 .vscode/
+
+# Certificates / keys
+*.pem
+*.key
+
+# Playwright browser cache (if installed locally)
+/playwright/.cache/

@@ -201,6 +201,7 @@ Atmospheric glows: blurred circles (`bg-primary-container/10 blur-3xl`, `bg-seco
 Stitch badges such as "CHEF SPECIAL", "SPICY ZING", "STEAM FRESH" and "6 PCS" are **not** reproduced; they are mockup content.
 
 ### 7.5 Vegetarian indicator
+- **"100% VEG" pill text** uses `tertiary` (V-12).
 - **Mark:** 16×16 square, `rounded-[3px] border-[1.5px] border-veg-pure-green`, with an 8 px `bg-veg-pure-green rounded-full` dot (12×12 / 6 px in compact contexts). Non-veg variant: border and triangle in `#8B1A1A` (standard Indian marking). Each mark has `role="img"` and an `aria-label` ("Vegetarian" / "Non-vegetarian").
 - **Rules:**
   - The per-item mark comes from `MenuItem.dietType`.
@@ -213,7 +214,7 @@ Stitch badges such as "CHEF SPECIAL", "SPICY ZING", "STEAM FRESH" and "6 PCS" ar
   - Title `headline-sm` with a two-line clamp; description `body-sm text-on-surface-variant line-clamp-2`.
   - Footer: small caption (category name), price `title-price text-primary` (if a DISCOUNT offer is active: struck-through regular price `body-sm line-through text-on-surface-variant`, then the promo price), and a "View details" ghost button.
   - The whole card is a link target; the button is the same link.
-  - **Unavailable:** `opacity-60`, image `grayscale`, centred overlay label "Out of stock", button text "Out of stock — view details" in disabled styling. The card remains a link.
+  - **Unavailable:** image `grayscale` + `opacity-60` (image only, V-13), centred overlay label "Out of stock" on solid `bg-inverse-surface`, button text "Out of stock — view details" in disabled styling. The card remains a link and its text keeps full contrast.
 - **Trending card (home):** `rounded-2xl bg-surface-container-lowest overflow-hidden shadow-sm hover:shadow-xl`, image `h-52`, `p-space-md` body; otherwise the same as the menu card.
 - **Combo card:** desktop `article flex sm:flex-row rounded-2xl shadow-md hover:shadow-xl`, image `sm:w-2/5 min-h-[240px]`, body `sm:w-3/5 p-space-lg`; mobile stacked, image `h-44` with gradient and the title over the image (mobile Stitch).
   - Includes a "SAVE ₹X" badge, an "Included" list (`bg-surface-canvas-subtle rounded-xl`, check icons, `N× Item`), the price with struck-through regular price and "% OFF", the validity line "Valid till 31 Oct 2026", and a "View details" button.
@@ -444,6 +445,9 @@ Empty-state layout with a large `display-hero` "404" in `text-primary`, the mess
 | V-09 | 5 trending (synopsis) vs 4 (Stitch) | 4 | ADR-023 |
 | V-10 | Header "Table QR Order" button | "QR Menu" link to `/qr` | CLAUDE.md 6.3 |
 | V-11 | Fixed 40 px page margins at all widths | 16 / 24 / 40 px | DESIGN.md grid |
+| V-12 | "100% VEG" pill text `#15803D` on the light-emerald tint (DESIGN.md) | Text `tertiary` `#006947` | axe colour-contrast failure found in Phase 2 |
+| V-13 | Sold-out card `opacity-60` on the whole card (Stitch menu screen) | Dim and greyscale the **image only**; the label sits on a solid `bg-inverse-surface`; text keeps full contrast | axe colour-contrast failure found in Phase 2 |
+| V-14 | Small buttons, pills, chip remove `×` (28–40 px) | `min-h-12` under 1024 px (`lg:` compact size kept); whole filter chip is the remove link; dialog/toast close 48 px | 48 px touch-target rule (§11), TC-RESP-002 |
 
 ## 15. Derived screens (no Stitch source)
 

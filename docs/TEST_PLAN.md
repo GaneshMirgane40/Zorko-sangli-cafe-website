@@ -69,7 +69,7 @@
 | TC-COMP-003 | MenuCard with an active discount | Struck-through regular price + promo price |
 | TC-COMP-004 | VegMark hidden "100% VEG" pill when `isPureVegConfirmed=false` | No pill |
 | TC-COMP-005 | EmptyState in the menu has a "Clear all filters" action | Calls reset |
-| TC-COMP-006 | Dialog traps focus, closes on Esc, restores focus | Pass |
+| TC-COMP-006 | Dialog traps focus, closes on Esc, restores focus (**E2E**: jsdom has no `showModal`) | Pass |
 | TC-COMP-007 | AddOnList renders groups read-only (no inputs) | No `input`/`button` in the list |
 | TC-COMP-008 | ReviewCard renders `<script>` text literally | Escaped text, no element |
 | TC-COMP-009 | Pagination marks the current page with `aria-current` | Pass |
@@ -199,6 +199,11 @@
 | TC-PERF-002 | Query count per menu request (Prisma query log in test) | ≤3 queries; no N+1 |
 
 ## 5. Commands (from Phase 2 on)
+
+Notes from Phase 2:
+- E2E runs `npm run build && next start -p 3100` automatically with `ENABLE_STYLEGUIDE=true`.
+- Keyboard tests press **Option+Tab in WebKit**: Safari moves Tab only between form fields by default.
+
 
 ```
 npm run lint          # ESLint
