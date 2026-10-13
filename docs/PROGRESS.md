@@ -6,10 +6,10 @@ Single source of truth for project state (CLAUDE.md Section 0.1).
 
 | Field | Value |
 |---|---|
-| Current phase | **Phase 1 — Requirements, architecture, design spec** |
+| Current phase | **Phase 2 — Application foundation** |
 | Status | **IN PROGRESS** |
-| Branch | `phase-1` (local only, not pushed) |
-| Latest report | `docs/PHASE_REPORTS/phase-0.md` (phase-1 in progress) |
+| Branch | `phase-2` (local only, not pushed) |
+| Latest report | `docs/PHASE_REPORTS/phase-1.md` (phase-2 in progress) |
 | Last updated | 2026-10-13 |
 
 ## Approved phases
@@ -17,6 +17,7 @@ Single source of truth for project state (CLAUDE.md Section 0.1).
 | Phase | Date | Approval message (quoted) |
 |---|---|---|
 | Phase 0 | 2026-10-13 | "approved, go to Phase 1" |
+| Phase 1 | 2026-10-13 | "approved, go to Phase 2" |
 
 ## Open bugs
 
@@ -27,8 +28,12 @@ None.
 - Loyalty and Reward Program: future work (synopsis methodology lists it as future expansion). Confirm with guide.
 - Online ordering, payment, customer accounts, delivery/order tracking: future work (synopsis + CLAUDE.md 3.0).
 - Install a secret scanner (gitleaks or equivalent) before Phase 2 checks; not installed on the dev machine yet.
+- Pin exact library versions in Phase 2; verify TypeScript 7 / ESLint 10 compatibility with Next 16 (ADR-002).
+- Finalise CSP script policy in Phase 7 (ADR-016).
 
 ## Assumptions waiting for team confirmation
+
+Phase 1 approval (2026-10-13) did not comment on A-09…A-11 / Q-19; they are applied as proposed and remain open for objection.
 
 See `docs/PHASE_REPORTS/phase-0.md` → "Synopsis vs CLAUDE.md differences". In short:
 
@@ -38,5 +43,10 @@ See `docs/PHASE_REPORTS/phase-0.md` → "Synopsis vs CLAUDE.md differences". In 
 4. A-04: "Frequently Bought Together" = admin-managed item associations; combos are shown separately as offers.
 5. A-05: Public "customer reviews" = moderated feedback submitted through the site (no ratings, no imported reviews).
 6. A-06: "Customer Gallery" = admin-uploaded gallery photos (no customer photo uploads).
-7. A-07: Homepage shows up to 5 trending/best-seller items (pseudocode `limit=5`).
+7. A-07 (revised in Phase 1): Homepage shows up to **4** trending/best-seller items to match the design grid (ADR-023; synopsis says 5).
 8. A-08: Synopsis copy used: `~/Downloads/MINI PROJECT SYN (2).pdf` (chosen by the team on 2026-10-13).
+9. A-09: Primary button hover uses `#d1430a` instead of Stitch `#E64A19` for WCAG AA contrast (ADR-004).
+10. A-10: Header fixes to the Stitch design: sticky header, no-wrap nav, drawer at 768–1279 px (ADR-024).
+11. A-11: Feedback has no star ratings (ADR-026, Q-11).
+
+Full list of information needed from the café/team: `docs/OPEN_QUESTIONS.md` (Q-01…Q-20).

@@ -1,0 +1,26 @@
+# OPEN QUESTIONS
+
+Information or decisions the team, the café or the guide must supply. Until answered, the default applies and is visibly labelled where relevant. **Blocks** shows the earliest phase that needs the answer; nothing here blocks Phase 2.
+
+| ID | Question | Ask whom | Default until answered | Blocks |
+|---|---|---|---|---|
+| Q-01 | Verified outlet address and map coordinates (lat/lng) | Café | Placeholder address "To be confirmed"; no map pin | 4B (real data), 8 |
+| Q-02 | Phone and WhatsApp numbers | Café | Hidden / "To be confirmed" | 4B, 8 |
+| Q-03 | Optional public email | Café | Hidden | 4B |
+| Q-04 | Instagram and Facebook URLs | Café | Hidden | 4B |
+| Q-05 | Opening hours per day (any hours past midnight?) | Café | Demo hours labelled demo; past-midnight closing not supported unless needed | 3, 4B |
+| Q-06 | Is the outlet 100% vegetarian? (controls every "100% VEG" claim) | Café | `isPureVegConfirmed=false`; per-item marks only | 4A |
+| Q-07 | Real menu: categories, items, prices, descriptions, add-ons, veg/non-veg | Café | Demo seed labelled demo | before final demo |
+| Q-08 | Real offers, combos and Student Zone terms | Café | Demo offers labelled demo | before final demo |
+| Q-09 | Permission to use the ZORKO logo, name and imagery | Café / franchise | Text wordmark only; neutral footer | 4A |
+| Q-10 | Real photos for gallery and menu | Café | Generated placeholders | before final demo |
+| Q-11 | Should feedback include a star rating? | Team / guide | No ratings (ADR-026) | 6 |
+| Q-12 | Loyalty and Reward Program: confirm it is future work (synopsis abstract vs methodology) | Guide | Out of scope | — |
+| Q-13 | Production domain (if any) | Team | Vercel `*.vercel.app` URL | 8 |
+| Q-14 | Enable MFA for admin accounts? | Team | Recommended, optional | 5A |
+| Q-15 | Administrator email address(es) | Team | — | 5A |
+| Q-16 | GitHub repository (for CI) — create one? | Team | Local Git only; CI workflow file prepared but not run | 2 |
+| Q-17 | Two Supabase projects (dev, prod) created? | Team | — | 3 (dev), 8 (prod) |
+| Q-18 | Vercel account | Team | — | 8 |
+| Q-19 | Confirm UI decisions: hover colour (ADR-004), header fixes (ADR-024), 4 trending items (ADR-023), feedback without ratings (ADR-026) | Team | As proposed | 2 |
+| Q-20 | Hero/about marketing copy: keep the Stitch-style tagline "Hungry? Bite Into Joy at ZORKO Sangli!"? | Team / café | Keep (not a factual claim) | 4A |

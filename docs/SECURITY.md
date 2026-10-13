@@ -1,0 +1,146 @@
+# SECURITY — Threat Model and Controls
+
+**Version:** 1.0 (Phase 1, initial threat model), 2026-10-13. Reviewed again in Phase 5A, 5B and 7.
+**Checklists used:** OWASP Top 10:2025 and OWASP API Security Top 10:2023. Category names are to be re-checked against owasp.org at the Phase 7 review.
+**Status legend:** Planned · Implemented (phase) · Verified (test ID).
+
+## 1. Assets
+
+| Asset | Sensitivity | Why it matters |
+|---|---|---|
+| Admin accounts and sessions | High | Full content control; defacement; misleading prices or offers |
+| `SUPABASE_SECRET_KEY`, `DATABASE_URL`/`DIRECT_URL`, `RATE_LIMIT_SALT` | Critical | Full database/storage access, bypassing RLS |
+| Menu, prices, availability, offers, café info | Medium (integrity) | Customers act on them; wrong prices hurt trust |
+| Feedback content | Low–medium (privacy) | May contain personal statements; unmoderated content is a defacement/XSS vector |
+| Audit log | Medium | Accountability; must not be tampered with |
+| Storage bucket | Medium | Hosting malicious files under the café's domain |
+| Availability of the public site | Medium | Demo, viva, customers at the counter |
+
+## 2. Trust boundaries
+
+1. **Browser ↔ Next.js:** everything from the client is untrusted (query, body, cookies, headers, files).
+2. **Next.js ↔ Supabase Postgres:** a privileged connection (Prisma bypasses RLS), so authorization is enforced in our server code.
+3. **Browser ↔ Supabase directly:** the publishable key is public, so the auto REST/GraphQL API must expose nothing (RLS deny-all + REVOKE). The Storage public bucket is read-only.
+4. **Next.js ↔ Supabase Auth:** JWT validation via `getClaims()`/`getUser()`.
+5. **Admin ↔ public data:** admin-entered text and URLs are rendered to the public, so they are treated as untrusted output (escaping, URL scheme checks).
+6. **Third parties:** Google Maps iframe, Vercel, npm dependencies.
+
+## 3. Attack surface
+
+- Public GET pages and `/api/v1/*` (query parsing, search).
+- POST `/api/v1/feedback`.
+- `/admin/login` Server Action.
+- All admin Server Actions.
+- POST `/api/admin/uploads`.
+- POST `/api/admin/logout`.
+- The Supabase REST/GraphQL/Storage endpoints of our project.
+- Build artefacts (client JS bundles), the repository, CI logs.
+- Environment configuration on Vercel.
+
+## 4. Threat actors
+
+- Anonymous internet users and bots: spam, scraping, credential stuffing.
+- A curious customer who inspects the JS bundle or calls Supabase REST with the public key.
+- A non-admin Supabase user. Signup is disabled, but an account could exist through a misconfiguration.
+- A malicious or compromised admin account.
+- Supply-chain compromise through an npm package.
+- Accidental insiders: committed secrets, a production migration run by mistake.
+
+## 5. Abuse cases
+
+| ID | Abuse case | Control |
+|---|---|---|
+| AB-01 | Brute-force or stuffed admin passwords | Login rate limit (IP and IP+email), generic errors, Supabase's own limits, strong-password policy in Supabase |
+| AB-02 | Read or modify tables via Supabase REST with the publishable key | RLS enabled with no policies + `REVOKE ALL` from anon/authenticated (ADR-009); TC-SEC-020 |
+| AB-03 | Call an admin Server Action without being an admin (replayed action ID) | `requireAdmin()` inside every action; TC-SEC-001…006 |
+| AB-04 | Forged or expired JWT cookie | `getClaims()`/`getUser()` validation; TC-SEC-003/004 |
+| AB-05 | Mass assignment (for example `isArchived`, `id`, `adminUserId` in a payload) | Zod `.strict()` allowlists; services set server-controlled fields; TC-SEC-030 |
+| AB-06 | Stored XSS via feedback or admin text | React escaping; no `dangerouslySetInnerHTML`; ESLint rule; TC-SEC-040/041 |
+| AB-07 | `javascript:` or `data:` banner/social links, or an open redirect via `next` | `safeHref` / `httpsUrl` validators; `next` must be an internal `/admin` path; TC-SEC-050/051 |
+| AB-08 | Disguised or oversized upload (HTML/SVG/polyglot renamed `.jpg`) | Magic bytes + `sharp` decode/re-encode to WebP; 5 MB limit; no SVG; TC-SEC-060…064 |
+| AB-09 | Feedback spam or flooding | Honeypot, rate limit, length limits, moderation queue; TC-SEC-070 |
+| AB-10 | CSRF on cookie-authenticated POSTs | Server Actions (Next Origin check) + explicit Origin allowlist on Route Handlers; `SameSite=Lax`; TC-SEC-080 |
+| AB-11 | SQL injection through search | Prisma parameterised `contains` with `mode: insensitive`; no raw SQL with input; TC-SEC-090 |
+| AB-12 | Expensive queries (huge `pageSize`, long `q`) | Zod caps (`pageSize`≤48, `q`≤60); body size limits; TC-SEC-091 |
+| AB-13 | Secret leak in the client bundle or repo | `server-only` imports; no secrets in `NEXT_PUBLIC_*`; bundle grep + gitleaks in CI; TC-SEC-100/101 |
+| AB-14 | Clickjacking the admin | `frame-ancestors 'none'` / `X-Frame-Options: DENY`; TC-SEC-110 |
+| AB-15 | Showing expired offers or unapproved feedback | Server-side status filters; TC-INT-030, TC-INT-040 |
+| AB-16 | QR code pointing to a wrong or attacker site | URL from env, validated (https, not localhost, in production); shown in the admin with a warning; TC-UNIT-030 |
+
+## 6. STRIDE analysis
+
+| Threat | Where | Mitigation | Residual |
+|---|---|---|---|
+| **S**poofing | Admin login, session cookies | Supabase Auth, JWT validation per request, allowlist, rate limit | Phished admin password (no MFA in v1; Q-14 suggests enabling Supabase MFA) |
+| **T**ampering | Admin mutations, DB via REST, uploads | `requireAdmin` + Zod on every action; RLS deny-all/REVOKE; re-encoded uploads; FK/CHECK constraints | A compromised admin can still edit content (the audit log shows who) |
+| **R**epudiation | Admin changes | Append-only `AuditLog` written in the same transaction; admins have no UI to edit it | DB owner can alter logs (accepted) |
+| **I**nformation disclosure | API DTOs, errors, bundles, logs | Explicit `select`; safe error messages; `server-only`; log redaction | Supabase dashboard access is managed by the team |
+| **D**enial of service | Feedback, login, search, uploads | Rate limits, size caps, pagination caps, Vercel/Supabase platform limits | Large-scale DDoS (platform-level only) |
+| **E**levation of privilege | Non-admin user to admin; client role flags | Allowlist table, never trust client flags, no self-service role change; provisioning script needs the secret key | Misconfigured dashboard (signup left on). Signup-disabled check in the DEPLOYMENT checklist + TC-SEC-006 |
+
+## 7. Risk register
+
+Scales: L(ikelihood) and I(mpact) are 1–3; Risk = L×I.
+
+| ID | Risk | L | I | Risk | Mitigation | Residual |
+|---|---|---|---|---|---|---|
+| R-01 | Supabase REST exposes tables | 2 | 3 | 6 | ADR-009, TC-SEC-020 against the dev project | Low |
+| R-02 | Missing `requireAdmin` in a new action | 2 | 3 | 6 | Lint/test: every exported admin action is covered by the authorization-matrix test that enumerates actions | Low |
+| R-03 | Secret committed or bundled | 2 | 3 | 6 | `.gitignore`, gitleaks, bundle scan, `.claude/settings.json` deny on `.env` | Low |
+| R-04 | Credential stuffing on admin | 2 | 3 | 6 | Rate limit, strong passwords, optional MFA (Q-14) | Low–Med |
+| R-05 | Stored XSS via admin/feedback text | 1 | 3 | 3 | Escaping, CSP, tests | Low |
+| R-06 | Malicious upload | 1 | 2 | 2 | ADR-015 | Low |
+| R-07 | CSP needs `'unsafe-inline'` scripts | 2 | 2 | 4 | ADR-016 evaluation in Phase 7 | Med until resolved |
+| R-08 | Destructive migration on prod | 1 | 3 | 3 | Rule 14, separate projects, `pg_dump` before deploy | Low |
+| R-09 | Free-tier pause or outage during demo | 2 | 2 | 4 | Wake before the demo; health check | Low |
+| R-10 | Vulnerable dependency | 2 | 2 | 4 | `npm audit` in CI, pinned lockfile, minimal deps | Low–Med |
+| R-11 | Feedback contains personal data | 2 | 1 | 2 | Moderation, no contact fields, retention rule | Low |
+
+## 8. OWASP Top 10:2025 checklist
+
+| # | Category | Controls in this project | Status |
+|---|---|---|---|
+| A01 | Broken Access Control | `requireAdmin` in every operation; deny by default; RLS deny-all; IDOR-safe (no per-user data; admin-wide scope); safe `next` redirect | Planned (5A) |
+| A02 | Security Misconfiguration | Env validation; security headers; Supabase signup disabled; production checks (https site URL); no debug output | Planned (2, 7, 8) |
+| A03 | Software Supply Chain Failures | Lockfile, `npm ci`, `npm audit`, minimal deps, gitleaks, pinned versions, no RCs | Planned (2, 7) |
+| A04 | Cryptographic Failures | HTTPS/HSTS; Supabase password hashing; HMAC for rate-limit keys; no custom crypto | Planned |
+| A05 | Injection | Prisma parameterised queries; Zod; React escaping; no raw SQL with input | Planned (3, 4A) |
+| A06 | Insecure Design | Threat model (this doc); no ordering/payment surface; least data | In progress (1) |
+| A07 | Authentication Failures | Supabase Auth; rate limit; generic errors; session expiry; logout revokes | Planned (5A) |
+| A08 | Software or Data Integrity Failures | Audit log; transactions; re-encoded uploads; no untrusted deserialisation | Planned (5B) |
+| A09 | Logging & Alerting Failures | Audit log; structured server logs without secrets; failed-login audit | Planned (5A) |
+| A10 | Mishandling of Exceptional Conditions | Central error mapping; safe 5xx; error boundaries; DB-down health status | Planned (2, 3) |
+
+## 9. OWASP API Security Top 10:2023 checklist
+
+| # | Category | Controls | Status |
+|---|---|---|---|
+| API1 | Broken Object Level Authorization | Public objects are public by design; admin objects behind `requireAdmin`; unpublished/expired filtered server-side | Planned |
+| API2 | Broken Authentication | Supabase JWT validation; rate limits | Planned |
+| API3 | Broken Object Property Level Authorization | Explicit DTO `select`; Zod `.strict()` input | Planned |
+| API4 | Unrestricted Resource Consumption | pageSize ≤48, q ≤60, body ≤8 KB (JSON) / 5 MB (upload), rate limits | Planned |
+| API5 | Broken Function Level Authorization | Admin functions only in `(admin)` actions with `requireAdmin` | Planned |
+| API6 | Unrestricted Access to Sensitive Business Flows | Feedback flow limited (honeypot + rate limit + moderation) | Planned |
+| API7 | Server-Side Request Forgery | The server fetches no user-supplied URLs (banner links are only rendered) | N/A by design |
+| API8 | Security Misconfiguration | Headers, CORS not enabled (same-origin only), env checks | Planned |
+| API9 | Improper Inventory Management | All endpoints listed in TRD §6; no undocumented routes; `/dev/*` 404 in production | Planned |
+| API10 | Unsafe Consumption of APIs | Only Supabase SDK responses; typed and checked | Planned |
+
+## 10. Specific controls (summary)
+
+- **Headers:** see ADR-016. CORS: no `Access-Control-Allow-Origin` header on any route (same-origin only).
+- **Cookies:** set by `@supabase/ssr`: `HttpOnly`, `Secure` (production), `SameSite=Lax`, path `/`. Verified in Phase 5A (TC-SEC-007).
+- **Secrets:**
+  - `.env.example` contains placeholders only; `.env*` is git-ignored.
+  - `.claude/settings.json` denies the assistant reading `.env` files.
+  - Values are never printed in reports.
+  - If a secret is exposed: rotate it in Supabase (keys / DB password), update Vercel env, redeploy, and record it in the phase report.
+- **Privacy:** feedback has no contact fields; rate-limit buckets hold HMACs only and are pruned after 24 h; rejected feedback is deleted after 90 days; the map iframe discloses that it loads from Google.
+
+## 11. Verification results
+
+| Test group | Phase | Result |
+|---|---|---|
+| — | — | No security tests executed yet (Phase 1 is documentation only). |
+
+Manual threat-model review: initial version written in Phase 1; to be re-reviewed with the team in Phase 7. Automated scans cannot prove security.

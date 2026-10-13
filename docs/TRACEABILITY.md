@@ -1,0 +1,68 @@
+# TRACEABILITY
+
+Requirement → design/module → implementation location (planned) → tests → phase → status → evidence.
+
+**Status values:** Planned · In progress · Implemented (code exists, not verified) · Verified (tests passed; evidence linked). A Must-have may be marked Verified only with passing tests recorded in a phase report.
+
+| Req | Pri | Design / module | Implementation (planned) | Tests | Phase | Status | Evidence |
+|---|---|---|---|---|---|---|---|
+| FR-001 Homepage | M | UI_SPEC §12.1; services home/menu/offers/cafe | `src/app/(public)/page.tsx`, `src/server/services/home.ts` | TC-E2E-001, TC-VIS-001, TC-A11Y-001 | 4A | Planned | — |
+| FR-002 Navigation | M | UI_SPEC §8 | `src/components/layout/*` | TC-RESP-003, TC-A11Y-003 | 4A | Planned | — |
+| FR-003 Menu listing | M | UI_SPEC §12.2; TRD §6 | `src/app/(public)/menu/page.tsx`, `services/menu.ts` | TC-INT-010, TC-INT-012, TC-E2E-010 | 3, 4A | Planned | — |
+| FR-004 Search | M | ADR-012 | `lib/validation/menu.ts`, `services/menu.ts` | TC-UNIT-010/011, TC-SEC-090, TC-E2E-010 | 3, 4A | Planned | — |
+| FR-005 Combined filters | M | ADR-021, ADR-022 | same | TC-UNIT-011/012, TC-INT-010, TC-E2E-010 | 3, 4A | Planned | — |
+| FR-006 Sort & reset | M | UI_SPEC §12.2 | same + `features/menu/SortSelect` | TC-INT-013, TC-E2E-011/012 | 3, 4A | Planned | — |
+| FR-007 Pagination | M | TRD §4 | same + `ui/Pagination` | TC-INT-011, TC-E2E-012 | 3, 4A | Planned | — |
+| FR-008 List states | M | UI_SPEC §7.7 | `menu/loading.tsx`, `error.tsx`, `EmptyState` | TC-COMP-005, TC-E2E-011/013 | 4A | Planned | — |
+| FR-009 Availability display | M | UI_SPEC §7.6 | `features/menu/MenuCard` | TC-COMP-002, TC-E2E-021 | 4A | Planned | — |
+| FR-010 Item details | M | UI_SPEC §12.3 | `src/app/(public)/menu/[slug]/page.tsx` | TC-INT-020, TC-E2E-020 | 3, 4A | Planned | — |
+| FR-011 Add-ons display | M | ADR-019 | `features/menu/AddOnList` | TC-COMP-007, TC-E2E-020 | 4A | Planned | — |
+| FR-012 Related / FBT / combos | M | TRD §4 ItemRelation | `services/menu.ts#getItemDetail` | TC-INT-021, TC-E2E-020 | 3, 4A | Planned | — |
+| FR-013 Best sellers / trending | M | ADR-021 | flags + home section | TC-INT-010, TC-E2E-001 | 3, 4A | Planned | — |
+| FR-014 Offers & combos | M | ADR-020; UI_SPEC §12.4–12.5 | `src/app/(public)/offers/*`, `services/offers.ts`, `lib/format.ts#offerStatus` | TC-UNIT-020/021, TC-INT-030, TC-E2E-030 | 3, 4B | Planned | — |
+| FR-015 Student Zone | M | UI_SPEC §12.6 | `src/app/(public)/student-zone/page.tsx` | TC-E2E-031 | 4B | Planned | — |
+| FR-016 Gallery | M | UI_SPEC §12.7 | `src/app/(public)/gallery/page.tsx` | TC-E2E-040 | 4B | Planned | — |
+| FR-017 Café info & location | M | UI_SPEC §12.8; ADR-017 | `src/app/(public)/contact/page.tsx`, `services/cafe.ts` | TC-UNIT-022, TC-E2E-041 | 3, 4B | Planned | — |
+| FR-018 QR menu | M | ADR-018 | `src/app/(public)/qr/page.tsx`, `server/qr.ts` | TC-UNIT-030, TC-E2E-043/044 | 6 | Planned | — |
+| FR-019 Feedback submission | M | UI_SPEC §12.9; ADR-014/026 | `src/app/api/v1/feedback/route.ts`, `features/feedback/FeedbackForm` | TC-UNIT-050, TC-INT-041, TC-SEC-070/080/091, TC-E2E-042 | 6 | Planned | — |
+| FR-020 Public reviews | M | — | `services/feedback.ts#listApproved` | TC-INT-040, TC-SEC-040, TC-COMP-008 | 3, 6 | Planned | — |
+| FR-021 SEO | M | — | `generateMetadata`, `app/sitemap.ts`, `app/robots.ts` | TC-E2E (metadata checks in 4B) | 4B | Planned | — |
+| FR-022 Live availability ≤30 s | M | ADR-013 | `server/revalidate.ts` + page revalidate | TC-E2E-050/051 | 5B | Planned | — |
+| FR-023 Structured data | C | — | — | — | after Q-01…04 | Planned | — |
+| FR-024 Demo labelling | M | ADR-025 | `layout/DemoRibbon`, `isDemo` | TC-E2E-001 | 3, 4A | Planned | — |
+| FR-025 Error pages | M | UI_SPEC §12.11 | `not-found.tsx`, `error.tsx` | TC-E2E-091 | 2, 4A | Planned | — |
+| FR-030 Admin login/logout | M | TRD §5 | `src/app/(admin)/admin/login/*`, `api/admin/logout` | TC-E2E-060, TC-SEC-009 | 5A | Planned | — |
+| FR-031 Allowlist authorization | M | ADR-010 | `server/auth/requireAdmin.ts` | TC-SEC-001…005, 031 | 5A | Planned | — |
+| FR-032 Login protection & expiry | M | ADR-014 | login action + `rate-limit.ts` | TC-SEC-008, TC-E2E-062, TC-UNIT-042 | 5A | Planned | — |
+| FR-033 Dashboard | M | UI_SPEC §13 | `src/app/(admin)/admin/page.tsx` | TC-E2E-074 | 5A | Planned | — |
+| FR-034 Categories | M | TRD §6 actions | `admin/categories/*`, `services/categories.ts` | TC-INT-003, TC-E2E-070 | 5B | Planned | — |
+| FR-035 Menu items | M | same | `admin/menu/*`, `services/menu-admin.ts` | TC-INT-001/002, TC-SEC-030, TC-E2E-070 | 5B | Planned | — |
+| FR-036 Availability toggle | M | ADR-013 | `item.setAvailability` | TC-E2E-050 | 5B | Planned | — |
+| FR-037 Item images | M | ADR-015 | `api/admin/uploads`, `server/storage.ts` | TC-UNIT-060, TC-SEC-060…064 | 5B | Planned | — |
+| FR-038 Add-on configuration | M | TRD §4 | `item.addOns.save` | TC-INT-070, TC-E2E-070 | 5B | Planned | — |
+| FR-039 Item relations | S | TRD §4 | `item.relations.*` | TC-E2E-070 | 5B | Planned | — |
+| FR-040 Offers admin | M | ADR-020 | `admin/offers/*` | TC-INT-002, TC-E2E-071 | 5C | Planned | — |
+| FR-041 Banners | M | TRD §6 | `admin/banners/*` | TC-UNIT-040, TC-SEC-050, TC-E2E-072 | 5C | Planned | — |
+| FR-042 Café info & hours | M | TRD §4 | `admin/cafe/*` | TC-UNIT-041, TC-INT-002, TC-E2E-072 | 5C | Planned | — |
+| FR-043 Gallery management | M | ADR-015 | `admin/gallery/*` | TC-SEC-060…064, TC-E2E-072 | 5C | Planned | — |
+| FR-044 Feedback moderation | M | TRD §6 | `admin/feedback/*` | TC-SEC-001/002, TC-E2E-073 | 6 | Planned | — |
+| FR-045 Audit log | M | TRD §4 | `server/audit.ts`, `admin/audit` | TC-INT-071, TC-E2E-075 | 5A–6 | Planned | — |
+| FR-046 Preview | S | UI_SPEC §13 | editor links | TC-E2E-070 | 5B | Planned | — |
+| FR-047 Revalidation | M | ADR-013 | `server/revalidate.ts` | TC-E2E-050/051/071/072 | 5B–5C | Planned | — |
+| FR-048 Veg marking | S | UI_SPEC §7.5 | `VegMark`, `dietType`, `isPureVegConfirmed` | TC-COMP-004 | 3, 4A | Planned | — |
+| FR-049 Admin QR | M | ADR-018 | `admin/qr` | TC-E2E-043 | 6 | Planned | — |
+| FR-050 Admin usability | M | UI_SPEC §8.4, §13 | `layout/AdminShell` etc. | TC-A11Y-002, TC-RESP-004 | 5A–6 | Planned | — |
+| NFR-001 Responsive | M | UI_SPEC §17 | all pages | TC-RESP-001…004 | 4A–7 | Planned | — |
+| NFR-002 Accessibility | M | UI_SPEC §2.3, §11 | all | TC-A11Y-001…006 | 4A–7 | Planned | — |
+| NFR-003 Performance | S | TRD §13 | — | TC-PERF-001/002 | 7 | Planned | — |
+| NFR-004 Security | M | SECURITY.md | — | TC-SEC-* | 3–7 | Planned | — |
+| NFR-005 Privacy | M | SECURITY §10 | feedback, rate-limit pruning | TC-SEC-130, TC-INT-060 | 3, 6 | Planned | — |
+| NFR-006 Maintainability | M | TRD §3 | lint/TS config | lint + typecheck in CI | 2+ | Planned | — |
+| NFR-007 Reliability | M | TRD §7 | `/api/health`, error boundaries | TC-INT-080 | 2–3 | Planned | — |
+| NFR-008 Freshness | M | ADR-013 | — | TC-E2E-050 | 5B | Planned | — |
+| NFR-009 Browser support | M | TEST_PLAN §1 | Playwright projects | E2E on Chromium + WebKit | 4A+ | Planned | — |
+| NFR-010 Content honesty | M | CLAUDE.md 6.2 | seed + UI | TC-E2E-090, review | 3–7 | Planned | — |
+| NFR-011 Deployability | M | DEPLOYMENT.md | — | Phase 8 checklist | 8 | Planned | — |
+| NFR-012 Data integrity | M | TRD §4 | Prisma schema + SQL CHECKs | TC-INT-001…003, 070 | 3 | Planned | — |
+
+**Phase 1 documentation deliverables** (CLAUDE.md §12): PRD, TRD, UI_SPEC, SECURITY, TEST_PLAN, TRACEABILITY, DEPLOYMENT, DECISIONS, OPEN_QUESTIONS, `design/reference/*` — Implemented in Phase 1; verified by team review.
