@@ -6,7 +6,8 @@
  * - Create-only by slug: existing categories/items (including admin edits) are never changed.
  * - Refuses while demo menu items exist, so real and demo items are never mixed
  *   (run `npm run db:remove-demo -- --confirm` first).
- * - Re-running upgrades our earlier "photo coming soon" tiles to the illustrative photos (ADR-045).
+ * - Re-running refreshes our own bundled images (placeholder tiles, earlier illustrative photos) to
+ *   the current per-item photo; admin-uploaded images are never touched (ADR-045).
  * - Café information: replaces the row only while it is still demo data; hours are kept
  *   (still unconfirmed, Q-05).
  */
@@ -48,9 +49,17 @@ async function main() {
         const photo = item.image ?? cat.image
         const existing = await db.menuItem.findUnique({ where: { slug }, select: { id: true } })
         if (existing) {
-          // Only upgrade our own "photo coming soon" tiles; never touch admin-uploaded images.
+          // Only refresh our own bundled images (placeholder tiles and earlier illustrative photos);
+          // never touch admin-uploaded images (Supabase Storage paths).
           const upgraded = await db.menuItemImage.updateMany({
-            where: { menuItemId: existing.id, storagePath: { startsWith: 'placeholder/' } },
+            where: {
+              menuItemId: existing.id,
+              OR: [
+                { storagePath: { startsWith: 'placeholder/' } },
+                { storagePath: { startsWith: 'stock/' } },
+              ],
+              NOT: { storagePath: stockPath(photo) },
+            },
             data: { storagePath: stockPath(photo), altText: stockAlt(photo) },
           })
           created.photosUpgraded += upgraded.count

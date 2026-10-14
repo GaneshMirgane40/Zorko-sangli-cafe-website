@@ -56,14 +56,6 @@
     "source": "https://commons.wikimedia.org/wiki/File:Jacob%27s_Restaurant_-_December_2025_-_Sarah_Stierch_03.jpg"
   },
   {
-    "key": "pasta-red",
-    "title": "Penne norma - Enzo's 2026-04-21.jpg",
-    "author": "Andy Li",
-    "license": "CC0",
-    "licenseUrl": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
-    "source": "https://commons.wikimedia.org/wiki/File:Penne_norma_-_Enzo%27s_2026-04-21.jpg"
-  },
-  {
     "key": "garlic-bread",
     "title": "Garlic Bread Mozzarella - Oregano Pizzeria 2025-05-17.jpg",
     "author": "Andy Li",
@@ -190,5 +182,173 @@
     "license": "CC0",
     "licenseUrl": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
     "source": "https://commons.wikimedia.org/wiki/File:Hot_chocolate_(Unsplash).jpg"
+  },
+  {
+    "key": "burger-tikki",
+    "title": "Aloo Tikki Burger.jpg",
+    "author": "Vikramdewangan22889",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "source": "https://commons.wikimedia.org/wiki/File:Aloo_Tikki_Burger.jpg"
+  },
+  {
+    "key": "burger-veggie",
+    "title": "Fancy Veggie Burger and Fries - Joe's Burger House 2024-07-07.jpg",
+    "author": "Andy Li",
+    "license": "CC0",
+    "licenseUrl": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+    "source": "https://commons.wikimedia.org/wiki/File:Fancy_Veggie_Burger_and_Fries_-_Joe%27s_Burger_House_2024-07-07.jpg"
+  },
+  {
+    "key": "pizza-margherita",
+    "title": "Pizza-napoletana.jpg",
+    "author": "Fabryx98",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "source": "https://commons.wikimedia.org/wiki/File:Pizza-napoletana.jpg"
+  },
+  {
+    "key": "pizza-corn",
+    "title": "Mysore Style Tawa Pizza with higher resolution.jpg",
+    "author": "Manjeshwari poet mysore",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "source": "https://commons.wikimedia.org/wiki/File:Mysore_Style_Tawa_Pizza_with_higher_resolution.jpg"
+  },
+  {
+    "key": "pizza-veg-thin",
+    "title": "Vegetable pizza Denpasar Bali.JPG",
+    "author": "Midori",
+    "license": "CC BY 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0",
+    "source": "https://commons.wikimedia.org/wiki/File:Vegetable_pizza_Denpasar_Bali.JPG"
+  },
+  {
+    "key": "pizza-paneer-spicy",
+    "title": "Paneer Pizza 2.jpg",
+    "author": "Yakshitha",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "source": "https://commons.wikimedia.org/wiki/File:Paneer_Pizza_2.jpg"
+  },
+  {
+    "key": "pizza-paneer-tikka",
+    "title": "Paneer Tikka Pizza.jpg",
+    "author": "Gaurav Dhwaj Khadka",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "source": "https://commons.wikimedia.org/wiki/File:Paneer_Tikka_Pizza.jpg"
+  },
+  {
+    "key": "momos-fried",
+    "title": "Fried momos of Salem.jpg",
+    "author": "Thamizhpparithi Maari",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "source": "https://commons.wikimedia.org/wiki/File:Fried_momos_of_Salem.jpg"
+  },
+  {
+    "key": "momos-cheese",
+    "title": "MOMOs with chilly cheese chutney and soya sauce.jpg",
+    "author": "Katugoswami21",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "source": "https://commons.wikimedia.org/wiki/File:MOMOs_with_chilly_cheese_chutney_and_soya_sauce.jpg"
+  },
+  {
+    "key": "fries-peri",
+    "title": "Peri peri fries.jpg",
+    "author": "Barkathnisa Ashaqilahi",
+    "license": "CC0",
+    "licenseUrl": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+    "source": "https://commons.wikimedia.org/wiki/File:Peri_peri_fries.jpg"
+  },
+  {
+    "key": "fries-loaded",
+    "title": "LoadedCheeseFries C2Cafe Mumbai.jpg",
+    "author": "Shah Naisargi",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "source": "https://commons.wikimedia.org/wiki/File:LoadedCheeseFries_C2Cafe_Mumbai.jpg"
+  },
+  {
+    "key": "pasta-white",
+    "title": "White Sauce Pasta at a restaurant in Kolkata, India.jpg",
+    "author": "Ravi Dwivedi",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "source": "https://commons.wikimedia.org/wiki/File:White_Sauce_Pasta_at_a_restaurant_in_Kolkata,_India.jpg"
+  },
+  {
+    "key": "pasta-white-2",
+    "title": "White sauce pasta.jpg",
+    "author": "Sanika Dhumal",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "source": "https://commons.wikimedia.org/wiki/File:White_sauce_pasta.jpg"
+  },
+  {
+    "key": "pasta-arrabbiata",
+    "title": "Penne Arrabbiata.jpg",
+    "author": "Petar Milošević",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "source": "https://commons.wikimedia.org/wiki/File:Penne_Arrabbiata.jpg"
+  },
+  {
+    "key": "nachos-dip",
+    "title": "Nachos with dip.jpg",
+    "author": "Aerous",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "source": "https://commons.wikimedia.org/wiki/File:Nachos_with_dip.jpg"
+  },
+  {
+    "key": "bun-korean",
+    "title": "AEON Taman Maluri, Kuala Lumpur 20230618 105829.jpg",
+    "author": "Wiki Farazi",
+    "license": "CC0",
+    "licenseUrl": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+    "source": "https://commons.wikimedia.org/wiki/File:AEON_Taman_Maluri,_Kuala_Lumpur_20230618_105829.jpg"
+  },
+  {
+    "key": "mojito-mango",
+    "title": "Mango Mojito – La Casa Restaurant – September 2023 - Sarah Stierch.jpg",
+    "author": "Missvain",
+    "license": "CC BY 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/4.0",
+    "source": "https://commons.wikimedia.org/wiki/File:Mango_Mojito_%E2%80%93_La_Casa_Restaurant_%E2%80%93_September_2023_-_Sarah_Stierch.jpg"
+  },
+  {
+    "key": "mojito-pineapple",
+    "title": "Mango mojito.jpg",
+    "author": "Janine from Mililani, Hawaii, United States",
+    "license": "CC BY 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
+    "source": "https://commons.wikimedia.org/wiki/File:Mango_mojito.jpg"
+  },
+  {
+    "key": "shake-pink",
+    "title": "Strawberry Milkshake Whipped Cream.jpg",
+    "author": "Alex Gorzen",
+    "license": "CC BY-SA 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0",
+    "source": "https://commons.wikimedia.org/wiki/File:Strawberry_Milkshake_Whipped_Cream.jpg"
+  },
+  {
+    "key": "shake-chocolate",
+    "title": "Chocolate Milkshake (Rudford's Restaurant).jpg",
+    "author": "Visitor7",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+    "source": "https://commons.wikimedia.org/wiki/File:Chocolate_Milkshake_(Rudford%27s_Restaurant).jpg"
+  },
+  {
+    "key": "tea-peach",
+    "title": "Peach iced tea with orange slices.jpg",
+    "author": "Baoothersks",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "source": "https://commons.wikimedia.org/wiki/File:Peach_iced_tea_with_orange_slices.jpg"
   }
 ]

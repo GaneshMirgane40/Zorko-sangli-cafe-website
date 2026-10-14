@@ -59,7 +59,7 @@ describe('illustrative photos (ADR-045)', () => {
     }
     expect(Object.keys(STOCK).sort()).toEqual(credits.map((c) => c.key).sort())
     for (const c of credits) {
-      expect(c.license).toMatch(/^(CC0|Public domain|CC BY 4\.0|CC BY-SA 4\.0)$/)
+      expect(c.license).toMatch(/^(CC0|Public domain|CC BY(-SA)? (2\.0|2\.5|3\.0|4\.0))$/)
       expect(c.source).toMatch(/^https:\/\/commons\.wikimedia\.org\//)
     }
   })

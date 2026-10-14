@@ -319,4 +319,10 @@ Prisma parameterises `contains`, but it does **not** escape `%`, `_` and `\`. A 
   - `tests/unit/sangli-menu.test.ts`: every photo used exists, is credited and has an allowed licence;
   - an E2E check that the credits page renders.
   - Mobile visual baselines were re-recorded for the deliberate footer change; only the footer line differed.
+- **Revision 2026-10-15 (team feedback: "many images don't match the names"):**
+  - Every item was re-searched individually, and licences were widened to CC BY / CC BY-SA 2.0–4.0 (all credited on `/credits`). Each candidate was reviewed by eye. Now 44 photos cover 47 items with a dish-specific or very close match, e.g. Aloo Tikki Burger, Paneer Tikka Pizza, Fried Momos, White Sauce Pasta, Penne Arrabbiata, Mango Mojito, Peach Iced Tea.
+  - The remaining 18 items share an accurate photo of the same dish type, because no licensed photo of the exact variant exists: Maggi variants, toasties, garlic breads, several mojito and iced-tea flavours.
+  - **Rejected:** meat (beef "paneer" burgers, chicken burritos, pepperoni), alcohol (wine-bar drinks, a beer glass in shot), unappetising crops.
+  - **Photos from zorko.in were NOT used:** they are the brand's copyrighted photos. That needs written permission (Q-09); with it, or with the café's own photos (Phase 5B uploads), these can be replaced.
+  - `db:import-menu` now refreshes any of our bundled images (`placeholder/`, `stock/`) to the current per-item photo, never admin uploads (verified).
 
