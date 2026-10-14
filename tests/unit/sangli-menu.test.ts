@@ -41,3 +41,26 @@ describe('real Sangli menu data', () => {
     expect(sangliCafe.phone).toBe('+919890011348')
   })
 })
+
+describe('illustrative photos (ADR-045)', () => {
+  it('every photo used by the menu exists, is credited and has an allowed licence', async () => {
+    const { existsSync } = await import('node:fs')
+    const { STOCK } = await import('../../prisma/data/sangli-menu')
+    const credits = (await import('@/lib/site/image-credits.json')).default
+    const used = new Set(
+      sangliMenu.flatMap((c) => [c.image, ...c.items.map((i) => i.image ?? c.image)]),
+    )
+    for (const key of used) {
+      expect(existsSync(`public/stock/${key}.webp`), key).toBe(true)
+      expect(
+        credits.find((c) => c.key === key),
+        key,
+      ).toBeDefined()
+    }
+    expect(Object.keys(STOCK).sort()).toEqual(credits.map((c) => c.key).sort())
+    for (const c of credits) {
+      expect(c.license).toMatch(/^(CC0|Public domain|CC BY 4\.0|CC BY-SA 4\.0)$/)
+      expect(c.source).toMatch(/^https:\/\/commons\.wikimedia\.org\//)
+    }
+  })
+})

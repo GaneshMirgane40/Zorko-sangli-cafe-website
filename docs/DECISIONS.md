@@ -296,3 +296,27 @@ Prisma parameterises `contains`, but it does **not** escape `%`, `_` and `\`. A 
   - refuses in production (Phase 8 procedure).
 - **Tests:** frozen fixtures (ADR-043). `tests/unit/sangli-menu.test.ts` checks the transcription: unique slugs, price ranges, spot prices.
 
+## ADR-045 Illustrative menu photos from Wikimedia Commons — Accepted (Phase 4B, team request)
+- **Request (2026-10-14):** replace the "photo coming soon" tiles with matching food images. The café has supplied no photos yet (Q-10), and the printed menu's own photos are not ours to copy.
+- **Source and licence:**
+  - Wikimedia Commons, chosen through its public API, which reports each file's licence.
+  - Allowed licences: CC0, public domain, CC BY 4.0, CC BY-SA 4.0. 23 of the 24 photos are CC0/public domain; only the Maggi photo is CC BY-SA 4.0.
+  - `scripts/fetch-stock-images.mjs` downloads the files, re-encodes them to 1200×900 WebP (metadata stripped) in `public/stock/`, and writes `src/lib/site/image-credits.json`.
+- **Content checks:** every candidate was checked by eye before use:
+  - **vegetarian only** (pure-veg outlet): rejected candidates showed sausage, chicken or meat lasagna;
+  - appetising, and matching the dish.
+  - Per-item photos are used where a close match exists (red-sauce pasta, strawberry mojito, Oreo/strawberry shake, chocolate cold coffee, masala tea, hot chocolate, salsa wrap); otherwise the category photo.
+- **Honesty:**
+  - alt text says "Illustrative photo of …";
+  - the menu header says "Photos are illustrative";
+  - item pages link to the new `/credits` page (title, author, licence and source for every photo; required for CC BY/BY-SA, a courtesy for CC0);
+  - the footer links to the credits.
+  - This mirrors the printed menu's own "images are for illustrative purposes" line.
+- **Replacement:**
+  - Admin photo uploads (Phase 5B) replace these per item.
+  - `npm run db:import-menu` upgrades earlier "photo coming soon" tiles to these photos, but never touches admin-uploaded images.
+- **Tests:**
+  - `tests/unit/sangli-menu.test.ts`: every photo used exists, is credited and has an allowed licence;
+  - an E2E check that the credits page renders.
+  - Mobile visual baselines were re-recorded for the deliberate footer change; only the footer line differed.
+

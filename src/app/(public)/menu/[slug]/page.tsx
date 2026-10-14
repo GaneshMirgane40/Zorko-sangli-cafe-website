@@ -143,6 +143,17 @@ function ItemContent({ item }: { item: MenuItemDetailDto }) {
               )}
             </div>
             <p className="text-body-md text-on-surface-variant">{item.description}</p>
+            {item.images.some((i) => i.url.startsWith('/stock/')) && (
+              <p className="text-body-sm text-on-surface-variant">
+                Photo is illustrative —{' '}
+                <Link
+                  href="/credits"
+                  className="inline-flex min-h-12 min-w-12 items-center underline hover:text-primary lg:min-h-0"
+                >
+                  image credits
+                </Link>
+              </p>
+            )}
             {item.activeDiscount && (
               <p
                 data-volatile

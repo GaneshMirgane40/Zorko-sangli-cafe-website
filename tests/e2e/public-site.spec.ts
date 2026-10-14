@@ -78,6 +78,19 @@ test.describe('homepage (TC-E2E-001)', () => {
   })
 })
 
+test('image credits page lists every illustrative photo with its licence (ADR-045)', async ({
+  page,
+}) => {
+  await page.goto('/credits')
+  await expect(page.getByRole('heading', { level: 1, name: 'Image credits' })).toBeVisible()
+  const items = page.getByRole('main').getByRole('listitem')
+  expect(await items.count()).toBeGreaterThanOrEqual(20)
+  await expect(items.first()).toContainText(/CC0|Public domain|CC BY/)
+  await expect(
+    page.getByRole('contentinfo').getByRole('link', { name: 'Image credits' }),
+  ).toHaveAttribute('href', '/credits')
+})
+
 test.describe('digital menu (TC-E2E-010…013)', () => {
   test('combined filters from the URL: search + category + price band', async ({ page }) => {
     await gotoReady(page, '/menu?q=burger&category=burgers&price=100-200')

@@ -8,8 +8,9 @@
  * - "Best Seller" → isBestSeller, "Must Try" → isTrending, "New Launch" → isFeatured.
  * - A second printed price becomes an add-on option (Baked pasta, Large fries, "+25 with ice-cream
  *   scoop", "+15/+30/+40 add cheese", Maggi cheese/butter, cheese/mojito injector).
- * - Descriptions are shortened from the menu's own text. Food photos on the menu are marked
- *   "illustrative" and are NOT used; items show neutral "photo coming soon" tiles.
+ * - Descriptions are shortened from the menu's own text. The menu's own food photos are NOT used;
+ *   items show licence-checked, vegetarian ILLUSTRATIVE photos from Wikimedia Commons
+ *   (public/stock, credits on /credits, ADR-045).
  * - Desserts (ice-cream scoops) are left out: their prices are cut off in the photo.
  * - Every item carries the veg mark printed on the menu (the whole menu is vegetarian).
  */
@@ -22,6 +23,8 @@ export type RealItem = {
   price: number
   tags?: MenuTag[]
   addOns?: AddOnDef[]
+  /** Closer-matching illustrative photo key (public/stock), overriding the category photo. */
+  image?: StockKey
 }
 export type RealCategory = {
   slug: string
@@ -37,10 +40,41 @@ export type RealCategory = {
     | 'DESSERT'
     | 'MEAL'
     | 'GENERAL'
-  image: string
+  image: StockKey
   note?: string
   items: RealItem[]
 }
+
+/** Illustrative photos (scripts/fetch-stock-images.mjs) and what each one shows (used for alt text). */
+export const STOCK = {
+  burgers: 'a vegetable burger',
+  pizza: 'a cheese pizza',
+  momos: 'steamed vegetable momos with dip',
+  fries: 'french fries',
+  wraps: 'a toasted vegetable wrap',
+  'wrap-salsa': 'a vegetable burrito wrap with salad',
+  'pasta-pink': 'penne pasta in pink sauce',
+  'pasta-red': 'penne pasta in red tomato sauce',
+  'garlic-bread': 'cheese garlic bread',
+  toastie: 'cheese and tomato toast',
+  buns: 'a garlic cheese bun',
+  nachos: 'nachos with cheese, jalapeños and guacamole',
+  maggi: 'masala instant noodles with vegetables',
+  mojito: 'a mint mojito',
+  'mojito-strawberry': 'strawberry mojitos',
+  'cold-coffee': 'cold coffee topped with cream',
+  'cold-coffee-chocolate': 'an iced chocolate coffee',
+  shakes: 'a milkshake topped with cream',
+  'shake-oreo': 'an Oreo milkshake',
+  'shake-strawberry': 'a strawberry milkshake',
+  'ice-tea': 'iced tea with lemon',
+  coffee: 'a cup of hot coffee',
+  tea: 'a cup of masala tea',
+  'hot-chocolate': 'a cup of hot chocolate',
+} as const
+export type StockKey = keyof typeof STOCK
+export const stockPath = (key: StockKey) => `stock/${key}.webp`
+export const stockAlt = (key: StockKey) => `Illustrative photo of ${STOCK[key]}`
 
 const burgerExtras: AddOnDef = {
   name: 'Extras',
@@ -100,7 +134,7 @@ export const sangliMenu: RealCategory[] = [
     slug: 'burgers',
     name: 'Burgers',
     icon: 'BURGER',
-    image: 'placeholder/burgers.webp',
+    image: 'burgers',
     items: [
       {
         name: 'Classic Burger',
@@ -147,7 +181,7 @@ export const sangliMenu: RealCategory[] = [
     slug: 'pizza',
     name: 'Pizza',
     icon: 'PIZZA',
-    image: 'placeholder/pizza.webp',
+    image: 'pizza',
     items: [
       {
         name: 'Margherita',
@@ -205,7 +239,7 @@ export const sangliMenu: RealCategory[] = [
     slug: 'momos',
     name: 'Momos',
     icon: 'GENERAL',
-    image: 'placeholder/momos.webp',
+    image: 'momos',
     note: '6 pieces',
     items: [
       {
@@ -225,7 +259,7 @@ export const sangliMenu: RealCategory[] = [
     slug: 'fries',
     name: 'Fries',
     icon: 'SNACKS',
-    image: 'placeholder/fries.webp',
+    image: 'fries',
     items: [
       {
         name: 'Salted French Fries',
@@ -257,7 +291,7 @@ export const sangliMenu: RealCategory[] = [
     slug: 'wraps',
     name: 'Wraps',
     icon: 'SANDWICH',
-    image: 'placeholder/wraps.webp',
+    image: 'wraps',
     items: [
       {
         name: 'Classic Veg Wrap',
@@ -270,6 +304,7 @@ export const sangliMenu: RealCategory[] = [
         desc: 'Grilled tortilla with fresh tomato salsa, exotic veggies, potato patty, special sauces and crispy nachos.',
         price: 129,
         addOns: [addCheese30],
+        image: 'wrap-salsa',
       },
     ],
   },
@@ -277,7 +312,7 @@ export const sangliMenu: RealCategory[] = [
     slug: 'pasta',
     name: 'Pasta',
     icon: 'PASTA',
-    image: 'placeholder/pasta.webp',
+    image: 'pasta-pink',
     items: [
       {
         name: 'Alfredo (White Sauce)',
@@ -290,6 +325,7 @@ export const sangliMenu: RealCategory[] = [
         desc: 'Penne in tomato sauce infused with special spices, veggies and chilli flakes. Regular or baked.',
         price: 139,
         addOns: [pastaStyle],
+        image: 'pasta-red',
       },
       {
         name: 'Ala Rosey (Pink Sauce)',
@@ -310,7 +346,7 @@ export const sangliMenu: RealCategory[] = [
     slug: 'garlic-bread',
     name: 'Garlic Bread',
     icon: 'GENERAL',
-    image: 'placeholder/garlic-bread.webp',
+    image: 'garlic-bread',
     note: '3 slices',
     items: [
       {
@@ -331,7 +367,7 @@ export const sangliMenu: RealCategory[] = [
     slug: 'toastie',
     name: 'Toastie',
     icon: 'SANDWICH',
-    image: 'placeholder/toastie.webp',
+    image: 'toastie',
     items: [
       {
         name: 'Italian Treat',
@@ -356,7 +392,7 @@ export const sangliMenu: RealCategory[] = [
     slug: 'special-buns',
     name: 'Special Buns',
     icon: 'GENERAL',
-    image: 'placeholder/buns.webp',
+    image: 'buns',
     items: [
       {
         name: 'Cheese Pull & Tear Garlic Bun',
@@ -376,7 +412,7 @@ export const sangliMenu: RealCategory[] = [
     slug: 'nachos',
     name: 'Nachos',
     icon: 'SNACKS',
-    image: 'placeholder/nachos.webp',
+    image: 'nachos',
     items: [
       {
         name: 'Nachos with Cheese Dip',
@@ -395,7 +431,7 @@ export const sangliMenu: RealCategory[] = [
     slug: 'maggi',
     name: 'Maggi',
     icon: 'PASTA',
-    image: 'placeholder/maggi.webp',
+    image: 'maggi',
     items: [
       { name: 'Plain Maggie', desc: 'Classic Maggi noodles.', price: 49, addOns: [maggiExtras] },
       {
@@ -429,7 +465,7 @@ export const sangliMenu: RealCategory[] = [
     slug: 'mojito',
     name: 'Mojito',
     icon: 'BEVERAGE',
-    image: 'placeholder/mojito.webp',
+    image: 'mojito',
     items: [
       {
         name: 'Surprise Mojito',
@@ -450,6 +486,7 @@ export const sangliMenu: RealCategory[] = [
         desc: 'Strawberry mojito (non-alcoholic).',
         price: 49,
         addOns: [mojitoInjector],
+        image: 'mojito-strawberry',
       },
       {
         name: 'Tangy Mango Mojito',
@@ -493,7 +530,7 @@ export const sangliMenu: RealCategory[] = [
     slug: 'cold-coffee',
     name: 'Cold Coffee',
     icon: 'COFFEE',
-    image: 'placeholder/cold-coffee.webp',
+    image: 'cold-coffee',
     items: [
       {
         name: 'Premium Cold Coffee',
@@ -514,6 +551,7 @@ export const sangliMenu: RealCategory[] = [
         price: 79,
         tags: ['must'],
         addOns: [iceCreamScoop],
+        image: 'cold-coffee-chocolate',
       },
     ],
   },
@@ -521,7 +559,7 @@ export const sangliMenu: RealCategory[] = [
     slug: 'milk-shakes',
     name: 'Milk Shakes',
     icon: 'DESSERT',
-    image: 'placeholder/shakes.webp',
+    image: 'shakes',
     items: [
       { name: 'Rose Delight Shake', desc: 'Rose milkshake.', price: 79, addOns: [iceCreamScoop] },
       {
@@ -529,18 +567,21 @@ export const sangliMenu: RealCategory[] = [
         desc: 'Strawberry milkshake.',
         price: 79,
         addOns: [iceCreamScoop],
+        image: 'shake-strawberry',
       },
       {
         name: 'Oreo Chocolate Shake',
         desc: 'Chocolate milkshake with Oreo.',
         price: 99,
         addOns: [iceCreamScoop],
+        image: 'shake-oreo',
       },
       {
         name: 'KitKat Chocolate Shake',
         desc: 'Chocolate milkshake with KitKat.',
         price: 109,
         addOns: [iceCreamScoop],
+        image: 'shake-oreo',
       },
     ],
   },
@@ -548,7 +589,7 @@ export const sangliMenu: RealCategory[] = [
     slug: 'ice-tea',
     name: 'Ice Tea',
     icon: 'BEVERAGE',
-    image: 'placeholder/ice-tea.webp',
+    image: 'ice-tea',
     items: [
       { name: 'Lemon Ice Tea', desc: 'Chilled lemon ice tea.', price: 49 },
       { name: 'Peach Ice Tea', desc: 'Chilled peach ice tea.', price: 49 },
@@ -561,11 +602,17 @@ export const sangliMenu: RealCategory[] = [
     slug: 'hot-beverages',
     name: 'Hot Beverages',
     icon: 'COFFEE',
-    image: 'placeholder/hot.webp',
+    image: 'coffee',
     items: [
-      { name: 'Special Tea', desc: 'Hot tea.', price: 19 },
+      { name: 'Special Tea', desc: 'Hot tea.', price: 19, image: 'tea' },
       { name: 'Hot Coffee', desc: 'Hot coffee.', price: 29 },
-      { name: 'Hot Chocolate', desc: 'Hot chocolate.', price: 39, tags: ['best'] },
+      {
+        name: 'Hot Chocolate',
+        desc: 'Hot chocolate.',
+        price: 39,
+        tags: ['best'],
+        image: 'hot-chocolate',
+      },
     ],
   },
 ]

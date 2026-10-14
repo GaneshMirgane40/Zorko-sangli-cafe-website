@@ -6,11 +6,12 @@
  * - Create-only by slug: existing categories/items (including admin edits) are never changed.
  * - Refuses while demo menu items exist, so real and demo items are never mixed
  *   (run `npm run db:remove-demo -- --confirm` first).
+ * - Re-running upgrades our earlier "photo coming soon" tiles to the illustrative photos (ADR-045).
  * - Café information: replaces the row only while it is still demo data; hours are kept
  *   (still unconfirmed, Q-05).
  */
 import { scriptClient } from './client'
-import { sangliCafe, sangliMenu, slugify } from './data/sangli-menu'
+import { sangliCafe, sangliMenu, slugify, stockAlt, stockPath } from './data/sangli-menu'
 
 async function main() {
   if (process.env.VERCEL_ENV === 'production' || process.env.NODE_ENV === 'production') {
@@ -27,7 +28,7 @@ async function main() {
       process.exit(1)
     }
 
-    const created = { categories: 0, items: 0, skipped: 0, cafe: 'unchanged' }
+    const created = { categories: 0, items: 0, skipped: 0, photosUpgraded: 0, cafe: 'unchanged' }
     for (const [ci, cat] of sangliMenu.entries()) {
       let category = await db.menuCategory.findUnique({ where: { slug: cat.slug } })
       if (!category) {
@@ -44,7 +45,15 @@ async function main() {
       }
       for (const [ii, item] of cat.items.entries()) {
         const slug = slugify(item.name)
-        if (await db.menuItem.findUnique({ where: { slug } })) {
+        const photo = item.image ?? cat.image
+        const existing = await db.menuItem.findUnique({ where: { slug }, select: { id: true } })
+        if (existing) {
+          // Only upgrade our own "photo coming soon" tiles; never touch admin-uploaded images.
+          const upgraded = await db.menuItemImage.updateMany({
+            where: { menuItemId: existing.id, storagePath: { startsWith: 'placeholder/' } },
+            data: { storagePath: stockPath(photo), altText: stockAlt(photo) },
+          })
+          created.photosUpgraded += upgraded.count
           created.skipped++
           continue
         }
@@ -63,11 +72,7 @@ async function main() {
               isFeatured: tags.includes('new'),
               sortOrder: ii,
               images: {
-                create: {
-                  storagePath: cat.image,
-                  altText: `Placeholder: photo of ${item.name} coming soon`,
-                  sortOrder: 0,
-                },
+                create: { storagePath: stockPath(photo), altText: stockAlt(photo), sortOrder: 0 },
               },
             },
           })

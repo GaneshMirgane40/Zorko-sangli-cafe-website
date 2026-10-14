@@ -40,7 +40,7 @@ export default function MenuPage({ searchParams }: PageProps<'/menu'>) {
         <Container className="flex flex-col gap-1 py-space-lg">
           <h1 className="text-headline-lg-mobile md:text-headline-lg">Digital Menu</h1>
           <p className="text-body-md text-on-surface-variant">
-            Availability is updated live by café staff.
+            Availability is updated live by café staff. Photos are illustrative.
           </p>
         </Container>
       </div>

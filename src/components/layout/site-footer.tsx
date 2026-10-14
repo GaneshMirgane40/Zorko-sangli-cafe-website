@@ -107,7 +107,14 @@ export function SiteFooter({ cafe }: { cafe: CafeDto | null }) {
         )}
       </div>
       <p className="mx-auto mt-space-xl max-w-[1280px] px-margin text-body-sm text-on-surface-variant md:px-margin-tablet lg:px-margin-desktop">
-        ZORKO Sangli — student project, not an official ZORKO website.
+        ZORKO Sangli — student project, not an official ZORKO website. Menu photos are illustrative
+        ·{' '}
+        <Link
+          href="/credits"
+          className="inline-flex min-h-12 items-center underline hover:text-primary lg:min-h-0"
+        >
+          Image credits
+        </Link>
       </p>
     </footer>
   )
