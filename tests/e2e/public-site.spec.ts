@@ -327,6 +327,9 @@ test.describe('navigation, accessibility and responsive (TC-A11Y-001, TC-RESP-00
 test.describe('visual baselines (TC-VIS-001…003)', () => {
   // Chromium only: one engine is enough for pixel baselines; other checks run on both.
   test.skip(({ browserName }) => browserName !== 'chromium', 'baselines are recorded in Chromium')
+  // Font rendering differs per OS; baselines exist for macOS only until Linux ones are recorded
+  // for CI (PROGRESS backlog). Reported as skipped on Linux, never as passed.
+  test.skip(process.platform !== 'darwin', 'visual baselines are recorded on macOS')
 
   for (const [name, path] of [
     ['home', '/'],

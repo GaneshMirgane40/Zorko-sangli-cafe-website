@@ -28,6 +28,9 @@ jobs:
       - run: npm test
       - run: npm run build
       - run: npm audit --omit=dev --audit-level=high
+      # DB constraints, RLS and API tests against a throwaway Postgres container (Docker is
+      # available on ubuntu-latest). Never a Supabase project.
+      - run: npm run test:integration
       - name: Secret scan
         uses: gitleaks/gitleaks-action@v2
         env:
@@ -45,7 +48,8 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npx playwright install --with-deps chromium webkit
-      - run: npx playwright test
+      # Starts + seeds the throwaway test database, builds the app and runs Playwright.
+      - run: npm run test:e2e
       - uses: actions/upload-artifact@v4
         if: failure()
         with:
