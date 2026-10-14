@@ -10,6 +10,8 @@ const images = [
   ['burgers', '#a93200', 'Burgers'],
   ['pizza', '#d1430a', 'Pizza'],
   ['pasta', '#7c5800', 'Pasta'],
+  ['wraps', '#5e4200', 'Wraps'],
+  ['momos', '#00658d', 'Momos'],
   ['snacks', '#006947', 'Snacks'],
   ['beverages', '#00658d', 'Beverages'],
   ['desserts', '#8c3a5b', 'Desserts'],

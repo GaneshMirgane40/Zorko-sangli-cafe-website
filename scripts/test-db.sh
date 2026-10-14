@@ -35,7 +35,7 @@ case "${1:-up}" in
     export DIRECT_URL="postgresql://zorko_test:zorko_test@127.0.0.1:54329/zorko_test"
     export DATABASE_URL="$DIRECT_URL"
     npx prisma migrate deploy >/dev/null
-    ALLOW_DEMO_SEED=true npx tsx prisma/seed.ts
+    SEED_DATASET=test ALLOW_DEMO_SEED=true npx tsx prisma/seed.ts
     ;;
   down) docker rm -f "$NAME" >/dev/null && echo "Test database removed" ;;
 esac

@@ -264,3 +264,14 @@ Prisma parameterises `contains`, but it does **not** escape `%`, `_` and `\`. A 
   - the hero's first feature tile reads "Digital Menu / Search & filter" instead of "QR Digital Menu";
   - the reviews and gallery sections appear only once approved feedback or published images exist.
 
+## ADR-043 Demo menu modelled on zorko.in; frozen test fixtures — Accepted (Phase 4B, team request)
+- **Team request (2026-10-14):** use the official brand site https://zorko.in/ as the reference for menu items.
+- **What was used:** the development demo menu (`prisma/demo-data.ts`) uses the brand site's category and item names: 8 categories, 24 items (Veg Classic Burger, Kulhad Pizza, Spicy Paneer Wrap, Vegetable Momos, Double Masala Maggie, Crispy Loaded Fries, Premium Cold Coffee, Chocolate Browny Shake, …).
+- **What was not used:**
+  - The site lists no prices, so every price is an invented placeholder.
+  - Descriptions are our own neutral wording, prefixed "Demo item".
+  - No brand images or text were copied.
+- All rows stay `isDemo = true`; the site is a brand reference, not the Sangli outlet's confirmed menu (Q-03).
+- **Pure veg:** the brand site describes ZORKO as "100% Veg". This supports Q-06 but is not outlet confirmation, so `isPureVegConfirmed` stays false until the café confirms.
+- **Test fixtures:** the original dataset moved to `prisma/fixtures/test-data.ts` and is frozen. `scripts/test-db.sh` seeds it with `SEED_DATASET=test`, so integration/E2E assertions and visual baselines don't change when the demo menu changes.
+

@@ -9,7 +9,7 @@ Information or decisions the team, the café or the guide must supply. Until ans
 | Q-03 | Optional public email | Café | Hidden | 4B |
 | Q-04 | Instagram and Facebook URLs | Café | Hidden | 4B |
 | Q-05 | Opening hours per day (any hours past midnight?) | Café | Demo hours labelled demo; past-midnight closing not supported unless needed | 3, 4B |
-| Q-06 | Is the outlet 100% vegetarian? (controls every "100% VEG" claim) | Café | `isPureVegConfirmed=false`; per-item marks only | 4A |
+| Q-06 | Is the outlet 100% vegetarian? (controls every "100% VEG" claim) | Café | `isPureVegConfirmed=false`; per-item marks only | 4A | *(2026-10-14: the brand site zorko.in describes ZORKO as "100% Veg"; still needs confirmation for the Sangli outlet before the badge is shown — ADR-043.)*
 | Q-07 | Real menu: categories, items, prices, descriptions, add-ons, veg/non-veg | Café | Demo seed labelled demo | before final demo |
 | Q-08 | Real offers, combos and Student Zone terms | Café | Demo offers labelled demo | before final demo |
 | Q-09 | Permission to use the ZORKO logo, name and imagery | Café / franchise | Text wordmark only; neutral footer | 4A |
