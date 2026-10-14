@@ -4,13 +4,13 @@ Information or decisions the team, the café or the guide must supply. Until ans
 
 | ID | Question | Ask whom | Default until answered | Blocks |
 |---|---|---|---|---|
-| Q-01 | Verified outlet address and map coordinates (lat/lng) | Café | Placeholder address "To be confirmed"; no map pin | 4B (real data), 8 |
-| Q-02 | Phone and WhatsApp numbers | Café | Hidden / "To be confirmed" | 4B, 8 |
+| Q-01 | Verified outlet address and map coordinates (lat/lng) | Café | Placeholder address "To be confirmed"; no map pin | 4B (real data), 8 | **Answered 2026-10-14 (ADR-044):** address from the printed menu — "Cafe Zorko, Chavan Arkade, Near Sambha Bhel, 100 ft. Road, Vishrambag, Sangli 416415". Coordinates still needed.
+| Q-02 | Phone and WhatsApp numbers | Café | Hidden / "To be confirmed" | 4B, 8 | **Answered 2026-10-14 (ADR-044):** phone 9890011348 (printed menu). WhatsApp number still needed.
 | Q-03 | Optional public email | Café | Hidden | 4B |
 | Q-04 | Instagram and Facebook URLs | Café | Hidden | 4B |
 | Q-05 | Opening hours per day (any hours past midnight?) | Café | Demo hours labelled demo; past-midnight closing not supported unless needed | 3, 4B |
-| Q-06 | Is the outlet 100% vegetarian? (controls every "100% VEG" claim) | Café | `isPureVegConfirmed=false`; per-item marks only | 4A | *(2026-10-14: the brand site zorko.in describes ZORKO as "100% Veg"; still needs confirmation for the Sangli outlet before the badge is shown — ADR-043.)*
-| Q-07 | Real menu: categories, items, prices, descriptions, add-ons, veg/non-veg | Café | Demo seed labelled demo | before final demo |
+| Q-06 | Is the outlet 100% vegetarian? (controls every "100% VEG" claim) | Café | `isPureVegConfirmed=false`; per-item marks only | 4A | *(2026-10-14: the brand site zorko.in describes ZORKO as "100% Veg"; still needs confirmation for the Sangli outlet before the badge is shown — ADR-043.)* **Answered 2026-10-14 (ADR-044):** yes — the printed outlet menu carries the green veg mark; flag set.
+| Q-07 | Real menu: categories, items, prices, descriptions, add-ons, veg/non-veg | Café | Demo seed labelled demo | before final demo | **Answered 2026-10-14 (ADR-044):** menu and prices transcribed from the printed menu (65 items). Still needed: dessert prices (cut off in the photo) and item photos.
 | Q-08 | Real offers, combos and Student Zone terms | Café | Demo offers labelled demo | before final demo |
 | Q-09 | Permission to use the ZORKO logo, name and imagery | Café / franchise | Text wordmark only; neutral footer | 4A |
 | Q-10 | Real photos for gallery and menu | Café | Generated placeholders | before final demo |

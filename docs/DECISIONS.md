@@ -275,3 +275,24 @@ Prisma parameterises `contains`, but it does **not** escape `%`, `_` and `\`. A 
 - **Pure veg:** the brand site describes ZORKO as "100% Veg". This supports Q-06 but is not outlet confirmation, so `isPureVegConfirmed` stays false until the café confirms.
 - **Test fixtures:** the original dataset moved to `prisma/fixtures/test-data.ts` and is frozen. `scripts/test-db.sh` seeds it with `SEED_DATASET=test`, so integration/E2E assertions and visual baselines don't change when the demo menu changes.
 
+## ADR-044 Real Sangli menu imported from the printed outlet menu — Accepted (Phase 4B, team-supplied data)
+- **Source:** two photos of the printed menu of Cafe Zorko, Vishrambag, Sangli, supplied by the team on 2026-10-14 (taken 2026-10-12). Transcribed into `prisma/data/sangli-menu.ts`: 16 categories, 65 items, prices exactly as printed. `isDemo = false`.
+- **Mapping:**
+  - "Best Seller" → `isBestSeller`; "Must Try" → `isTrending` (shown as the Trending badge); "New Launch" → `isFeatured`.
+  - Second prices become add-on options: Regular/Baked pasta (+₹30), Regular/Large fries (+₹30 / +₹40), "+25 with ice-cream scoop", add cheese +₹15/+₹30/+₹40, Maggi cheese +₹30 / butter +₹10, cheese/mojito injector +₹30, double cheese slice / grill any burger +₹30.
+- **Left out:**
+  - Desserts: prices cut off in the photo (Q-07).
+  - The menu's food photos: marked "illustrative" and not ours to copy. Items use neutral "Photo coming soon" tiles from `public/placeholder/`.
+  - Brand claims printed on the menu (outlet/city counts, TV appearances, "We manage kitty/birthday parties"), per CLAUDE.md §6.2/§6.3.
+- **Outlet details from the menu (answers Q-01 address, Q-02 phone, Q-06):**
+  - address "Cafe Zorko, Chavan Arkade, Near Sambha Bhel, 100 ft. Road, Vishrambag, Sangli 416415";
+  - phone 9890011348;
+  - pure veg: the menu carries the green veg mark, so `isPureVegConfirmed = true` and the "100% VEG" pill is shown. The team can object.
+  - Opening hours, coordinates, email, WhatsApp and social links are not on the menu and stay unconfirmed.
+- **Loading:** `npm run db:import-menu` (`prisma/import-menu.ts`):
+  - create-only by slug;
+  - refuses while demo items exist, so menus never mix;
+  - replaces the café row only if it is still demo;
+  - refuses in production (Phase 8 procedure).
+- **Tests:** frozen fixtures (ADR-043). `tests/unit/sangli-menu.test.ts` checks the transcription: unique slugs, price ranges, spot prices.
+

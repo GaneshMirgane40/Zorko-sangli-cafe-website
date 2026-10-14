@@ -81,3 +81,9 @@ export function formatDateIST(iso: string | Date): string {
     timeZone: 'Asia/Kolkata',
   }).format(new Date(iso))
 }
+
+/** "+919890011348" → "+91 98900 11348" for display; other formats are shown unchanged. */
+export function formatPhone(phone: string): string {
+  const m = /^\+91(\d{5})(\d{5})$/.exec(phone.replace(/\s/g, ''))
+  return m ? `+91 ${m[1]} ${m[2]}` : phone
+}

@@ -26,7 +26,7 @@ import { DAY_NAMES, hoursLabel, todayHours } from '@/features/cafe/hours'
 import { MapEmbed } from '@/features/cafe/map-embed'
 import { CategoryIcon } from '@/features/menu/category-icon'
 import { MenuCard } from '@/features/menu/menu-card'
-import { formatDateIST, formatRupees } from '@/lib/format'
+import { formatDateIST, formatPhone, formatRupees } from '@/lib/format'
 import { isLive } from '@/lib/site/nav'
 import {
   cachedCafe,
@@ -579,7 +579,7 @@ function VisitUs({ cafe }: { cafe: CafeDto }) {
                   href={`tel:${cafe.phone}`}
                   className="flex min-h-12 items-center gap-2 text-label-lg text-primary hover:underline"
                 >
-                  <Phone aria-hidden="true" className="size-4" /> {cafe.phone}
+                  <Phone aria-hidden="true" className="size-4" /> {formatPhone(cafe.phone)}
                 </a>
               )}
             </div>

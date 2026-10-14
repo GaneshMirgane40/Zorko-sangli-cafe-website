@@ -67,6 +67,7 @@ ALLOW_DEMO_SEED=true npm run db:seed    # demo data; refuses without the flag an
 - Production: `npm run db:migrate:deploy`, **only with written approval**, after a backup (§9). Never seed production.
 - `prisma migrate reset` (destructive) only on the dev project and only with team approval (Prisma also refuses to run it from an AI agent without explicit consent).
 - **Replacing demo data with real data:** edit through the admin panel (Phase 5, preferred), or run `npm run db:remove-demo -- --confirm`. It deletes only `isDemo = true` offers, banners, gallery images, feedback, items and categories (items still used by a real offer are kept). Café info and hours are kept: edit them instead.
+- **Loading the REAL Sangli menu (ADR-044, recommended):** `npm run db:remove-demo -- --confirm` then `npm run db:import-menu`. Imports 65 items and the outlet's address/phone; keeps the opening hours (still unconfirmed). Safe to re-run (create-only).
 - **Switching an existing dev database to the ZORKO-style demo menu (Phase 4B, ADR-043):** `npm run db:remove-demo -- --confirm` then `ALLOW_DEMO_SEED=true npm run db:seed`. Development project only.
 - **Placeholder images** live in `public/demo/` (regenerate with `node scripts/make-demo-images.mjs`).
 

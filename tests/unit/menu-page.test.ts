@@ -96,3 +96,11 @@ describe('time formatting (IST copy)', () => {
     ).toBeNull()
   })
 })
+
+describe('formatPhone', () => {
+  it('groups Indian mobile numbers and leaves others unchanged', async () => {
+    const { formatPhone } = await import('@/lib/format')
+    expect(formatPhone('+919890011348')).toBe('+91 98900 11348')
+    expect(formatPhone('0233-2600000')).toBe('0233-2600000')
+  })
+})

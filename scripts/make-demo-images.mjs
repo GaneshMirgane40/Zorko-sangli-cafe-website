@@ -20,7 +20,36 @@ const images = [
   ['offer-student', '#7c5800', 'Student Zone'],
 ]
 
+// Neutral "photo coming soon" tiles for the REAL menu (no photos supplied yet, Q-10).
+const placeholders = [
+  ['burgers', '#a93200', 'Burgers'],
+  ['pizza', '#d1430a', 'Pizza'],
+  ['momos', '#00658d', 'Momos'],
+  ['fries', '#7c5800', 'Fries'],
+  ['wraps', '#5e4200', 'Wraps'],
+  ['pasta', '#8c3a5b', 'Pasta'],
+  ['garlic-bread', '#842500', 'Garlic Bread'],
+  ['toastie', '#5e4200', 'Toastie'],
+  ['buns', '#a93200', 'Special Buns'],
+  ['nachos', '#7c5800', 'Nachos'],
+  ['maggi', '#d1430a', 'Maggi'],
+  ['mojito', '#006947', 'Mojito'],
+  ['cold-coffee', '#5a4139', 'Cold Coffee'],
+  ['shakes', '#8c3a5b', 'Milk Shakes'],
+  ['ice-tea', '#00658d', 'Ice Tea'],
+  ['hot', '#842500', 'Hot Beverages'],
+]
+
 await mkdir(OUT, { recursive: true })
+await mkdir('public/placeholder', { recursive: true })
+for (const [name, color, label] of placeholders) {
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="800" height="600">
+    <rect width="800" height="600" fill="${color}"/>
+    <text x="400" y="300" text-anchor="middle" font-family="Helvetica, Arial, sans-serif" font-size="64" font-weight="700" fill="#ffffff">${label}</text>
+    <text x="400" y="372" text-anchor="middle" font-family="Helvetica, Arial, sans-serif" font-size="32" fill="#ffffff" fill-opacity="0.85">Photo coming soon</text>
+  </svg>`
+  await sharp(Buffer.from(svg)).webp({ quality: 70 }).toFile(`public/placeholder/${name}.webp`)
+}
 for (const [name, color, label] of images) {
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="800" height="600">
     <rect width="800" height="600" fill="${color}"/>
