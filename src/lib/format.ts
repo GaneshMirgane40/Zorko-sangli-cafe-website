@@ -56,3 +56,28 @@ export function isOpenNow(hours: DayHours[], now: Date = new Date()): boolean {
   if (!today || today.isClosed) return false
   return minutes >= today.opensAtMin && minutes < today.closesAtMin
 }
+
+/** Minutes from midnight → "10:30 AM" (UI copy, IST). 0 and 1440 are both "12:00 AM". */
+export function formatTime12(minutes: number): string {
+  const [h, m] = minutesToHHMM(minutes).split(':').map(Number)
+  const hour = h % 24
+  const suffix = hour < 12 ? 'AM' : 'PM'
+  const h12 = hour % 12 === 0 ? 12 : hour % 12
+  return `${h12}:${String(m).padStart(2, '0')} ${suffix}`
+}
+
+/** "10:30 AM – 11:00 PM", or null when the day is closed. */
+export function formatHoursRange(day: DayHours | undefined): string | null {
+  if (!day || day.isClosed) return null
+  return `${formatTime12(day.opensAtMin)} – ${formatTime12(day.closesAtMin)}`
+}
+
+/** "31 Oct 2026" in IST. */
+export function formatDateIST(iso: string | Date): string {
+  return new Intl.DateTimeFormat('en-IN', {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+    timeZone: 'Asia/Kolkata',
+  }).format(new Date(iso))
+}

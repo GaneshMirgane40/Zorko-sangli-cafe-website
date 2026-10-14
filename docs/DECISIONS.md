@@ -93,7 +93,7 @@ Prisma connects as a privileged role and bypasses RLS. A hand-written SQL migrat
 - The same functions back the public JSON API (`/api/v1/...`). The API is required by CLAUDE.md Section 8 and Phase 3 and is useful for tests.
 - The menu search/filter runs as one Prisma query with `where` conditions combined by AND, plus `skip/take` pagination. This differs from the synopsis pseudocode, which filters in memory (synopsis difference D-08).
 
-## ADR-013 Freshness ≤ 30 s — Proposed (mechanism verified in Phase 4A/5B)
+## ADR-013 Freshness ≤ 30 s — Accepted (mechanism implemented in Phase 4A, ADR-040; end-to-end timing test TC-E2E-050 in 5B)
 
 **Phase 2 note:** Cache Components is enabled (Next 16.4 default). Data is dynamic by default, and caching is opted into with `'use cache'` + `cacheLife` + `cacheTag`. Request data (`searchParams`, `cookies()`) must be read inside `<Suspense>` so that the static shell can still be prerendered. Phase 4A will use `'use cache'` with `cacheTag` per entity and a `cacheLife` revalidate of ≤30 s; admin actions will call `revalidateTag`/`updateTag` (docs: `node_modules/next/dist/docs/01-app/03-api-reference/04-functions/`).
 - Every successful admin mutation calls on-demand revalidation for the affected tags/paths (for example `menu`, `item:<slug>`, `home`, `offers`).
@@ -239,4 +239,28 @@ Prisma parameterises `contains`, but it does **not** escape `%`, `_` and `\`. A 
 - `RateLimitBucket` is unique on `(key, scope, windowStart)`; the TRD said `(key, windowStart)`, but the scope is needed so login and feedback limits do not collide.
 - **Constraint lesson (Phase 3 finding):** a CHECK that evaluates to NULL passes. `Offer_price_matches_kind` now uses `IS NOT NULL` explicitly. The migration was corrected before it was applied anywhere except the throwaway test DB.
 - **Menu list:** count and page run as two parallel reads, not a `$transaction`. That avoids pinning a pooled connection and a `pg` deprecation warning from the adapter.
+
+## ADR-040 Public page data: request-time rendering + `'use cache'` loaders (30 s, tagged) — Accepted (Phase 4A)
+- **Loaders:** pages read data only through `src/server/public-data.ts`. Each loader is `'use cache'` with `cacheLife({ stale: 30, revalidate: 30, expire: 300 })` and tags `menu`, `offers`, `cafe`, `home` and `item:<slug>`.
+- **No database access during `next build`:** every data-reading component first touches request data (`connection()` or `searchParams`/`params`) inside a `<Suspense>` boundary. The build therefore works without credentials, and pages stream as a static shell plus data.
+- **Freshness:** cached entries are at most 30 s old, plus one background refresh on the next request. Phase 5B admin actions will call `updateTag`/`revalidateTag` for the affected tags, so changes appear on the next request; TC-E2E-050 will measure this. A direct edit in the Supabase table editor bypasses the app and relies on the 30 s window.
+- **Alternatives rejected:**
+  - Fully dynamic pages with no cache: every view hits the database.
+  - Prerendering at build: needs the database at build time and serves stale data.
+- **Robustness:** the header and footer catch database errors and render without café data, so navigation still works. Page errors use the `(public)/error.tsx` boundary inside the layout.
+
+## ADR-041 Missing item pages: not-found UI + `noindex`, HTTP 200 under partial prerendering — Accepted (Phase 4A finding)
+- With Cache Components, `/menu/[slug]` sends the layout's static shell first. When `notFound()` runs in the streamed part, Next 16 renders the not-found UI and injects `<meta name="robots" content="noindex">`, but the status is already 200 (documented in `not-found.md`).
+- **Tried:** `export const instant = false` plus loading the item outside Suspense. The shell still streamed first, so the status stayed 200.
+- **Rejected:**
+  - A database lookup in `proxy` for every item request: extra cost and complexity.
+  - `generateStaticParams` with `dynamicParams = false`: needs the database at build time, and newly added items would 404 until a redeploy.
+- **Decision:** keep streaming. Search engines are told `noindex`, and visitors see a friendly "This dish isn't on the menu" page with a link back (TC-E2E-020). The JSON API still returns real 404s.
+
+## ADR-042 Links to pages from later phases are hidden until those pages exist — Accepted (Phase 4A)
+- `src/lib/site/nav.ts` defines the full navigation once, with a `live` flag. Header, drawer, bottom nav, footer, hero CTAs and "View offer"/"Explore Student Zone" buttons render only for live pages, so no phase ships a dead link (CLAUDE.md rule 7). An E2E test fetches every internal link on the core pages and expects 200.
+- Phase 4B switches on `/offers`, `/student-zone`, `/gallery` and `/contact`; Phase 6 switches on `/feedback` and `/qr`. Until then:
+  - the bottom nav shows Home · Menu only;
+  - the hero's first feature tile reads "Digital Menu / Search & filter" instead of "QR Digital Menu";
+  - the reviews and gallery sections appear only once approved feedback or published images exist.
 

@@ -22,17 +22,16 @@ test.describe('Foundation (Phase 2)', () => {
     expect(a).not.toBe(b)
   })
 
-  test('home page renders the under-construction notice with no console errors', async ({
-    page,
-  }) => {
+  test('home page renders with no console errors', async ({ page }) => {
     const errors: string[] = []
     page.on('console', (msg) => msg.type() === 'error' && errors.push(msg.text()))
     page.on('pageerror', (err) => errors.push(err.message))
     await page.goto('/')
+    // Phase 4A replaced the Phase 2 placeholder with the real homepage (UI_SPEC §12.1).
     await expect(
-      page.getByRole('heading', { level: 1, name: 'Website under construction' }),
+      page.getByRole('heading', { level: 1, name: /Bite Into Joy at ZORKO Sangli/ }),
     ).toBeVisible()
-    await expect(page).toHaveTitle('ZORKO Sangli')
+    await expect(page).toHaveTitle('ZORKO Sangli — Digital Menu, Offers & Café Info')
     expect(errors).toEqual([])
   })
 

@@ -208,6 +208,18 @@ describe('menu filters (TC-INT-010, TC-UNIT-012 boundaries)', () => {
     const over200 = await menu('?minPrice=200&pageSize=48')
     expect(over200.body.data.every((i: { pricePaise: number }) => i.pricePaise >= 20000)).toBe(true)
   })
+  it('price bands filter in paise: under-100 < ₹100, 100-200 inclusive, 200-plus > ₹200', async () => {
+    const prices = async (band: string) =>
+      (await menu(`?price=${band}&pageSize=48`)).body.data.map(
+        (i: { pricePaise: number }) => i.pricePaise,
+      )
+    expect((await prices('under-100')).every((p: number) => p < 10000)).toBe(true)
+    const mid = await prices('100-200')
+    expect(mid.every((p: number) => p >= 10000 && p <= 20000)).toBe(true)
+    expect(mid).toContain(19900)
+    expect((await prices('200-plus')).every((p: number) => p > 20000)).toBe(true)
+    expect((await menu('?price=cheap')).status).toBe(400)
+  })
   it('popular = best seller OR trending; offers = in an ACTIVE offer only', async () => {
     const popular = await menu('?popular=1&pageSize=48')
     expect(

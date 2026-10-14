@@ -11,6 +11,9 @@ type SearchFieldProps = {
   defaultValue?: string
   maxLength?: number
   className?: string
+  inputId?: string
+  /** Called after every edit (including Clear), e.g. to debounce a search. */
+  onValueChange?: (value: string) => void
 }
 
 /**
@@ -24,8 +27,11 @@ export function SearchField({
   defaultValue = '',
   maxLength = 60,
   className,
+  inputId,
+  onValueChange,
 }: SearchFieldProps) {
-  const id = useId()
+  const autoId = useId()
+  const id = inputId ?? autoId
   const [value, setValue] = useState(defaultValue)
   return (
     <div className={cn('relative flex items-center', className)}>
@@ -44,14 +50,20 @@ export function SearchField({
         maxLength={maxLength}
         placeholder={placeholder}
         autoComplete="off"
-        onChange={(event) => setValue(event.target.value)}
+        onChange={(event) => {
+          setValue(event.target.value)
+          onValueChange?.(event.target.value)
+        }}
         className="h-12 w-full rounded-xl bg-surface-canvas-subtle pr-12 pl-11 text-body-md text-on-surface placeholder:text-on-surface-variant focus:bg-white focus:outline-none focus-visible:ring-[1.5px] focus-visible:ring-primary [&::-webkit-search-cancel-button]:hidden"
       />
       {value && (
         <button
           type="button"
           aria-label="Clear search"
-          onClick={() => setValue('')}
+          onClick={() => {
+            setValue('')
+            onValueChange?.('')
+          }}
           className="absolute right-0 inline-flex size-12 items-center justify-center rounded-xl text-on-surface-variant hover:text-on-surface"
         >
           <X aria-hidden="true" className="size-[18px]" />

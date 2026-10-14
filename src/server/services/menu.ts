@@ -2,7 +2,7 @@ import 'server-only'
 import type { Prisma } from '@/generated/prisma/client'
 import { formatRupees } from '@/lib/format'
 import { mediaUrl } from '@/lib/media'
-import type { MenuQuery } from '@/lib/validation/public'
+import { PRICE_BANDS, type MenuQuery, type PriceBand } from '@/lib/validation/public'
 import { getDb } from '../db'
 import type { PageMeta } from '../http'
 import { activeOfferWhere, publicItemWhere } from './visibility'
@@ -109,6 +109,13 @@ export function escapeLike(value: string): string {
   return value.replace(/[\\%_]/g, (c) => `\\${c}`)
 }
 
+function priceBandWhere(band: PriceBand): Prisma.MenuItemWhereInput {
+  const b = PRICE_BANDS[band]
+  if ('maxPaiseExclusive' in b) return { pricePaise: { lt: b.maxPaiseExclusive } }
+  if ('minPaiseExclusive' in b) return { pricePaise: { gt: b.minPaiseExclusive } }
+  return { pricePaise: { gte: b.minPaise, lte: b.maxPaise } }
+}
+
 /** All filters combine with AND (FR menu: search + category + price + popular + offers). */
 export function menuWhere(query: MenuQuery, now: Date): Prisma.MenuItemWhereInput {
   const and: Prisma.MenuItemWhereInput[] = [publicItemWhere]
@@ -118,6 +125,7 @@ export function menuWhere(query: MenuQuery, now: Date): Prisma.MenuItemWhereInpu
   if (query.category) and.push({ category: { slug: query.category } })
   if (query.minPrice !== undefined) and.push({ pricePaise: { gte: query.minPrice * 100 } })
   if (query.maxPrice !== undefined) and.push({ pricePaise: { lte: query.maxPrice * 100 } })
+  if (query.price) and.push(priceBandWhere(query.price))
   if (query.popular) and.push({ OR: [{ isBestSeller: true }, { isTrending: true }] })
   if (query.offers) and.push({ offers: { some: { offer: activeOfferWhere(now) } } })
   return { AND: and }

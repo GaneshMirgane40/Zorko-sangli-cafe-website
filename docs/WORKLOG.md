@@ -12,12 +12,12 @@
 
 | | |
 |---|---|
-| **Current phase** | Phase 3 — Database and backend foundation |
-| **Phase status** | AWAITING TEAM VERIFICATION. All Phase 3 work is done and committed. Do **not** start Phase 4A until the team replies exactly `approved, go to Phase 4A`. |
-| **Git** | Branch `phase-3`. `main` holds phases 0–2 (tags `phase-0-approved` … `phase-2-approved`). Nothing pushed (no remote). |
-| **Last task completed** | Round 2: fixed `test:supabase` not reading `.env.local` (Vitest NODE_ENV=test); TC-SEC-020 PASS 34/34 on the dev project; migrations applied there by the team (2026-10-14). |
-| **Next action** | Wait for the team's reply. On approval: "On approval" steps below, then start Phase 4A. On a bug list: PROGRESS → `CHANGES REQUESTED`, fix on `phase-3`, add regression tests, append "Round 2" to `docs/PHASE_REPORTS/phase-3.md`. |
-| **Waiting on the team** | (1) Approval phrase for Phase 3. (2) Open questions Q-01…Q-20. |
+| **Current phase** | Phase 4A — Public site core |
+| **Phase status** | AWAITING TEAM VERIFICATION. All Phase 4A work is done and committed. Do **not** start Phase 4B until the team replies exactly `approved, go to Phase 4B`. |
+| **Git** | Branch `phase-4a`. `main` holds phases 0–3 (tags `phase-0-approved` … `phase-3-approved`). Nothing pushed (no remote). |
+| **Last task completed** | Phase 4A report written, PROGRESS set to AWAITING TEAM VERIFICATION, committed (2026-10-14). |
+| **Next action** | Wait for the team's reply. On approval: "On approval" steps below, then Phase 4B (offers, Student Zone, gallery, contact, SEO, sitemap/robots; switch pages on in `src/lib/site/nav.ts`). On a bug list: PROGRESS → `CHANGES REQUESTED`, fix on `phase-4a`, regression tests, "Round 2" in `docs/PHASE_REPORTS/phase-4a.md`. |
+| **Waiting on the team** | (1) Approval phrase for Phase 4A. (2) Open questions Q-01…Q-20. |
 
 ### On approval (the CLAUDE.md §0.2 step 8 routine)
 1. In `PROGRESS.md`: add a row to "Approved phases" (date + quoted message), set the current phase and status to `IN PROGRESS`, and update the branch.
@@ -34,8 +34,8 @@
 cd ~/projects/zorko-sangli
 git status && git log --oneline -5 && git tag
 npm ci && npm run check                 # lint, typecheck, format, unit tests, build
-npm run test:integration                # Docker test DB, expect 65 passed
-npm run test:e2e                        # Docker test DB + Playwright, expect 68 passed
+npm run test:integration                # Docker test DB, expect 66 passed
+npm run test:e2e                        # Docker test DB + Playwright, expect 132 passed, 6 skipped
 ```
 
 ---
@@ -51,6 +51,10 @@ npm run test:e2e                        # Docker test DB + Playwright, expect 68
 - **`@next/env` skips `.env.local` when NODE_ENV=test** (Vitest). Tests that need it use `process.loadEnvFile('.env.local')`.
 - **Prisma refuses `migrate reset` from an AI agent.** The test DB is reset by recreating its Docker container (`scripts/test-db.sh reset`, ADR-034). Docker Desktop must be running for integration/E2E tests.
 - **Prisma `contains` does not escape `%`/`_`**: use `escapeLike()` (ADR-037). **A CHECK that evaluates to NULL passes**: use `IS NOT NULL` explicitly (ADR-039).
+- **Public pages:** read data via `src/server/public-data.ts` (`'use cache'`, 30 s, tagged) from components inside `<Suspense>` that first touch request data (`connection()`/`searchParams`). Client hooks like `usePathname()` must also sit inside `<Suspense>` or the build fails (ADR-040).
+- **Missing item pages return HTTP 200 + noindex** under partial prerendering; this is expected (ADR-041).
+- **E2E on WebKit:** wait for hydration (`gotoReady()` = goto + networkidle) before typing or clicking client-enhanced controls.
+- **Docker Desktop may stop** between sessions; `open -a Docker` and wait before running integration/E2E.
 - With Cache Components, every DB-reading GET route must call `connection()` (use `apiRoute()` in `src/server/http.ts`), or `next build` tries to prerender it.
 - **Safari/WebKit specifics:**
   - HSTS and `upgrade-insecure-requests` break `http://localhost`, so they are sent only for https sites (ADR-028).
