@@ -377,6 +377,7 @@ describe('café map and directions (TC-INT-040, ADR-046)', () => {
         latitude: null,
         longitude: null,
         postalCode: null,
+        mapsQuery: null,
       },
     })
   afterEach(reset)
@@ -400,6 +401,17 @@ describe('café map and directions (TC-INT-040, ADR-046)', () => {
       `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(data.mapQuery)}`,
     )
     expect(data.directionsUrl).not.toContain('&Co') // "&" is encoded, so it can't add URL params
+  })
+  it('the Google Maps place wins over coordinates, so directions open the business', async () => {
+    await db().cafeInformation.update({
+      where: { id: 'cafe' },
+      data: { latitude: 16.85, longitude: 74.58, mapsQuery: '  Cafe Zorko, 100 Feet Rd, Sangli  ' },
+    })
+    expect(await cafe()).toMatchObject({
+      mapQuery: 'Cafe Zorko, 100 Feet Rd, Sangli',
+      directionsUrl:
+        'https://www.google.com/maps/dir/?api=1&destination=Cafe%20Zorko%2C%20100%20Feet%20Rd%2C%20Sangli',
+    })
   })
   it('coordinates win over the address', async () => {
     await db().cafeInformation.update({

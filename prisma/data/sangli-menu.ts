@@ -694,6 +694,9 @@ export const sangliCafe = {
   latitude: 16.845262,
   longitude: 74.596347,
   mapVerified: true,
+  // Google Maps listing of the outlet, supplied by the team (2026-10-15).
+  mapsQuery:
+    'Cafe Zorko, 100 Feet Rd, Sangli, Vishrambag, Sangli Miraj Kupwad, Maharashtra 416415, India',
 }
 
 /** URL slug from a menu name: "Ala Rosey (Pink Sauce)" → "ala-rosey-pink-sauce". */
