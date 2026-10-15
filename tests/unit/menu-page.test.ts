@@ -73,8 +73,9 @@ describe('navigation gating (CLAUDE.md rule 7: no dead links)', () => {
       '/offers',
       '/student-zone',
       '/gallery',
+      '/contact',
     ])
-    expect(isLive('/contact')).toBe(false)
+    expect(isLive('/feedback')).toBe(false)
     expect(NAV_ITEMS).toHaveLength(6) // the full nav is defined once; phases switch pages on
   })
   it('marks the active section, exact for home', () => {

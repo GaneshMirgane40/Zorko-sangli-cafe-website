@@ -10,6 +10,7 @@ import { GET as getOffer } from '@/app/api/v1/offers/[slug]/route'
 import { GET as getCafe } from '@/app/api/v1/cafe/route'
 import { GET as getHealth } from '@/app/api/health/route'
 import { toApiError } from '@/server/http'
+import { demoCafe } from '../../prisma/fixtures/test-data'
 import { call, db, params } from './helpers'
 
 // ------------------------------------------------------------------ response contracts (TRD §6)
@@ -363,6 +364,52 @@ describe('offers (TC-INT-030)', () => {
     } finally {
       await db().offer.update({ where: { slug: 'pizza-duo-deal' }, data: { expiredAt: null } })
     }
+  })
+})
+
+describe('café map and directions (TC-INT-040, ADR-046)', () => {
+  const reset = () =>
+    db().cafeInformation.update({
+      where: { id: 'cafe' },
+      data: {
+        addressVerified: false,
+        addressLine: demoCafe.addressLine,
+        latitude: null,
+        longitude: null,
+        postalCode: null,
+      },
+    })
+  afterEach(reset)
+  const cafe = async () => (await call(getCafe, '/api/v1/cafe')).body.data
+
+  it('an unverified placeholder address is never sent to Google', async () => {
+    expect(await cafe()).toMatchObject({ mapQuery: null, directionsUrl: null })
+  })
+  it('a verified address gives an address-based map and an encoded directions link', async () => {
+    await db().cafeInformation.update({
+      where: { id: 'cafe' },
+      data: {
+        addressVerified: true,
+        addressLine: 'Chavan Arkade & Co, 100 ft. Road',
+        postalCode: '416415',
+      },
+    })
+    const data = await cafe()
+    expect(data.mapQuery).toBe('ZORKO Sangli, Chavan Arkade & Co, 100 ft. Road, Sangli, 416415')
+    expect(data.directionsUrl).toBe(
+      `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(data.mapQuery)}`,
+    )
+    expect(data.directionsUrl).not.toContain('&Co') // "&" is encoded, so it can't add URL params
+  })
+  it('coordinates win over the address', async () => {
+    await db().cafeInformation.update({
+      where: { id: 'cafe' },
+      data: { addressVerified: true, latitude: 16.85, longitude: 74.58 },
+    })
+    expect(await cafe()).toMatchObject({
+      mapQuery: '16.85,74.58',
+      directionsUrl: 'https://www.google.com/maps/dir/?api=1&destination=16.85%2C74.58',
+    })
   })
 })
 

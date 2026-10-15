@@ -10,7 +10,7 @@ export const NAV_ITEMS: NavItem[] = [
   { href: '/offers', label: 'Offers & Combos', shortLabel: 'Offers', live: true },
   { href: '/student-zone', label: 'Student Zone', shortLabel: 'Students', live: true },
   { href: '/gallery', label: 'Gallery', live: true },
-  { href: '/contact', label: 'About & Contact', live: false }, // Phase 4B
+  { href: '/contact', label: 'About & Contact', live: true },
 ]
 
 /** Secondary links (footer, mobile "More" sheet). */

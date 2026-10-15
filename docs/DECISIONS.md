@@ -326,3 +326,9 @@ Prisma parameterises `contains`, but it does **not** escape `%`, `_` and `\`. A 
   - **Photos from zorko.in were NOT used:** they are the brand's copyrighted photos. That needs written permission (Q-09); with it, or with the café's own photos (Phase 5B uploads), these can be replaced.
   - `db:import-menu` now refreshes any of our bundled images (`placeholder/`, `stock/`) to the current per-item photo, never admin uploads (verified).
 
+
+## ADR-046 Map and directions from the verified address — Accepted (2026-10-15)
+- ADR-017 showed the map and the "Get directions" link only when coordinates are set. The café has confirmed its street address (ADR-044) but not coordinates.
+- Now the map and directions use the coordinates when set; otherwise the **verified** address (`name, addressLine, city, postalCode`), URL-encoded. An unverified placeholder address is never sent to Google, so customers are never pointed to a wrong place.
+- The logic lives in `getCafeInfo` (`mapQuery`, `directionsUrl`), shared by the home "Visit" section and `/contact`. Tested in `tests/integration/api.test.ts` (TC-INT-040).
+- The embedded Google map can show Google's own place details (for example its ratings). Those come from Google, not from this site; the site itself still shows no ratings (CLAUDE.md §6.2).

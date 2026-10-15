@@ -24,6 +24,7 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { shortAddress } from '@/components/layout/site-header'
 import { DAY_NAMES, hoursLabel, todayHours } from '@/features/cafe/hours'
 import { MapEmbed } from '@/features/cafe/map-embed'
+import { ReviewList } from '@/features/cafe/review-list'
 import { CategoryIcon } from '@/features/menu/category-icon'
 import { MenuCard } from '@/features/menu/menu-card'
 import { formatDateIST, formatPhone, formatRupees } from '@/lib/format'
@@ -221,34 +222,7 @@ async function HomeContent() {
         <section className="bg-surface-container-low py-space-2xl">
           <Container>
             <SectionHeading eyebrow="Guest feedback" title="What Café Guests Are Saying" />
-            <ul className="grid gap-space-md md:grid-cols-3">
-              {extras.reviews.map((r) => (
-                <li
-                  key={r.id}
-                  className="flex flex-col gap-space-sm rounded-2xl bg-surface-container-lowest p-space-lg shadow-sm"
-                >
-                  <blockquote className="text-body-md italic">“{r.message}”</blockquote>
-                  <p className="mt-auto flex items-center gap-space-sm">
-                    <span
-                      aria-hidden="true"
-                      className="flex size-10 items-center justify-center rounded-full bg-primary-fixed text-label-md text-on-primary-fixed"
-                    >
-                      {r.displayName.slice(0, 2).toUpperCase()}
-                    </span>
-                    <span className="flex flex-col">
-                      <span className="text-[15px] font-bold">{r.displayName}</span>
-                      <span className="text-body-sm text-on-surface-variant">
-                        {new Intl.DateTimeFormat('en-IN', {
-                          month: 'long',
-                          year: 'numeric',
-                          timeZone: 'Asia/Kolkata',
-                        }).format(new Date(r.createdAt))}
-                      </span>
-                    </span>
-                  </p>
-                </li>
-              ))}
-            </ul>
+            <ReviewList reviews={extras.reviews} />
           </Container>
         </section>
       )}
@@ -554,7 +528,7 @@ function StudentTeaser({ text, offers }: { text: string | null; offers: OfferDto
 }
 
 function VisitUs({ cafe }: { cafe: CafeDto }) {
-  const showMap = cafe.latitude !== null && cafe.longitude !== null
+  const showMap = cafe.mapQuery !== null
   return (
     <section className="bg-surface py-space-2xl">
       <Container>
@@ -617,9 +591,7 @@ function VisitUs({ cafe }: { cafe: CafeDto }) {
               </div>
             )}
           </div>
-          {showMap && (
-            <MapEmbed lat={cafe.latitude!} lng={cafe.longitude!} title={`Map of ${cafe.name}`} />
-          )}
+          {showMap && <MapEmbed query={cafe.mapQuery!} title={`Map of ${cafe.name}`} />}
         </div>
       </Container>
     </section>

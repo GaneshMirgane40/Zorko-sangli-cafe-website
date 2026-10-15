@@ -14,6 +14,7 @@ const PAGES = [
   '/offers/burger-fries-combo',
   '/student-zone',
   '/gallery',
+  '/contact',
 ] as const
 const WIDTHS = [375, 430, 768, 1024, 1440]
 
@@ -395,6 +396,33 @@ test.describe('gallery on mobile', () => {
   })
 })
 
+test.describe('about & contact (TC-E2E-033)', () => {
+  test('shows hours with today highlighted and labels unconfirmed details', async ({ page }) => {
+    await gotoReady(page, '/')
+    await page.getByRole('contentinfo').getByRole('link', { name: 'About & Contact' }).click()
+    await expect(page).toHaveURL(/\/contact$/)
+    await expect(page.getByRole('heading', { level: 1, name: 'About & Contact' })).toBeVisible()
+    // Fixture address and hours are unverified: labelled, never presented as fact.
+    await expect(page.getByRole('main').getByText('To be confirmed', { exact: true })).toHaveCount(
+      2,
+    )
+    await expect(page.getByText('Address to be confirmed by the café')).toHaveCount(0)
+    // 7 days; exactly one row is today.
+    const rows = page.getByRole('table').getByRole('row')
+    await expect(rows).toHaveCount(7)
+    await expect(page.locator('tr[aria-current="date"]')).toHaveCount(1)
+    await expect(page.locator('tr[aria-current="date"]')).toContainText('(today)')
+    // No unverified address is sent to Google: no map, no directions (ADR-046).
+    await expect(page.locator('iframe')).toHaveCount(0)
+    await expect(page.getByRole('link', { name: /Get directions/ })).toHaveCount(0)
+    // About text from the database; feedback CTA hidden until its page exists (Phase 6).
+    await expect(
+      page.getByText('Demo text: replace with the café’s approved description.'),
+    ).toBeVisible()
+    await expect(page.getByRole('link', { name: 'Share feedback' })).toHaveCount(0)
+  })
+})
+
 test.describe('navigation, accessibility and responsive (TC-A11Y-001, TC-RESP-001…003)', () => {
   for (const path of PAGES) {
     for (const width of [390, 1440]) {
@@ -494,6 +522,7 @@ test.describe('visual baselines (TC-VIS-001…003)', () => {
     ['offers', '/offers'],
     ['student-zone', '/student-zone'],
     ['gallery', '/gallery'],
+    ['contact', '/contact'],
   ] as const) {
     for (const [device, width, height] of [
       ['desktop', 1440, 900],
