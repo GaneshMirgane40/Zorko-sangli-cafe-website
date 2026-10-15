@@ -34,6 +34,8 @@ export default defineConfig({
       // `npm run test:e2e`. Never a Supabase project.
       DATABASE_URL: 'postgresql://zorko_test:zorko_test@127.0.0.1:54329/zorko_test',
       NEXT_PUBLIC_SITE_URL: baseURL,
+      // Fixed, non-secret salt for the throwaway test server only (login rate limiting).
+      RATE_LIMIT_SALT: 'e2e-test-salt-not-a-secret-0000000000000000',
     },
   },
 })

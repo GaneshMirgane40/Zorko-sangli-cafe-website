@@ -12,12 +12,12 @@
 
 | | |
 |---|---|
-| **Current phase** | Phase 4B — Public site remainder |
-| **Phase status** | AWAITING TEAM VERIFICATION. All Phase 4B work is done and committed. Do **not** start Phase 5A until the team replies exactly `approved, go to Phase 5A`. |
-| **Git** | Branch `phase-4b`, pushed to `origin` (github.com/uTkarsho6/cafe-website) after each task when the user says "push". `main` holds phases 0–4A (tags up to `phase-4a-approved`). |
-| **Last task completed** | Final responsive/a11y sweep (axe at 390/768/1440 on 11 pages, keyboard test, /credits touch targets fixed), Phase 4B report written, PROGRESS set to AWAITING TEAM VERIFICATION (2026-10-15). |
-| **Next action** | Wait for the team's reply. On approval: "On approval" steps below (merge `phase-4b` into `main`, tag `phase-4b-approved`), then Phase 5A (auth + admin shell; add `/admin` to robots Disallow). On a bug list: PROGRESS → `CHANGES REQUESTED`, fix on `phase-4b`, regression tests, "Round 2" in `docs/PHASE_REPORTS/phase-4b.md`. |
-| **Waiting on the team** | (1) "push" for the final 4B commit. (2) Approval phrase for Phase 4B. (3) Open questions Q-03/Q-04/Q-05/Q-07 (WhatsApp/social, hours, real offers). |
+| **Current phase** | Phase 5A — Authentication and admin shell |
+| **Phase status** | IN PROGRESS. Built: proxy, `requireAdmin` (getUser + AdminUser allowlist), login/logout Server Actions, Postgres rate limiter, audit log, admin shell + dashboard, `admin:add/disable/list`, tests. Waiting on team prerequisites for the signed-in E2E tests. |
+| **Git** | Branch `phase-5a` (from `main` after the 4B merge; tag `phase-4b-approved`). Local commits; push on the team's "push". |
+| **Last task completed** | Phase 5A core auth + admin shell + tests committed (2026-10-15). Found and fixed a false pass in TC-SEC-020 (REST URL; errata in phase-3.md and phase-4b.md, ADR-048). |
+| **Next action** | When the team says the prerequisites are done: run `npm run admin:add` for their real admin (the team runs it with their User UID), run the signed-in E2E tests (`tests/e2e/admin.spec.ts`), record the dashboard baselines, then write the Phase 5A report. |
+| **Waiting on the team** | Phase 5A prerequisites: disable signup in Supabase; create real admin + E2E admin + E2E user accounts; `.env.local`: RATE_LIMIT_SALT, E2E_ADMIN_EMAIL/PASSWORD, E2E_USER_EMAIL/PASSWORD; optionally set NEXT_PUBLIC_SUPABASE_URL to the plain project URL. |
 | **Note** | This Mac runs under very high load (BTLEServer ~97 % CPU), so E2E with 4 workers can time out on static files. Run `npx playwright test --workers=2` locally. |
 
 ### On approval (the CLAUDE.md §0.2 step 8 routine)

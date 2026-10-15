@@ -615,6 +615,7 @@ test.describe('visual baselines (TC-VIS-001…003)', () => {
     ['student-zone', '/student-zone'],
     ['gallery', '/gallery'],
     ['contact', '/contact'],
+    ['admin-login', '/admin/login'],
   ] as const) {
     for (const [device, width, height] of [
       ['desktop', 1440, 900],
