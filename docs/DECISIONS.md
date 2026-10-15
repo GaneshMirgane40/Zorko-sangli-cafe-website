@@ -264,3 +264,79 @@ Prisma parameterises `contains`, but it does **not** escape `%`, `_` and `\`. A 
   - the hero's first feature tile reads "Digital Menu / Search & filter" instead of "QR Digital Menu";
   - the reviews and gallery sections appear only once approved feedback or published images exist.
 
+## ADR-043 Demo menu modelled on zorko.in; frozen test fixtures — Accepted (Phase 4B, team request)
+- **Team request (2026-10-14):** use the official brand site https://zorko.in/ as the reference for menu items.
+- **What was used:** the development demo menu (`prisma/demo-data.ts`) uses the brand site's category and item names: 8 categories, 24 items (Veg Classic Burger, Kulhad Pizza, Spicy Paneer Wrap, Vegetable Momos, Double Masala Maggie, Crispy Loaded Fries, Premium Cold Coffee, Chocolate Browny Shake, …).
+- **What was not used:**
+  - The site lists no prices, so every price is an invented placeholder.
+  - Descriptions are our own neutral wording, prefixed "Demo item".
+  - No brand images or text were copied.
+- All rows stay `isDemo = true`; the site is a brand reference, not the Sangli outlet's confirmed menu (Q-03).
+- **Pure veg:** the brand site describes ZORKO as "100% Veg". This supports Q-06 but is not outlet confirmation, so `isPureVegConfirmed` stays false until the café confirms.
+- **Test fixtures:** the original dataset moved to `prisma/fixtures/test-data.ts` and is frozen. `scripts/test-db.sh` seeds it with `SEED_DATASET=test`, so integration/E2E assertions and visual baselines don't change when the demo menu changes.
+
+## ADR-044 Real Sangli menu imported from the printed outlet menu — Accepted (Phase 4B, team-supplied data)
+- **Source:** two photos of the printed menu of Cafe Zorko, Vishrambag, Sangli, supplied by the team on 2026-10-14 (taken 2026-10-12). Transcribed into `prisma/data/sangli-menu.ts`: 16 categories, 65 items, prices exactly as printed. `isDemo = false`.
+- **Mapping:**
+  - "Best Seller" → `isBestSeller`; "Must Try" → `isTrending` (shown as the Trending badge); "New Launch" → `isFeatured`.
+  - Second prices become add-on options: Regular/Baked pasta (+₹30), Regular/Large fries (+₹30 / +₹40), "+25 with ice-cream scoop", add cheese +₹15/+₹30/+₹40, Maggi cheese +₹30 / butter +₹10, cheese/mojito injector +₹30, double cheese slice / grill any burger +₹30.
+- **Left out:**
+  - Desserts: prices cut off in the photo (Q-07).
+  - The menu's food photos: marked "illustrative" and not ours to copy. Items use neutral "Photo coming soon" tiles from `public/placeholder/`.
+  - Brand claims printed on the menu (outlet/city counts, TV appearances, "We manage kitty/birthday parties"), per CLAUDE.md §6.2/§6.3.
+- **Outlet details from the menu (answers Q-01 address, Q-02 phone, Q-06):**
+  - address "Cafe Zorko, Chavan Arkade, Near Sambha Bhel, 100 ft. Road, Vishrambag, Sangli 416415";
+  - phone 9890011348;
+  - pure veg: the menu carries the green veg mark, so `isPureVegConfirmed = true` and the "100% VEG" pill is shown. The team can object.
+  - Opening hours, coordinates, email, WhatsApp and social links are not on the menu and stay unconfirmed.
+- **Loading:** `npm run db:import-menu` (`prisma/import-menu.ts`):
+  - create-only by slug;
+  - refuses while demo items exist, so menus never mix;
+  - replaces the café row only if it is still demo;
+  - refuses in production (Phase 8 procedure).
+- **Tests:** frozen fixtures (ADR-043). `tests/unit/sangli-menu.test.ts` checks the transcription: unique slugs, price ranges, spot prices.
+
+## ADR-045 Illustrative menu photos from Wikimedia Commons — Accepted (Phase 4B, team request)
+- **Request (2026-10-14):** replace the "photo coming soon" tiles with matching food images. The café has supplied no photos yet (Q-10), and the printed menu's own photos are not ours to copy.
+- **Source and licence:**
+  - Wikimedia Commons, chosen through its public API, which reports each file's licence.
+  - Allowed licences: CC0, public domain, CC BY 4.0, CC BY-SA 4.0. 23 of the 24 photos are CC0/public domain; only the Maggi photo is CC BY-SA 4.0.
+  - `scripts/fetch-stock-images.mjs` downloads the files, re-encodes them to 1200×900 WebP (metadata stripped) in `public/stock/`, and writes `src/lib/site/image-credits.json`.
+- **Content checks:** every candidate was checked by eye before use:
+  - **vegetarian only** (pure-veg outlet): rejected candidates showed sausage, chicken or meat lasagna;
+  - appetising, and matching the dish.
+  - Per-item photos are used where a close match exists (red-sauce pasta, strawberry mojito, Oreo/strawberry shake, chocolate cold coffee, masala tea, hot chocolate, salsa wrap); otherwise the category photo.
+- **Honesty:**
+  - alt text says "Illustrative photo of …";
+  - the menu header says "Photos are illustrative";
+  - item pages link to the new `/credits` page (title, author, licence and source for every photo; required for CC BY/BY-SA, a courtesy for CC0);
+  - the footer links to the credits.
+  - This mirrors the printed menu's own "images are for illustrative purposes" line.
+- **Replacement:**
+  - Admin photo uploads (Phase 5B) replace these per item.
+  - `npm run db:import-menu` upgrades earlier "photo coming soon" tiles to these photos, but never touches admin-uploaded images.
+- **Tests:**
+  - `tests/unit/sangli-menu.test.ts`: every photo used exists, is credited and has an allowed licence;
+  - an E2E check that the credits page renders.
+  - Mobile visual baselines were re-recorded for the deliberate footer change; only the footer line differed.
+- **Revision 2026-10-15 (team feedback: "many images don't match the names"):**
+  - Every item was re-searched individually, and licences were widened to CC BY / CC BY-SA 2.0–4.0 (all credited on `/credits`). Each candidate was reviewed by eye. Now 44 photos cover 47 items with a dish-specific or very close match, e.g. Aloo Tikki Burger, Paneer Tikka Pizza, Fried Momos, White Sauce Pasta, Penne Arrabbiata, Mango Mojito, Peach Iced Tea.
+  - The remaining 18 items share an accurate photo of the same dish type, because no licensed photo of the exact variant exists: Maggi variants, toasties, garlic breads, several mojito and iced-tea flavours.
+  - **Rejected:** meat (beef "paneer" burgers, chicken burritos, pepperoni), alcohol (wine-bar drinks, a beer glass in shot), unappetising crops.
+  - **Photos from zorko.in were NOT used:** they are the brand's copyrighted photos. That needs written permission (Q-09); with it, or with the café's own photos (Phase 5B uploads), these can be replaced.
+  - `db:import-menu` now refreshes any of our bundled images (`placeholder/`, `stock/`) to the current per-item photo, never admin uploads (verified).
+
+
+## ADR-046 Map and directions from the verified address — Accepted (2026-10-15)
+- ADR-017 showed the map and the "Get directions" link only when coordinates are set. The café has confirmed its street address (ADR-044) but not coordinates.
+- Now the map and directions use the coordinates when set; otherwise the **verified** address (`name, addressLine, city, postalCode`), URL-encoded. An unverified placeholder address is never sent to Google, so customers are never pointed to a wrong place.
+- The logic lives in `getCafeInfo` (`mapQuery`, `directionsUrl`), shared by the home "Visit" section and `/contact`. Tested in `tests/integration/api.test.ts` (TC-INT-042).
+- The embedded Google map can show Google's own place details (for example its ratings). Those come from Google, not from this site; the site itself still shows no ratings (CLAUDE.md §6.2).
+
+## ADR-047 SEO metadata, sitemap and robots — Accepted (2026-10-15)
+- Every page builds its metadata with `pageMetadata()` (`src/lib/site/seo.ts`): title, description, canonical URL, and complete Open Graph and Twitter fields. Next.js replaces rather than merges a parent's `openGraph`, so a shared helper avoids pages silently losing `siteName`, `locale` or the image.
+- Share image: the page's own photo (dish or offer), else `/og-default.jpg`, a 1200×630 crop of the credited CC BY-SA 4.0 burger photo (same licence).
+- `/sitemap.xml` is built at request time: the pages that are live in the navigation (ADR-042) plus visible dishes and offers that have not ended, using the same visibility rules as the pages (`src/server/services/sitemap.ts`). Unpublished, archived, expired and draft content never appears.
+- `/robots.txt` allows the site and disallows `/api/` and `/dev/`. Not-found pages and `/credits` are `noindex`.
+- No structured data (JSON-LD) yet: CLAUDE.md §3.1 I allows it only for verified data, and hours and coordinates are not confirmed (backlog).
+- **Revision (2026-10-15):** bare coordinates make Google open a point, not the business ("Place couldn't load" in its card; directions to a pin). New optional field `CafeInformation.mapsQuery` (migration `20261015120000_cafe_maps_query`, additive): the place exactly as listed on Google Maps. Order is now `mapsQuery` → coordinates → verified address. For Sangli it is "Cafe Zorko, 100 Feet Rd, Sangli, Vishrambag, Sangli Miraj Kupwad, Maharashtra 416415, India" (from the team), so the map shows the Cafe Zorko listing and directions open it. Admins edit it in Phase 5C (café info, "Google Maps place").

@@ -27,6 +27,7 @@ const eslintConfig = defineConfig([
     'design/**',
     'next-env.d.ts',
     'src/generated/**',
+    '.claude/**', // Claude Code worktrees: separate checkouts, linted in their own tree
   ]),
 ])
 

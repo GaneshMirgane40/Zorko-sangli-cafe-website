@@ -422,7 +422,7 @@ Empty-state layout with a large `display-hero` "404" in `text-primary`, the mess
 | Categories | `/admin/categories` | Table with drag-free ordering (up/down buttons), name, icon picker, item count, archive. |
 | Offers & combos | `/admin/offers` | Tabs by status (Active · Scheduled · Expired · Drafts). Editor: kind, title, description, image, promo price, linked items with quantities, start/end datetime (IST), student/featured flags, publish, "Expire now". |
 | Banners | `/admin/banners` | List with preview thumbnails; editor: title, subtitle, image, CTA label, CTA link (internal path or https URL only), schedule, order, publish. |
-| Café info | `/admin/cafe` | Sections: contact (address, phone, email, WhatsApp), social URLs, map (lat/lng with a validation hint), opening hours (7 rows: open/close time or closed), texts (about, student-zone intro, offer terms), pure-veg flag. |
+| Café info | `/admin/cafe` | Sections: contact (address, phone, email, WhatsApp), social URLs, map (Google Maps place name as listed on Google; lat/lng with a validation hint), opening hours (7 rows: open/close time or closed), texts (about, student-zone intro, offer terms), pure-veg flag. |
 | Gallery | `/admin/gallery` | Upload drop-zone (button fallback), grid of tiles with alt-text field, order up/down, publish toggle, remove (confirm). |
 | Feedback | `/admin/feedback` | Tabs Pending · Approved · Rejected; rows with message (escaped text), name, date, actions Approve / Reject / Delete (confirm). Counts in the tabs. |
 | QR code | `/admin/qr` | Same as `/qr` plus a warning if `NEXT_PUBLIC_SITE_URL` is not https. |

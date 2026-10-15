@@ -27,7 +27,8 @@
     "db:remove-demo": "tsx prisma/remove-demo.ts",
     "test:db:up": "./scripts/test-db.sh up",
     "test:db:reset": "./scripts/test-db.sh reset",
-    "test:db:down": "./scripts/test-db.sh down"
+    "test:db:down": "./scripts/test-db.sh down",
+    "db:import-menu": "tsx prisma/import-menu.ts"
   },
   "dependencies": {
     "@prisma/adapter-pg": "7.10.0",

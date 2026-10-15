@@ -30,8 +30,14 @@ function InfoBar({ cafe }: { cafe: CafeDto }) {
         </div>
         <span className="flex shrink-0 items-center gap-1.5">
           <Clock aria-hidden="true" className="size-4 text-tertiary" />
-          {today.label ? `Open today: ${today.label}` : 'Closed today'}
-          {!today.verified && <span className="text-on-surface-variant">(to be confirmed)</span>}
+          {!today
+            ? 'Hours to be confirmed'
+            : today.label
+              ? `Open today: ${today.label}`
+              : 'Closed today'}
+          {today && !today.verified && (
+            <span className="text-on-surface-variant">(to be confirmed)</span>
+          )}
         </span>
       </div>
     </div>

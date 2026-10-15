@@ -6,7 +6,19 @@ import { expect, test, type Page } from '@playwright/test'
  * Runs against the seeded local test database (scripts/test-db.sh), production build.
  */
 
-const PAGES = ['/', '/menu', '/menu/classic-veg-burger'] as const
+const PAGES = [
+  '/',
+  '/menu',
+  '/menu/classic-veg-burger',
+  '/offers',
+  '/offers/burger-fries-combo',
+  '/student-zone',
+  '/gallery',
+  '/contact',
+  '/offers/weekend-dessert-special',
+  '/credits',
+] as const
+const BASE = 'http://localhost:3100' // playwright.config.ts baseURL / NEXT_PUBLIC_SITE_URL
 const WIDTHS = [375, 430, 768, 1024, 1440]
 
 async function axeSeriousOrCritical(page: Page) {
@@ -76,6 +88,19 @@ test.describe('homepage (TC-E2E-001)', () => {
     )
     expect(results.filter(([, status]) => status !== 200)).toEqual([])
   })
+})
+
+test('image credits page lists every illustrative photo with its licence (ADR-045)', async ({
+  page,
+}) => {
+  await page.goto('/credits')
+  await expect(page.getByRole('heading', { level: 1, name: 'Image credits' })).toBeVisible()
+  const items = page.getByRole('main').getByRole('listitem')
+  expect(await items.count()).toBeGreaterThanOrEqual(20)
+  await expect(items.first()).toContainText(/CC0|Public domain|CC BY/)
+  await expect(
+    page.getByRole('contentinfo').getByRole('link', { name: 'Image credits' }),
+  ).toHaveAttribute('href', '/credits')
 })
 
 test.describe('digital menu (TC-E2E-010…013)', () => {
@@ -239,9 +264,224 @@ test.describe('item details (TC-E2E-020)', () => {
   })
 })
 
+test.describe('offers & combos (TC-E2E-030, TC-INT-030 end to end)', () => {
+  test('lists active combos and deals, a scheduled offer, never expired or draft ones', async ({
+    page,
+  }) => {
+    await gotoReady(page, '/offers')
+    await expect(page.getByRole('heading', { level: 1 })).toContainText('Offers & Combo Feasts')
+    await expect(page.getByText('3 active offers')).toBeVisible()
+    const titles = await page.getByTestId('offer-card').getByRole('heading').allInnerTexts()
+    expect(titles).toEqual([
+      'Burger + Fries + Coffee Combo',
+      'Student Snack Box',
+      'Pizza Duo Deal',
+      'Dessert Special (scheduled)',
+    ])
+    await expect(page.getByText(/Old Pasta Offer|Draft Offer/)).toHaveCount(0)
+    // Prices, saving and % off come from the database (₹267 − ₹229 = ₹38, 14%).
+    const combo = page.getByTestId('offer-card').first()
+    await expect(combo).toContainText('₹229')
+    await expect(combo).toContainText('Save ₹38')
+    await expect(combo).toContainText('14% off')
+    // No voucher, coupon or ordering UI (CLAUDE.md §6.3).
+    for (const banned of [/Claim/i, /Copy code/i, /coupon/i, /Add to/i])
+      await expect(page.getByText(banned)).toHaveCount(0)
+  })
+
+  test('tabs filter in the URL; Student shows only student offers', async ({ page }) => {
+    await gotoReady(page, '/offers')
+    await page
+      .getByRole('navigation', { name: 'Offer types' })
+      .getByRole('link', { name: 'Student' })
+      .click()
+    await expect(page).toHaveURL(/tab=student/)
+    await expect
+      .poll(() => page.getByTestId('offer-card').getByRole('heading').allInnerTexts())
+      .toEqual(['Student Snack Box'])
+    // Item deals: the active deal, plus the scheduled dessert deal under "Coming soon".
+    await gotoReady(page, '/offers?tab=deals')
+    expect(await page.getByTestId('offer-card').getByRole('heading').allInnerTexts()).toEqual([
+      'Pizza Duo Deal',
+      'Dessert Special (scheduled)',
+    ])
+    // Unknown tab values fall back to "All".
+    await gotoReady(page, '/offers?tab=evil')
+    await expect(page.getByRole('link', { name: 'All', exact: true })).toHaveAttribute(
+      'aria-current',
+      'page',
+    )
+  })
+
+  test('offer details: included items link to the menu; scheduled shows its start date', async ({
+    page,
+  }) => {
+    await gotoReady(page, '/')
+    await page.getByRole('link', { name: 'View offer', exact: true }).click()
+    await expect(page).toHaveURL(/\/offers\/burger-fries-combo$/)
+    await expect(
+      page.getByRole('heading', { level: 1, name: 'Burger + Fries + Coffee Combo' }),
+    ).toBeVisible()
+    await expect(page.getByText('You save ₹38')).toBeVisible()
+    await page.getByRole('link', { name: /1× French Fries/ }).click()
+    await expect(page).toHaveURL(/\/menu\/french-fries$/)
+    // Wait for the dish page to finish rendering before navigating again (WebKit race).
+    await expect(page.getByRole('heading', { level: 1, name: 'French Fries' })).toBeVisible()
+    await gotoReady(page, '/offers/weekend-dessert-special')
+    await expect(page.getByText(/^Starts /)).toBeVisible()
+    await expect(page.getByText('Active now')).toHaveCount(0)
+  })
+
+  test('expired, unpublished and unknown offers show the not-found page', async ({ page }) => {
+    for (const path of ['/offers/old-pasta-offer', '/offers/draft-offer', '/offers/nope']) {
+      await page.goto(path)
+      await expect(page.getByRole('heading', { name: "This offer isn't available" })).toBeVisible()
+    }
+  })
+})
+
+test.describe('student zone (TC-E2E-031)', () => {
+  test('shows only student offers, the intro text and the no-verification notice', async ({
+    page,
+  }) => {
+    await gotoReady(page, '/')
+    await page.getByRole('link', { name: 'Explore Student Zone' }).click()
+    await expect(page).toHaveURL(/\/student-zone$/)
+    await expect(page.getByRole('heading', { level: 1 })).toContainText('Student Offers')
+    await expect(
+      page
+        .getByRole('main')
+        .getByText(
+          'Demo text: Student Zone offers are information only. No student ID check exists.',
+          { exact: true },
+        ),
+    ).toBeVisible() // admin-editable intro text
+    await expect(
+      page.getByText('this website does not verify student status', { exact: false }),
+    ).toBeVisible()
+    expect(await page.getByTestId('offer-card').getByRole('heading').allInnerTexts()).toEqual([
+      'Student Snack Box',
+    ])
+    // No student-ID check, voucher or ordering UI (CLAUDE.md §3.1 D, §6.3).
+    for (const banned of [/upload.*id/i, /verify your/i, /Claim/i, /coupon/i, /Add to/i])
+      await expect(page.getByText(banned)).toHaveCount(0)
+    await page.getByRole('link', { name: 'Student Snack Box' }).click()
+    await expect(page).toHaveURL(/\/offers\/student-snack-box$/)
+  })
+})
+
+test.describe('gallery (TC-E2E-040: empty state; lightbox keys in TC-COMP-010)', () => {
+  test('is linked from the navigation and shows an empty state until photos are published', async ({
+    page,
+  }) => {
+    await gotoReady(page, '/student-zone')
+    await page.getByRole('contentinfo').getByRole('link', { name: 'Gallery' }).click()
+    await expect(page).toHaveURL(/\/gallery$/)
+    await expect(page.getByRole('heading', { level: 1, name: 'Gallery' })).toBeVisible()
+    // The test fixtures have no published photos (lightbox: tests/component/gallery-grid.test.tsx).
+    await expect(page.getByRole('heading', { name: 'No photos yet' })).toBeVisible()
+    await page.getByRole('link', { name: 'Browse the menu' }).click()
+    await expect(page).toHaveURL(/\/menu$/)
+  })
+})
+
+test.describe('gallery on mobile', () => {
+  test('the bottom nav "More" sheet links to the gallery', async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 })
+    await gotoReady(page, '/')
+    await page
+      .getByRole('navigation', { name: 'Bottom' })
+      .getByRole('button', { name: 'More' })
+      .click()
+    await page.getByRole('dialog', { name: 'More' }).getByRole('link', { name: 'Gallery' }).click()
+    await expect(page).toHaveURL(/\/gallery$/)
+    await expect(page.getByRole('dialog')).toHaveCount(0)
+  })
+})
+
+test.describe('about & contact (TC-E2E-041)', () => {
+  test('shows hours with today highlighted and labels unconfirmed details', async ({ page }) => {
+    await gotoReady(page, '/')
+    await page.getByRole('contentinfo').getByRole('link', { name: 'About & Contact' }).click()
+    await expect(page).toHaveURL(/\/contact$/)
+    await expect(page.getByRole('heading', { level: 1, name: 'About & Contact' })).toBeVisible()
+    // Fixture address and hours are unverified: labelled, never presented as fact.
+    await expect(page.getByRole('main').getByText('To be confirmed', { exact: true })).toHaveCount(
+      2,
+    )
+    await expect(page.getByText('Address to be confirmed by the café')).toHaveCount(0)
+    // 7 days; exactly one row is today.
+    const rows = page.getByRole('table').getByRole('row')
+    await expect(rows).toHaveCount(7)
+    await expect(page.locator('tr[aria-current="date"]')).toHaveCount(1)
+    await expect(page.locator('tr[aria-current="date"]')).toContainText('(today)')
+    // No unverified address is sent to Google: no map, no directions (ADR-046).
+    await expect(page.locator('iframe')).toHaveCount(0)
+    await expect(page.getByRole('link', { name: /Get directions/ })).toHaveCount(0)
+    // About text from the database; feedback CTA hidden until its page exists (Phase 6).
+    await expect(
+      page.getByText('Demo text: replace with the café’s approved description.'),
+    ).toBeVisible()
+    await expect(page.getByRole('link', { name: 'Share feedback' })).toHaveCount(0)
+  })
+})
+
+test.describe('SEO: metadata, sitemap and robots (TC-E2E-045)', () => {
+  test('pages have a title, description, canonical and Open Graph tags', async ({ page }) => {
+    await page.goto('/menu/classic-veg-burger')
+    await expect(page).toHaveTitle('Classic Veg Burger | ZORKO Sangli')
+    const meta = (sel: string) => page.locator(sel).first().getAttribute('content')
+    expect(await meta('meta[name="description"]')).toContain('vegetable patty')
+    expect(await page.locator('link[rel="canonical"]').getAttribute('href')).toBe(
+      `${BASE}/menu/classic-veg-burger`,
+    )
+    expect(await meta('meta[property="og:site_name"]')).toBe('ZORKO Sangli')
+    expect(await meta('meta[property="og:url"]')).toBe(`${BASE}/menu/classic-veg-burger`)
+    expect(await meta('meta[property="og:image"]')).toMatch(/^http:\/\/localhost:3100\/demo\//)
+    expect(await meta('meta[name="twitter:card"]')).toBe('summary_large_image')
+    // A page without its own image falls back to the default share image.
+    await page.goto('/gallery')
+    expect(await meta('meta[property="og:image"]')).toBe(`${BASE}/og-default.jpg`)
+    expect((await page.request.get('/og-default.jpg')).status()).toBe(200)
+  })
+
+  test('missing pages are noindex', async ({ page }) => {
+    for (const path of ['/menu/nope', '/offers/nope', '/no-such-page']) {
+      await page.goto(path)
+      await expect(page.locator('meta[name="robots"]').first()).toHaveAttribute(
+        'content',
+        /noindex/,
+      )
+    }
+  })
+
+  test('sitemap.xml lists live pages and visible details only; robots.txt points to it', async ({
+    request,
+  }) => {
+    const res = await request.get('/sitemap.xml')
+    expect(res.status()).toBe(200)
+    const urls = [...(await res.text()).matchAll(/<loc>(.*?)<\/loc>/g)].map((m) => m[1])
+    for (const path of ['/', '/menu', '/offers', '/student-zone', '/gallery', '/contact'])
+      expect(urls).toContain(`${BASE}${path}`)
+    expect(urls).toContain(`${BASE}/menu/classic-veg-burger`)
+    expect(urls).toContain(`${BASE}/offers/burger-fries-combo`)
+    expect(urls).toContain(`${BASE}/offers/weekend-dessert-special`) // scheduled: page exists
+    // Never: unpublished items, expired or draft offers, pages from later phases.
+    for (const hidden of ['pink-sauce-pasta', 'old-pasta-offer', 'draft-offer', '/feedback', '/qr'])
+      expect(urls.join(' ')).not.toContain(hidden)
+    // Every listed page really exists.
+    for (const u of urls) expect((await request.get(u)).status(), u).toBe(200)
+
+    const robots = await (await request.get('/robots.txt')).text()
+    expect(robots).toContain('Disallow: /api/')
+    expect(robots).toContain('Disallow: /dev/')
+    expect(robots).toContain(`Sitemap: ${BASE}/sitemap.xml`)
+  })
+})
+
 test.describe('navigation, accessibility and responsive (TC-A11Y-001, TC-RESP-001…003)', () => {
   for (const path of PAGES) {
-    for (const width of [390, 1440]) {
+    for (const width of [390, 768, 1440]) {
       test(`axe: no serious/critical violations on ${path} at ${width}px`, async ({ page }) => {
         await page.setViewportSize({ width, height: 900 })
         await gotoReady(page, path)
@@ -313,6 +553,42 @@ test.describe('navigation, accessibility and responsive (TC-A11Y-001, TC-RESP-00
     await expect(page).toHaveURL(/\/menu$/)
   })
 
+  test('keyboard only: skip link, offer tabs and a detail page (TC-A11Y-003)', async ({
+    page,
+    browserName,
+  }) => {
+    // Safari moves Tab between links only with Option+Tab (its default setting); Chrome with Tab.
+    const TAB = browserName === 'webkit' ? 'Alt+Tab' : 'Tab'
+    await page.setViewportSize({ width: 1440, height: 900 })
+    await gotoReady(page, '/offers')
+    await page.keyboard.press(TAB)
+    const skip = page.getByRole('link', { name: 'Skip to content' })
+    await expect(skip).toBeFocused()
+    await page.keyboard.press('Enter')
+    await expect(page).toHaveURL(/#main$/)
+    // Tabs are plain links: reachable with Tab and activated with Enter.
+    const student = page.getByRole('navigation', { name: 'Offer types' }).getByRole('link', {
+      name: 'Student',
+    })
+    await student.focus()
+    await expect(student).toBeFocused()
+    await page.keyboard.press('Enter')
+    await expect(page).toHaveURL(/tab=student/)
+    const card = page.getByRole('link', { name: 'Student Snack Box' })
+    await card.focus()
+    await page.keyboard.press('Enter')
+    await expect(page).toHaveURL(/\/offers\/student-snack-box$/)
+    // A visible focus indicator (UI_SPEC §11): the focused element has an outline or ring.
+    await page.keyboard.press(TAB)
+    const visible = await page.evaluate(() => {
+      const el = document.activeElement as HTMLElement | null
+      if (!el || el === document.body) return false
+      const cs = getComputedStyle(el)
+      return cs.outlineStyle !== 'none' || cs.boxShadow !== 'none'
+    })
+    expect(visible).toBe(true)
+  })
+
   test('tablet drawer opens, traps focus and navigates', async ({ page }) => {
     await page.setViewportSize({ width: 1024, height: 900 })
     await gotoReady(page, '/')
@@ -327,11 +603,18 @@ test.describe('navigation, accessibility and responsive (TC-A11Y-001, TC-RESP-00
 test.describe('visual baselines (TC-VIS-001…003)', () => {
   // Chromium only: one engine is enough for pixel baselines; other checks run on both.
   test.skip(({ browserName }) => browserName !== 'chromium', 'baselines are recorded in Chromium')
+  // Font rendering differs per OS; baselines exist for macOS only until Linux ones are recorded
+  // for CI (PROGRESS backlog). Reported as skipped on Linux, never as passed.
+  test.skip(process.platform !== 'darwin', 'visual baselines are recorded on macOS')
 
   for (const [name, path] of [
     ['home', '/'],
     ['menu', '/menu'],
     ['item', '/menu/classic-veg-burger'],
+    ['offers', '/offers'],
+    ['student-zone', '/student-zone'],
+    ['gallery', '/gallery'],
+    ['contact', '/contact'],
   ] as const) {
     for (const [device, width, height] of [
       ['desktop', 1440, 900],

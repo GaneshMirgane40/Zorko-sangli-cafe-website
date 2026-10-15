@@ -6,16 +6,12 @@
  *   never overwrites or deletes anything (including admin edits and real data).
  * - Never creates an admin user or any password.
  * - Every row has isDemo = true (or belongs to a demo row).
+ * - Dataset: the ZORKO-style demo menu (prisma/demo-data.ts) by default; the frozen test fixtures
+ *   (prisma/fixtures/test-data.ts) when SEED_DATASET=test (automated tests only).
  */
 import { scriptClient } from './client'
-import {
-  demoAddOns,
-  demoCafe,
-  demoCategories,
-  demoHours,
-  demoOffers,
-  demoRelations,
-} from './demo-data'
+import { demoDataset } from './demo-data'
+import { testDataset } from './fixtures/test-data'
 import { seedRefusalReason } from './seed-guard'
 
 async function main() {
@@ -25,6 +21,9 @@ async function main() {
     process.exit(1)
   }
 
+  const data = process.env.SEED_DATASET === 'test' ? testDataset : demoDataset
+  const { categories: demoCategories, addOns: demoAddOns, relations: demoRelations } = data
+  const { offers: demoOffers, cafe: demoCafe, hours: demoHours } = data
   const db = scriptClient()
   const created = { categories: 0, items: 0, offers: 0, relations: 0, cafe: 0, hours: 0 }
   const now = new Date()

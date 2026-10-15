@@ -7,6 +7,7 @@ import {
 } from '@/features/menu/menu-params'
 import { formatHoursRange, formatTime12 } from '@/lib/format'
 import { isActivePath, isLive, liveNav, NAV_ITEMS } from '@/lib/site/nav'
+import { DEFAULT_OG_IMAGE, pageMetadata } from '@/lib/site/seo'
 import { menuQuerySchema } from '@/lib/validation/public'
 import { menuWhere } from '@/server/services/menu'
 
@@ -67,8 +68,15 @@ describe('menu page URL state (UI_SPEC §12.2)', () => {
 
 describe('navigation gating (CLAUDE.md rule 7: no dead links)', () => {
   it('only shows pages that exist in this phase', () => {
-    expect(liveNav().map((i) => i.href)).toEqual(['/', '/menu'])
-    expect(isLive('/offers')).toBe(false)
+    expect(liveNav().map((i) => i.href)).toEqual([
+      '/',
+      '/menu',
+      '/offers',
+      '/student-zone',
+      '/gallery',
+      '/contact',
+    ])
+    expect(isLive('/feedback')).toBe(false)
     expect(NAV_ITEMS).toHaveLength(6) // the full nav is defined once; phases switch pages on
   })
   it('marks the active section, exact for home', () => {
@@ -94,5 +102,53 @@ describe('time formatting (IST copy)', () => {
     expect(
       formatHoursRange({ dayOfWeek: 1, opensAtMin: 660, closesAtMin: 1380, isClosed: true }),
     ).toBeNull()
+  })
+})
+
+describe('formatPhone', () => {
+  it('groups Indian mobile numbers and leaves others unchanged', async () => {
+    const { formatPhone } = await import('@/lib/format')
+    expect(formatPhone('+919890011348')).toBe('+91 98900 11348')
+    expect(formatPhone('0233-2600000')).toBe('0233-2600000')
+  })
+})
+
+describe('offer % off (TC-UNIT-021)', () => {
+  it('rounds down and hides zero or missing savings', async () => {
+    const { percentOff } = await import('@/features/offers/offer-cards')
+    expect(percentOff({ savingsPaise: 3800, regularPricePaise: 26700 })).toBe(14) // 14.23 → 14
+    expect(percentOff({ savingsPaise: 2900, regularPricePaise: 15800 })).toBe(18) // 18.35 → 18
+    expect(percentOff({ savingsPaise: null, regularPricePaise: 1000 })).toBeNull()
+    expect(percentOff({ savingsPaise: 1, regularPricePaise: 1000 })).toBeNull() // 0.1% → hidden
+  })
+})
+
+describe('page metadata (TC-UNIT-031, FR-021)', () => {
+  it('builds canonical, Open Graph and Twitter fields with the default share image', () => {
+    const m = pageMetadata({ title: 'Gallery', description: 'Photos.', path: '/gallery' })
+    expect(m.title).toBe('Gallery')
+    expect(m.alternates?.canonical).toBe('/gallery')
+    expect(m.openGraph).toMatchObject({
+      siteName: 'ZORKO Sangli',
+      locale: 'en_IN',
+      url: '/gallery',
+      title: 'Gallery | ZORKO Sangli',
+      images: [DEFAULT_OG_IMAGE],
+    })
+    expect(m.twitter).toMatchObject({ card: 'summary_large_image' })
+  })
+  it('uses the page image when there is one, and absolute titles as-is', () => {
+    const m = pageMetadata({
+      title: 'Home title',
+      description: 'd',
+      path: '/',
+      absoluteTitle: true,
+      image: { url: '/stock/pizza.webp', alt: 'Pizza' },
+    })
+    expect(m.title).toEqual({ absolute: 'Home title' })
+    expect(m.openGraph).toMatchObject({
+      title: 'Home title',
+      images: [{ url: '/stock/pizza.webp' }],
+    })
   })
 })

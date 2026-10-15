@@ -1,5 +1,6 @@
 import { Clock, MapPin, MessageCircle, Phone } from 'lucide-react'
 import Link from 'next/link'
+import { formatPhone } from '@/lib/format'
 import { PureVegPill } from '@/components/ui/veg-mark'
 import { DAY_NAMES, hoursLabel } from '@/features/cafe/hours'
 import { liveMore, liveNav } from '@/lib/site/nav'
@@ -60,7 +61,7 @@ export function SiteFooter({ cafe }: { cafe: CafeDto | null }) {
                 className="flex min-h-12 items-center gap-2 text-label-md text-primary hover:underline lg:min-h-0"
               >
                 <Phone aria-hidden="true" className="size-4" />
-                {cafe.phone}
+                {formatPhone(cafe.phone)}
               </a>
             )}
           </div>
@@ -106,7 +107,14 @@ export function SiteFooter({ cafe }: { cafe: CafeDto | null }) {
         )}
       </div>
       <p className="mx-auto mt-space-xl max-w-[1280px] px-margin text-body-sm text-on-surface-variant md:px-margin-tablet lg:px-margin-desktop">
-        ZORKO Sangli — student project, not an official ZORKO website.
+        ZORKO Sangli — student project, not an official ZORKO website. Menu photos are illustrative
+        ·{' '}
+        <Link
+          href="/credits"
+          className="inline-flex min-h-12 items-center underline hover:text-primary lg:min-h-0"
+        >
+          Image credits
+        </Link>
       </p>
     </footer>
   )

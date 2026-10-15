@@ -10,7 +10,8 @@ import {
   listPublishedGallery,
 } from './services/home'
 import { getMenuItemBySlug, listMenuItems } from './services/menu'
-import { listOffers } from './services/offers'
+import { getOfferBySlug, listOffers } from './services/offers'
+import { listSitemapEntries } from './services/sitemap'
 
 /**
  * Cached loaders for public pages (ADR-013, ADR-040).
@@ -66,6 +67,13 @@ export async function cachedOffers(query: OffersQuery = {}) {
   return listOffers(query)
 }
 
+export async function cachedOffer(slug: string) {
+  'use cache'
+  cacheLife(FRESH)
+  cacheTag(TAGS.offers, TAGS.menu, `offer:${slug}`)
+  return getOfferBySlug(slug)
+}
+
 export async function cachedHomeExtras() {
   'use cache'
   cacheLife(FRESH)
@@ -77,4 +85,21 @@ export async function cachedHomeExtras() {
     countPublicItems(),
   ])
   return { banners, reviews, gallery, itemCount }
+}
+
+/** Published gallery for /gallery (capped: the café uploads tens of photos, not thousands). */
+export const GALLERY_PAGE_LIMIT = 60
+
+export async function cachedGallery() {
+  'use cache'
+  cacheLife(FRESH)
+  cacheTag(TAGS.home)
+  return listPublishedGallery(GALLERY_PAGE_LIMIT)
+}
+
+export async function cachedSitemapEntries() {
+  'use cache'
+  cacheLife(FRESH)
+  cacheTag(TAGS.menu, TAGS.offers)
+  return listSitemapEntries()
 }

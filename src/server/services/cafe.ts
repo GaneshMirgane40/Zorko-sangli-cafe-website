@@ -14,6 +14,9 @@ export type CafeDto = {
   facebookUrl: string | null
   latitude: number | null
   longitude: number | null
+  /** What the map and directions point at: the Google Maps place, else coordinates, else the
+   *  verified address (ADR-046). */
+  mapQuery: string | null
   directionsUrl: string | null
   aboutText: string | null
   studentZoneText: string | null
@@ -37,10 +40,19 @@ export async function getCafeInfo(now = new Date()): Promise<CafeDto | null> {
 
   const lat = cafe.latitude === null ? null : Number(cafe.latitude)
   const lng = cafe.longitude === null ? null : Number(cafe.longitude)
-  const directionsUrl =
-    lat !== null && lng !== null
-      ? `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`
-      : null
+  // 1. The place as listed on Google Maps: Google opens the business itself (bare coordinates
+  //    only open a point on the map). 2. Coordinates. 3. The verified street address.
+  // An unverified placeholder address is never sent to Google (wrong place for customers).
+  const mapQuery =
+    cafe.mapsQuery?.trim() ||
+    (lat !== null && lng !== null
+      ? `${lat},${lng}`
+      : cafe.addressVerified
+        ? [cafe.name, cafe.addressLine, cafe.city, cafe.postalCode].filter(Boolean).join(', ')
+        : null)
+  const directionsUrl = mapQuery
+    ? `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(mapQuery)}`
+    : null
 
   return {
     name: cafe.name,
@@ -54,6 +66,7 @@ export async function getCafeInfo(now = new Date()): Promise<CafeDto | null> {
     facebookUrl: cafe.facebookUrl,
     latitude: lat,
     longitude: lng,
+    mapQuery,
     directionsUrl,
     aboutText: cafe.aboutText,
     studentZoneText: cafe.studentZoneText,

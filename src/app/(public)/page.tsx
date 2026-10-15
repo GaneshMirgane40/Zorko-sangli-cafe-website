@@ -13,6 +13,7 @@ import {
   Zap,
 } from 'lucide-react'
 import type { Metadata } from 'next'
+import { pageMetadata } from '@/lib/site/seo'
 import Image from 'next/image'
 import Link from 'next/link'
 import { connection } from 'next/server'
@@ -24,9 +25,10 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { shortAddress } from '@/components/layout/site-header'
 import { DAY_NAMES, hoursLabel, todayHours } from '@/features/cafe/hours'
 import { MapEmbed } from '@/features/cafe/map-embed'
+import { ReviewList } from '@/features/cafe/review-list'
 import { CategoryIcon } from '@/features/menu/category-icon'
 import { MenuCard } from '@/features/menu/menu-card'
-import { formatDateIST, formatRupees } from '@/lib/format'
+import { formatDateIST, formatPhone, formatRupees } from '@/lib/format'
 import { isLive } from '@/lib/site/nav'
 import {
   cachedCafe,
@@ -38,14 +40,20 @@ import {
 import type { CafeDto } from '@/server/services/cafe'
 import type { OfferDto } from '@/server/services/offers'
 
-export const metadata: Metadata = {
-  title: { absolute: 'ZORKO Sangli — Digital Menu, Offers & Café Info' },
+export const metadata: Metadata = pageMetadata({
+  title: 'ZORKO Sangli — Digital Menu, Offers & Café Info',
   description: 'Browse the ZORKO Sangli digital menu, current offers and café information.',
-  alternates: { canonical: '/' },
-  openGraph: { title: 'ZORKO Sangli', type: 'website' },
-}
+  path: '/',
+  absoluteTitle: true,
+})
 
 /** Homepage (UI_SPEC §12.1). Sections without real data are left out rather than faked. */
+/** Licence and credit: src/lib/site/image-credits.json (shown on /credits). */
+const HERO_FALLBACK = {
+  url: '/stock/burger-tikki.webp',
+  altText: 'A veg burger with cheese, tomato and lettuce (illustrative photo)',
+}
+
 export default function HomePage() {
   return (
     <main id="main" className="flex-1">
@@ -94,8 +102,9 @@ async function HomeContent() {
         : min,
     null,
   )
-  const heroImage =
-    extras.banners.find((b) => b.image)?.image ?? trending.items.find((i) => i.image)?.image ?? null
+  // An admin banner image wins; otherwise a fixed illustrative burger photo (Stitch hero), so the
+  // hero never depends on whichever dish happens to be first in "popular".
+  const heroImage = extras.banners.find((b) => b.image)?.image ?? HERO_FALLBACK
 
   return (
     <>
@@ -214,34 +223,7 @@ async function HomeContent() {
         <section className="bg-surface-container-low py-space-2xl">
           <Container>
             <SectionHeading eyebrow="Guest feedback" title="What Café Guests Are Saying" />
-            <ul className="grid gap-space-md md:grid-cols-3">
-              {extras.reviews.map((r) => (
-                <li
-                  key={r.id}
-                  className="flex flex-col gap-space-sm rounded-2xl bg-surface-container-lowest p-space-lg shadow-sm"
-                >
-                  <blockquote className="text-body-md italic">“{r.message}”</blockquote>
-                  <p className="mt-auto flex items-center gap-space-sm">
-                    <span
-                      aria-hidden="true"
-                      className="flex size-10 items-center justify-center rounded-full bg-primary-fixed text-label-md text-on-primary-fixed"
-                    >
-                      {r.displayName.slice(0, 2).toUpperCase()}
-                    </span>
-                    <span className="flex flex-col">
-                      <span className="text-[15px] font-bold">{r.displayName}</span>
-                      <span className="text-body-sm text-on-surface-variant">
-                        {new Intl.DateTimeFormat('en-IN', {
-                          month: 'long',
-                          year: 'numeric',
-                          timeZone: 'Asia/Kolkata',
-                        }).format(new Date(r.createdAt))}
-                      </span>
-                    </span>
-                  </p>
-                </li>
-              ))}
-            </ul>
+            <ReviewList reviews={extras.reviews} />
           </Container>
         </section>
       )}
@@ -547,7 +529,7 @@ function StudentTeaser({ text, offers }: { text: string | null; offers: OfferDto
 }
 
 function VisitUs({ cafe }: { cafe: CafeDto }) {
-  const showMap = cafe.latitude !== null && cafe.longitude !== null
+  const showMap = cafe.mapQuery !== null
   return (
     <section className="bg-surface py-space-2xl">
       <Container>
@@ -579,7 +561,7 @@ function VisitUs({ cafe }: { cafe: CafeDto }) {
                   href={`tel:${cafe.phone}`}
                   className="flex min-h-12 items-center gap-2 text-label-lg text-primary hover:underline"
                 >
-                  <Phone aria-hidden="true" className="size-4" /> {cafe.phone}
+                  <Phone aria-hidden="true" className="size-4" /> {formatPhone(cafe.phone)}
                 </a>
               )}
             </div>
@@ -610,9 +592,7 @@ function VisitUs({ cafe }: { cafe: CafeDto }) {
               </div>
             )}
           </div>
-          {showMap && (
-            <MapEmbed lat={cafe.latitude!} lng={cafe.longitude!} title={`Map of ${cafe.name}`} />
-          )}
+          {showMap && <MapEmbed query={cafe.mapQuery!} title={`Map of ${cafe.name}`} />}
         </div>
       </Container>
     </section>

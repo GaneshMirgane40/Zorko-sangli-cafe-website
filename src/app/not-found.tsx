@@ -1,8 +1,9 @@
 import type { Metadata } from 'next'
+import { NO_INDEX } from '@/lib/site/seo'
 import { Container } from '@/components/ui/container'
 import { LinkButton } from '@/components/ui/button'
 
-export const metadata: Metadata = { title: 'Page not found' }
+export const metadata: Metadata = { title: 'Page not found', robots: NO_INDEX }
 
 // UI_SPEC §12.11
 export default function NotFound() {

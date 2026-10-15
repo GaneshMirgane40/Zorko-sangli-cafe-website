@@ -1,5 +1,7 @@
 import type { Metadata } from 'next'
+import { pageMetadata } from '@/lib/site/seo'
 import Link from 'next/link'
+import { connection } from 'next/server'
 import { Suspense } from 'react'
 import { buttonClasses } from '@/components/ui/button'
 import { FilterChip, PillLink, PillRow } from '@/components/ui/chip'
@@ -26,11 +28,11 @@ import { MenuResultsSkeleton } from '@/features/menu/skeletons'
 import { cn } from '@/lib/utils'
 import { cachedCafe, cachedCategories, cachedMenu } from '@/server/public-data'
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: 'Digital Menu',
   description: 'Browse the ZORKO Sangli menu: search, filter by category, price and offers.',
-  alternates: { canonical: '/menu' },
-}
+  path: '/menu',
+})
 
 /** Digital menu (UI_SPEC §12.2). All state lives in the URL; results are rendered on the server. */
 export default function MenuPage({ searchParams }: PageProps<'/menu'>) {
@@ -40,7 +42,7 @@ export default function MenuPage({ searchParams }: PageProps<'/menu'>) {
         <Container className="flex flex-col gap-1 py-space-lg">
           <h1 className="text-headline-lg-mobile md:text-headline-lg">Digital Menu</h1>
           <p className="text-body-md text-on-surface-variant">
-            Availability is updated live by café staff.
+            Availability is updated live by café staff. Photos are illustrative.
           </p>
         </Container>
       </div>
@@ -53,6 +55,7 @@ export default function MenuPage({ searchParams }: PageProps<'/menu'>) {
 
 async function MenuContent({ searchParams }: Pick<PageProps<'/menu'>, 'searchParams'>) {
   const { query, params } = parseMenuParams(pickMenuParams(await searchParams))
+  await connection() // request time: "today's hours" below reads the current time
   const [categories, menu, cafe] = await Promise.all([
     cachedCategories(),
     cachedMenu(query),

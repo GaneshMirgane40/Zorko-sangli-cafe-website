@@ -237,6 +237,9 @@ model CafeInformation {
   facebookUrl        String?  @db.VarChar(300)
   latitude           Decimal? @db.Decimal(9, 6)
   longitude          Decimal? @db.Decimal(9, 6)
+  /// Place name/address exactly as listed on Google Maps, e.g. "Cafe Zorko, 100 Feet Rd, …".
+  /// Map and directions use it first, so Google opens the business listing (ADR-046).
+  mapsQuery          String?  @db.VarChar(200)
   aboutText          String?  @db.VarChar(1000)
   studentZoneText    String?  @db.VarChar(1000)
   offerTerms         String?  @db.VarChar(1000)

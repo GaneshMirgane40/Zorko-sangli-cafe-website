@@ -12,12 +12,13 @@
 
 | | |
 |---|---|
-| **Current phase** | Phase 4A — Public site core |
-| **Phase status** | AWAITING TEAM VERIFICATION. All Phase 4A work is done and committed. Do **not** start Phase 4B until the team replies exactly `approved, go to Phase 4B`. |
-| **Git** | Branch `phase-4a`. `main` holds phases 0–3 (tags `phase-0-approved` … `phase-3-approved`). Nothing pushed (no remote). |
-| **Last task completed** | Phase 4A report written, PROGRESS set to AWAITING TEAM VERIFICATION, committed (2026-10-14). |
-| **Next action** | Wait for the team's reply. On approval: "On approval" steps below, then Phase 4B (offers, Student Zone, gallery, contact, SEO, sitemap/robots; switch pages on in `src/lib/site/nav.ts`). On a bug list: PROGRESS → `CHANGES REQUESTED`, fix on `phase-4a`, regression tests, "Round 2" in `docs/PHASE_REPORTS/phase-4a.md`. |
-| **Waiting on the team** | (1) Approval phrase for Phase 4A. (2) Open questions Q-01…Q-20. |
+| **Current phase** | Phase 4B — Public site remainder |
+| **Phase status** | AWAITING TEAM VERIFICATION. All Phase 4B work is done and committed. Do **not** start Phase 5A until the team replies exactly `approved, go to Phase 5A`. |
+| **Git** | Branch `phase-4b`, pushed to `origin` (github.com/uTkarsho6/cafe-website) after each task when the user says "push". `main` holds phases 0–4A (tags up to `phase-4a-approved`). |
+| **Last task completed** | Final responsive/a11y sweep (axe at 390/768/1440 on 11 pages, keyboard test, /credits touch targets fixed), Phase 4B report written, PROGRESS set to AWAITING TEAM VERIFICATION (2026-10-15). |
+| **Next action** | Wait for the team's reply. On approval: "On approval" steps below (merge `phase-4b` into `main`, tag `phase-4b-approved`), then Phase 5A (auth + admin shell; add `/admin` to robots Disallow). On a bug list: PROGRESS → `CHANGES REQUESTED`, fix on `phase-4b`, regression tests, "Round 2" in `docs/PHASE_REPORTS/phase-4b.md`. |
+| **Waiting on the team** | (1) "push" for the final 4B commit. (2) Approval phrase for Phase 4B. (3) Open questions Q-03/Q-04/Q-05/Q-07 (WhatsApp/social, hours, real offers). |
+| **Note** | This Mac runs under very high load (BTLEServer ~97 % CPU), so E2E with 4 workers can time out on static files. Run `npx playwright test --workers=2` locally. |
 
 ### On approval (the CLAUDE.md §0.2 step 8 routine)
 1. In `PROGRESS.md`: add a row to "Approved phases" (date + quoted message), set the current phase and status to `IN PROGRESS`, and update the branch.

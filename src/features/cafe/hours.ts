@@ -22,8 +22,13 @@ export function hoursLabel(day: CafeDto['hours'][number] | undefined): string | 
   return `${formatTime12(toMinutes(day.opensAt))} – ${formatTime12(toMinutes(day.closesAt))}`
 }
 
-/** Today's hours in IST plus whether they are confirmed by the café (UI must say if not). */
+/**
+ * Today's hours in IST plus whether they are confirmed by the café (UI must say if not).
+ * Null when no opening hours are configured at all — callers then show nothing or "to be
+ * confirmed", never "Closed today".
+ */
 export function todayHours(cafe: Pick<CafeDto, 'hours' | 'verified'>, now = new Date()) {
+  if (cafe.hours.length === 0) return null
   const { dayOfWeek } = istClock(now)
   const label = hoursLabel(cafe.hours.find((h) => h.dayOfWeek === dayOfWeek))
   return { label, verified: cafe.verified.hours }

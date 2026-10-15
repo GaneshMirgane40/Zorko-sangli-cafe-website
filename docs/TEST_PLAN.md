@@ -55,6 +55,7 @@
 | TC-UNIT-021 | Combo savings: regular sum − promo; % rounded down; promo ≥ regular | Correct values; no savings badge when ≤0 |
 | TC-UNIT-022 | `isOpenNow` for open, closed, a closed day, boundary minutes (IST) | Correct |
 | TC-UNIT-030 | QR target built from the site URL; localhost rejected in production | `https://x/menu?src=qr`; error |
+| TC-UNIT-031 | `pageMetadata()`: canonical, Open Graph/Twitter fields, page image or default share image, absolute titles | All fields present; `/og-default.jpg` when no image |
 | TC-UNIT-040 | `safeHref`: `/menu`, `https://a.b`, `//evil.com`, `javascript:alert(1)`, `data:…`, ` JaVaScRiPt:` | ok, ok, reject, reject, reject, reject |
 | TC-UNIT-041 | Social URL validator (Instagram/Facebook host + https) | Only matching https hosts accepted |
 | TC-UNIT-042 | Safe `next` redirect: `/admin/menu` ok; `//evil`, `https://evil`, `/\evil` rejected | Correct |
@@ -84,6 +85,7 @@ Added in Phase 4A: menu URL state (invalid values dropped, hrefs keep filters, c
 | TC-COMP-007 | AddOnList renders groups read-only (no inputs) | No `input`/`button` in the list |
 | TC-COMP-008 | ReviewCard renders `<script>` text literally | Escaped text, no element |
 | TC-COMP-009 | Pagination marks the current page with `aria-current` | Pass |
+| TC-COMP-010 | Gallery lightbox: open a tile, previous/next buttons, ←/→ keys wrap, caption falls back to alt text | Correct photo and "Photo N of M" after each step |
 
 ### 4.3 Integration (TC-INT) — dev DB / local Postgres
 
@@ -103,6 +105,7 @@ Added in Phase 4A: menu URL state (invalid values dropped, hrefs keep filters, c
 | TC-INT-031 | `GET /api/v1/cafe` | 7 hours rows, `verified` flags, `openNow`, no internal id |
 | TC-INT-040 | `GET /api/v1/reviews` | APPROVED only |
 | TC-INT-041 | `POST /api/v1/feedback` valid | 201, stored PENDING |
+| TC-INT-042 | Café map/directions (ADR-046): Google Maps place > coordinates > verified address; unverified address never sent | `mapQuery`/`directionsUrl` as specified, URL-encoded; null when unverified |
 | TC-INT-050 | Response contracts (Zod-validated in the test) for every public endpoint | Match TRD §6 |
 | TC-INT-060 | Rate limiter: N allowed, N+1 → limited; window reset; concurrent increments | Correct counts under concurrency |
 | TC-INT-070 | Admin service transactions (add-on save replaces groups atomically; failure rolls back) | No partial writes |
@@ -169,6 +172,7 @@ Added in Phase 4A: menu URL state (invalid values dropped, hrefs keep filters, c
 | TC-E2E-042 | Feedback submit → success; appears publicly only after admin approval | Pass |
 | TC-E2E-043 | QR page: decode the rendered QR (jsQR in test) equals `${SITE_URL}/menu?src=qr`; PNG/SVG download | Pass |
 | TC-E2E-044 | Visiting the QR target URL on a mobile viewport opens the menu with no login | Pass |
+| TC-E2E-045 | SEO: title/description/canonical/OG/Twitter tags; noindex on missing pages; sitemap and robots.txt | Tags present; sitemap has only visible content and every URL resolves |
 | TC-E2E-050 | **Freshness:** admin toggles availability → public item page reflects it within ≤30 s (poll every 2 s) | Pass with measured seconds recorded |
 | TC-E2E-051 | Admin price change visible publicly ≤30 s | Pass |
 | TC-E2E-060 | Admin login/logout; protected URL redirects when logged out | Pass |
