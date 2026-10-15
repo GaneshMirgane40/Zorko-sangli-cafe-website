@@ -8,9 +8,9 @@ Single source of truth for project state (CLAUDE.md Section 0.1).
 
 | Field | Value |
 |---|---|
-| Current phase | **Phase 5A — Authentication and admin shell** |
-| Status | **AWAITING TEAM VERIFICATION** (Round 2 done: all tests run and pass) |
-| Branch | `phase-5a` |
+| Current phase | **Phase 5B — Menu administration** |
+| Status | **IN PROGRESS** |
+| Branch | `phase-5b` |
 | Latest report | `docs/PHASE_REPORTS/phase-5a.md` |
 | Last updated | 2026-10-15 |
 
@@ -24,6 +24,7 @@ Single source of truth for project state (CLAUDE.md Section 0.1).
 | Phase 3 | 2026-10-14 | "approved, go to Phase 4A" |
 | Phase 4A | 2026-10-14 | "approved, go to Phase 4B" |
 | Phase 4B | 2026-10-15 | "approved, go to Phase 5A" |
+| Phase 5A | 2026-10-15 | "approved, go to Phase 5B, pls do it quickly u are taking a hell lot of time" |
 
 ## Open bugs
 
