@@ -12,6 +12,7 @@ const PAGES = [
   '/menu/classic-veg-burger',
   '/offers',
   '/offers/burger-fries-combo',
+  '/student-zone',
 ] as const
 const WIDTHS = [375, 430, 768, 1024, 1440]
 
@@ -329,6 +330,36 @@ test.describe('offers & combos (TC-E2E-030, TC-INT-030 end to end)', () => {
   })
 })
 
+test.describe('student zone (TC-E2E-031)', () => {
+  test('shows only student offers, the intro text and the no-verification notice', async ({
+    page,
+  }) => {
+    await gotoReady(page, '/')
+    await page.getByRole('link', { name: 'Explore Student Zone' }).click()
+    await expect(page).toHaveURL(/\/student-zone$/)
+    await expect(page.getByRole('heading', { level: 1 })).toContainText('Student Offers')
+    await expect(
+      page
+        .getByRole('main')
+        .getByText(
+          'Demo text: Student Zone offers are information only. No student ID check exists.',
+          { exact: true },
+        ),
+    ).toBeVisible() // admin-editable intro text
+    await expect(
+      page.getByText('this website does not verify student status', { exact: false }),
+    ).toBeVisible()
+    expect(await page.getByTestId('offer-card').getByRole('heading').allInnerTexts()).toEqual([
+      'Student Snack Box',
+    ])
+    // No student-ID check, voucher or ordering UI (CLAUDE.md §3.1 D, §6.3).
+    for (const banned of [/upload.*id/i, /verify your/i, /Claim/i, /coupon/i, /Add to/i])
+      await expect(page.getByText(banned)).toHaveCount(0)
+    await page.getByRole('link', { name: 'Student Snack Box' }).click()
+    await expect(page).toHaveURL(/\/offers\/student-snack-box$/)
+  })
+})
+
 test.describe('navigation, accessibility and responsive (TC-A11Y-001, TC-RESP-001…003)', () => {
   for (const path of PAGES) {
     for (const width of [390, 1440]) {
@@ -426,6 +457,7 @@ test.describe('visual baselines (TC-VIS-001…003)', () => {
     ['menu', '/menu'],
     ['item', '/menu/classic-veg-burger'],
     ['offers', '/offers'],
+    ['student-zone', '/student-zone'],
   ] as const) {
     for (const [device, width, height] of [
       ['desktop', 1440, 900],

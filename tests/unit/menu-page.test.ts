@@ -67,7 +67,7 @@ describe('menu page URL state (UI_SPEC §12.2)', () => {
 
 describe('navigation gating (CLAUDE.md rule 7: no dead links)', () => {
   it('only shows pages that exist in this phase', () => {
-    expect(liveNav().map((i) => i.href)).toEqual(['/', '/menu', '/offers'])
+    expect(liveNav().map((i) => i.href)).toEqual(['/', '/menu', '/offers', '/student-zone'])
     expect(isLive('/gallery')).toBe(false)
     expect(NAV_ITEMS).toHaveLength(6) // the full nav is defined once; phases switch pages on
   })
