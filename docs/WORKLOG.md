@@ -15,9 +15,9 @@
 | **Current phase** | Phase 5A — Authentication and admin shell |
 | **Phase status** | AWAITING TEAM VERIFICATION. Report written; signed-in E2E + TC-SEC-006 + dashboard baseline NOT RUN (need the team's accounts). Do **not** start Phase 5B until the team replies exactly `approved, go to Phase 5B`. |
 | **Git** | Branch `phase-5a` (from `main` after the 4B merge; tag `phase-4b-approved`). Local commits; push on the team's "push". |
-| **Last task completed** | Phase 5A report + HOW TO TEST (with step-by-step Supabase setup), test IDs aligned, TC-SEC-006 added (gated), PROGRESS set to AWAITING TEAM VERIFICATION (2026-10-15). |
-| **Next action** | When the team reports the setup is done: run `npm run test:supabase` and `npx playwright test tests/e2e/admin.spec.ts`, record the admin dashboard baseline (add `['admin-dashboard', '/admin']` with a signed-in fixture), append "Round 2" results to phase-5a.md. On approval: merge `phase-5a` → `main`, tag `phase-5a-approved`, start 5B. |
-| **Waiting on the team** | Phase 5A prerequisites: disable signup in Supabase; create real admin + E2E admin + E2E user accounts; `.env.local`: RATE_LIMIT_SALT, E2E_ADMIN_EMAIL/PASSWORD, E2E_USER_EMAIL/PASSWORD; optionally set NEXT_PUBLIC_SUPABASE_URL to the plain project URL. |
+| **Last task completed** | Phase 5A Round 2: team setup verified, signup disabled confirmed, all signed-in tests pass, dashboard baselines recorded (2026-10-15). |
+| **Next action** | Wait for `approved, go to Phase 5B`. On approval: merge `phase-5a` → `main`, tag `phase-5a-approved`, start 5B. |
+| **Waiting on the team** | Approval phrase for Phase 5A; "push" for main, tags and phase-5a. |
 | **Note** | This Mac runs under very high load (BTLEServer ~97 % CPU), so E2E with 4 workers can time out on static files. Run `npx playwright test --workers=2` locally. |
 
 ### On approval (the CLAUDE.md §0.2 step 8 routine)

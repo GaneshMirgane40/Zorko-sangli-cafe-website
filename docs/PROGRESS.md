@@ -9,7 +9,7 @@ Single source of truth for project state (CLAUDE.md Section 0.1).
 | Field | Value |
 |---|---|
 | Current phase | **Phase 5A — Authentication and admin shell** |
-| Status | **AWAITING TEAM VERIFICATION** (signed-in tests NOT RUN until the team's Supabase setup, phase-5a.md §5) |
+| Status | **AWAITING TEAM VERIFICATION** (Round 2 done: all tests run and pass) |
 | Branch | `phase-5a` |
 | Latest report | `docs/PHASE_REPORTS/phase-5a.md` |
 | Last updated | 2026-10-15 |

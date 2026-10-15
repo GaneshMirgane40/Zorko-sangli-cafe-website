@@ -1,6 +1,6 @@
 # Phase 5A — Authentication and admin shell
 
-**Status:** AWAITING TEAM VERIFICATION (signed-in tests NOT RUN, see §5) · **Branch:** `phase-5a` · **Date:** 2026-10-15
+**Status:** AWAITING TEAM VERIFICATION (Round 2: team setup done, all tests run, see the end of this report) · **Branch:** `phase-5a` · **Date:** 2026-10-15
 **Approval of Phase 4B recorded:** 2026-10-15, "approved, go to Phase 5A" (merged to `main`, tag `phase-4b-approved`).
 
 The team chose to do the Supabase setup (prerequisites) while verifying this phase, not before it. Everything that can be verified without those accounts was run; the signed-in tests are written and will run once the accounts exist (§HOW TO TEST step 1).
@@ -173,3 +173,30 @@ After step 1, the signed-in admin tests and TC-SEC-006 run instead of being skip
 - the terminal error lines, **with any passwords or keys removed**
 
 Phase 5A complete. Waiting for your approval or bug reports before starting Phase 5B. To approve, reply exactly: approved, go to Phase 5B
+
+
+---
+
+## Round 2 — after the team's Supabase setup (2026-10-15)
+
+The team created the accounts, added the `.env.local` values and allowlisted their real admin (`admin:list` shows it active, already signed in once).
+
+**Found and fixed during this round:**
+1. **Public signup was still enabled.** TC-SEC-006 got `over_email_send_rate_limit`, which means Supabase accepted the signup and tried to email. The team switched it off; the test now receives `signup_disabled`. **PASS.**
+2. **The TC-SEC-006 probe was inconclusive at first.** An `@example.com` address is rejected as invalid before the signup check, which would have been a false pass. It now uses a plus-variant of the team's test address and requires the exact `signup_disabled` code.
+3. **The E2E Supabase client used the REST URL** (404, the same problem as ADR-048). It now uses the origin.
+4. **`mediaUrl` would have built broken Storage URLs** from the REST URL (no uploads exist yet). It now uses the origin; unit test added.
+5. **The dashboard baseline was flaky:** first it captured the loading skeleton, then the activity table height changed with earlier sign-ins. The test now waits for the dashboard, clears the test database's audit log first and captures the viewport.
+
+**Results (Round 2):**
+
+| Suite | Result |
+|---|---|
+| `npm run check` | **PASS**, 151 |
+| Integration | **PASS**, 80 |
+| Supabase (dev project) | **PASS**, 46: REST denial on all 17 tables + positive control, 5 forged/expired session cases × 2, **signup disabled** |
+| Admin E2E, Chromium + WebKit | **PASS**, 20 (2 skipped by design: Chromium-only rate-limit and screenshot tests). Includes **admin sign-in → dashboard counts, HttpOnly + SameSite=Lax cookies, non-admin refused and signed out, logout → protected URL redirects again, mobile drawer** |
+| Full E2E | Chromium 125 passed, WebKit 109 passed (before the baseline fix; the only failure was the dashboard baseline, now fixed and passing) |
+| Visual baselines | admin login + **admin dashboard** (desktop, mobile) recorded and reviewed |
+
+All tests that were NOT RUN in Round 1 have now run and pass.

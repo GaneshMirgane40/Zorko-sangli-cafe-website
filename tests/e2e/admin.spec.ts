@@ -202,6 +202,11 @@ test.describe('signed-in flows (TC-SEC-002/007/009, TC-E2E-060/061)', () => {
   test('dashboard visual baselines (TC-VIS, admin dashboard)', async ({ page, browserName }) => {
     test.skip(browserName !== 'chromium', 'baselines are recorded in Chromium')
     test.skip(process.platform !== 'darwin', 'visual baselines are recorded on macOS')
+    // Deterministic activity table: only this sign-in (test database only).
+    const db = new Client({ connectionString: TEST_DB })
+    await db.connect()
+    await db.query('DELETE FROM "AuditLog"')
+    await db.end()
     await signIn(page, ADMIN.email!, ADMIN.password!)
     await expect(page).toHaveURL(/\/admin$/)
     for (const [device, width, height] of [
@@ -214,8 +219,9 @@ test.describe('signed-in flows (TC-SEC-002/007/009, TC-E2E-060/061)', () => {
       await expect(page.getByRole('heading', { level: 1, name: 'Dashboard' })).toBeVisible()
       await expect(page.getByTestId('stat-card')).toHaveCount(7)
       await page.evaluate(() => document.fonts.ready)
+      // Viewport only: the activity table grows with each sign-in, which changes the page height.
       await expect(page).toHaveScreenshot(`admin-dashboard-${device}.png`, {
-        fullPage: true,
+        fullPage: false,
         // Recent activity (times, number of sign-ins) and the account name differ per run.
         mask: [page.getByRole('table'), page.getByText(/Signed in as|Welcome,/)],
         maxDiffPixelRatio: 0.01,
