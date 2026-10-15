@@ -46,6 +46,12 @@ export const metadata: Metadata = {
 }
 
 /** Homepage (UI_SPEC §12.1). Sections without real data are left out rather than faked. */
+/** Licence and credit: src/lib/site/image-credits.json (shown on /credits). */
+const HERO_FALLBACK = {
+  url: '/stock/burger-tikki.webp',
+  altText: 'A veg burger with cheese, tomato and lettuce (illustrative photo)',
+}
+
 export default function HomePage() {
   return (
     <main id="main" className="flex-1">
@@ -94,8 +100,9 @@ async function HomeContent() {
         : min,
     null,
   )
-  const heroImage =
-    extras.banners.find((b) => b.image)?.image ?? trending.items.find((i) => i.image)?.image ?? null
+  // An admin banner image wins; otherwise a fixed illustrative burger photo (Stitch hero), so the
+  // hero never depends on whichever dish happens to be first in "popular".
+  const heroImage = extras.banners.find((b) => b.image)?.image ?? HERO_FALLBACK
 
   return (
     <>
