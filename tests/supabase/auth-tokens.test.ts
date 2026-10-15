@@ -4,7 +4,7 @@ import { createServerClient } from '@supabase/ssr'
 import { describe, expect, it } from 'vitest'
 
 /**
- * TC-SEC-010/011: forged, unsigned and expired session cookies must be rejected by the same calls
+ * TC-SEC-003/004: forged, unsigned and expired session cookies must be rejected by the same calls
  * the app uses (`getUser()` in requireAdmin, `getClaims()` in the proxy). Runs against the team's
  * DEVELOPMENT Supabase project; read-only (no user is created). Values are never printed.
  */
@@ -55,7 +55,7 @@ const claims = (exp: number) => ({
 })
 
 describe.runIf(Boolean(url && key))(
-  'session verification against Supabase Auth (TC-SEC-010/011)',
+  'session verification against Supabase Auth (TC-SEC-003/004)',
   () => {
     const cases: [string, string][] = [
       ['forged signature', jwt(claims(now + 3600))],
@@ -80,4 +80,27 @@ describe.runIf(Boolean(url && key))(
 
 describe.skipIf(Boolean(url && key))('session verification against Supabase Auth', () => {
   it.skip('NOT RUN: NEXT_PUBLIC_SUPABASE_URL / NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY not set', () => {})
+})
+
+// TC-SEC-006: public signup must be disabled. Runs only once the Phase 5A prerequisites are done
+// (the E2E accounts exist), because with signup still enabled this would create a user.
+const prerequisitesDone = Boolean(process.env.E2E_ADMIN_EMAIL && process.env.E2E_USER_EMAIL)
+describe.runIf(Boolean(url && key) && prerequisitesDone)(
+  'public signup is disabled (TC-SEC-006)',
+  () => {
+    it('a signup attempt with the publishable key is refused', async () => {
+      const supabase = createServerClient(url!, key!, {
+        cookies: { getAll: () => [], setAll: () => {} },
+      })
+      const { data, error } = await supabase.auth.signUp({
+        email: `signup-probe-${randomUUID()}@example.com`,
+        password: `Probe-${randomUUID()}`,
+      })
+      expect(data.user).toBeNull()
+      expect(error?.message ?? '').toMatch(/signups not allowed|signup.*disabled/i)
+    })
+  },
+)
+describe.skipIf(Boolean(url && key) && prerequisitesDone)('public signup is disabled', () => {
+  it.skip('NOT RUN: Phase 5A prerequisites (E2E_* accounts in .env.local) not done yet', () => {})
 })

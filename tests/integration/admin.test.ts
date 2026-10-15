@@ -23,7 +23,7 @@ afterAll(async () => {
   await db().rateLimitBucket.deleteMany({})
 })
 
-describe('authorization matrix (TC-SEC-001…004, ADR-010)', () => {
+describe('authorization matrix (TC-SEC-001/002/005/031, ADR-010)', () => {
   it('anonymous: no or malformed user ID', async () => {
     expect(await checkAllowlist(null)).toEqual({ status: 'anonymous' })
     expect(await checkAllowlist('')).toEqual({ status: 'anonymous' })
@@ -49,7 +49,7 @@ describe('authorization matrix (TC-SEC-001…004, ADR-010)', () => {
   })
 })
 
-describe('login rate limiting (TC-SEC-050, ADR-014)', () => {
+describe('login rate limiting (TC-INT-060, TC-SEC-008, ADR-014)', () => {
   it('allows 5 attempts per account per window, refuses the 6th, resets next window', async () => {
     const now = new Date('2026-10-15T10:00:00Z')
     const results = []
@@ -85,7 +85,7 @@ describe('login rate limiting (TC-SEC-050, ADR-014)', () => {
   })
 })
 
-describe('audit log and dashboard (TC-INT-060, TC-INT-061)', () => {
+describe('audit log and dashboard (TC-INT-061, TC-INT-062)', () => {
   it('records actions with a trimmed, length-capped summary and the admin name', async () => {
     const admin = await db().adminUser.findUniqueOrThrow({ where: { authUserId: activeId } })
     await recordAudit({

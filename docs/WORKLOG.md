@@ -13,10 +13,10 @@
 | | |
 |---|---|
 | **Current phase** | Phase 5A — Authentication and admin shell |
-| **Phase status** | IN PROGRESS. Built: proxy, `requireAdmin` (getUser + AdminUser allowlist), login/logout Server Actions, Postgres rate limiter, audit log, admin shell + dashboard, `admin:add/disable/list`, tests. Waiting on team prerequisites for the signed-in E2E tests. |
+| **Phase status** | AWAITING TEAM VERIFICATION. Report written; signed-in E2E + TC-SEC-006 + dashboard baseline NOT RUN (need the team's accounts). Do **not** start Phase 5B until the team replies exactly `approved, go to Phase 5B`. |
 | **Git** | Branch `phase-5a` (from `main` after the 4B merge; tag `phase-4b-approved`). Local commits; push on the team's "push". |
-| **Last task completed** | Phase 5A core auth + admin shell + tests committed (2026-10-15). Found and fixed a false pass in TC-SEC-020 (REST URL; errata in phase-3.md and phase-4b.md, ADR-048). |
-| **Next action** | When the team says the prerequisites are done: run `npm run admin:add` for their real admin (the team runs it with their User UID), run the signed-in E2E tests (`tests/e2e/admin.spec.ts`), record the dashboard baselines, then write the Phase 5A report. |
+| **Last task completed** | Phase 5A report + HOW TO TEST (with step-by-step Supabase setup), test IDs aligned, TC-SEC-006 added (gated), PROGRESS set to AWAITING TEAM VERIFICATION (2026-10-15). |
+| **Next action** | When the team reports the setup is done: run `npm run test:supabase` and `npx playwright test tests/e2e/admin.spec.ts`, record the admin dashboard baseline (add `['admin-dashboard', '/admin']` with a signed-in fixture), append "Round 2" results to phase-5a.md. On approval: merge `phase-5a` → `main`, tag `phase-5a-approved`, start 5B. |
 | **Waiting on the team** | Phase 5A prerequisites: disable signup in Supabase; create real admin + E2E admin + E2E user accounts; `.env.local`: RATE_LIMIT_SALT, E2E_ADMIN_EMAIL/PASSWORD, E2E_USER_EMAIL/PASSWORD; optionally set NEXT_PUBLIC_SUPABASE_URL to the plain project URL. |
 | **Note** | This Mac runs under very high load (BTLEServer ~97 % CPU), so E2E with 4 workers can time out on static files. Run `npx playwright test --workers=2` locally. |
 

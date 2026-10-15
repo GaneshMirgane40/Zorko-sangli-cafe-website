@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest'
 import { safeAdminNext } from '@/lib/auth/redirect'
 import { isActiveAdminPath, liveAdminNav } from '@/lib/site/admin-nav'
 
-describe('post-login redirect is internal-only (TC-SEC-012, no open redirect)', () => {
+describe('post-login redirect is internal-only (TC-SEC-051, no open redirect)', () => {
   it.each([
     ['/admin', '/admin'],
     ['/admin/menu', '/admin/menu'],

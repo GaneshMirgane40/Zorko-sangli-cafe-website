@@ -82,7 +82,10 @@ test.describe('admin access without signing in (TC-SEC-001, TC-E2E-060)', () => 
     expect(await page.locator('input[name="next"]').inputValue()).toBe('/admin')
   })
 
-  test('a forged session cookie is treated as signed out', async ({ page, context }) => {
+  test('a forged session cookie is treated as signed out (TC-SEC-003)', async ({
+    page,
+    context,
+  }) => {
     const ref = new URL(
       process.env.NEXT_PUBLIC_SUPABASE_URL ?? 'https://x.supabase.co',
     ).hostname.split('.')[0]
@@ -98,7 +101,7 @@ test.describe('admin access without signing in (TC-SEC-001, TC-E2E-060)', () => 
   })
 })
 
-test.describe('login rate limiting (TC-SEC-050)', () => {
+test.describe('login rate limiting (TC-SEC-008)', () => {
   // Chromium only: each attempt also reaches Supabase Auth, which has its own quota.
   test.skip(({ browserName }) => browserName !== 'chromium', 'one engine is enough')
   test('the 6th attempt for the same account within 15 minutes is refused', async ({ page }) => {
@@ -112,7 +115,7 @@ test.describe('login rate limiting (TC-SEC-050)', () => {
   })
 })
 
-test.describe('signed-in flows (TC-SEC-002…004, TC-E2E-061…063)', () => {
+test.describe('signed-in flows (TC-SEC-002/007/009, TC-E2E-060/061)', () => {
   test.skip(
     !hasAccounts,
     'NOT RUN: set E2E_ADMIN_* and E2E_USER_* in .env.local (Phase 5A prerequisites)',
