@@ -367,7 +367,7 @@ describe('offers (TC-INT-030)', () => {
   })
 })
 
-describe('café map and directions (TC-INT-040, ADR-046)', () => {
+describe('café map and directions (TC-INT-042, ADR-046)', () => {
   const reset = () =>
     db().cafeInformation.update({
       where: { id: 'cafe' },

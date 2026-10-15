@@ -123,7 +123,7 @@ describe('offer % off (TC-UNIT-021)', () => {
   })
 })
 
-describe('page metadata (TC-UNIT-030, FR SEO)', () => {
+describe('page metadata (TC-UNIT-031, FR-021)', () => {
   it('builds canonical, Open Graph and Twitter fields with the default share image', () => {
     const m = pageMetadata({ title: 'Gallery', description: 'Photos.', path: '/gallery' })
     expect(m.title).toBe('Gallery')

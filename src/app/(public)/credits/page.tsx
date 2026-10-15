@@ -28,24 +28,24 @@ export default function CreditsPage() {
         </p>
         <ul className="flex flex-col divide-y divide-surface-container rounded-2xl bg-surface-container-lowest px-space-md shadow-sm">
           {credits.map((c) => (
-            <li key={c.key} className="flex flex-col gap-0.5 py-space-sm text-body-sm">
+            <li key={c.key} className="flex flex-col py-space-xs text-body-sm">
               <a
                 href={c.source}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-label-lg text-primary hover:underline"
+                className="flex min-h-12 items-center text-label-lg text-primary hover:underline"
               >
                 {c.title}
                 <span className="sr-only"> (opens in a new tab)</span>
               </a>
-              <span className="text-on-surface-variant">
+              <span className="flex flex-wrap items-center gap-x-1 text-on-surface-variant">
                 By {c.author} ·{' '}
                 {c.licenseUrl ? (
                   <a
                     href={c.licenseUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="underline"
+                    className="inline-flex min-h-12 min-w-12 items-center underline"
                   >
                     {c.license}
                   </a>

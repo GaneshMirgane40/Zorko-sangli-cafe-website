@@ -6,8 +6,8 @@ Requirement → design/module → implementation location (planned) → tests �
 
 | Req | Pri | Design / module | Implementation (planned) | Tests | Phase | Status | Evidence |
 |---|---|---|---|---|---|---|---|
-| FR-001 Homepage | M | UI_SPEC §12.1; services home/menu/offers/cafe | `src/app/(public)/page.tsx`, `src/server/services/home.ts` | TC-E2E-001, TC-VIS-001, TC-A11Y-001 | 4A | In progress (4A: hero, categories, popular picks, featured combo, student teaser, visit-us verified; banner/review/gallery data comes with 5C/6) | phase-4a.md |
-| FR-002 Navigation | M | UI_SPEC §8 | `src/components/layout/*` | TC-RESP-003, TC-A11Y-003 | 4A | In progress (4A: header, drawer, bottom nav, footer verified for live pages; other pages switch on in 4B/6, ADR-042) | phase-4a.md |
+| FR-001 Homepage | M | UI_SPEC §12.1; services home/menu/offers/cafe | `src/app/(public)/page.tsx`, `src/server/services/home.ts` | TC-E2E-001, TC-VIS-001, TC-A11Y-001 | 4A, 4B | In progress (4A + 4B verified: hero with fixed burger photo, offers/Student Zone CTAs, map + directions; banner/review/gallery data comes with 5C/6) | phase-4a.md, phase-4b.md |
+| FR-002 Navigation | M | UI_SPEC §8 | `src/components/layout/*`, `src/lib/site/nav.ts` | TC-RESP-003, TC-A11Y-003 | 4A, 4B | In progress (all 6 public pages live and verified in header, drawer, bottom nav + More sheet, footer; Feedback/QR switch on in 6, ADR-042) | phase-4b.md |
 | FR-003 Menu listing | M | UI_SPEC §12.2; TRD §6 | `src/app/(public)/menu/page.tsx`, `services/menu.ts` | TC-INT-010, TC-INT-012, TC-E2E-010 | 3, 4A | Verified | phase-3.md, phase-4a.md |
 | FR-004 Search | M | ADR-012 | `lib/validation/public.ts`, `services/menu.ts` | TC-UNIT-010/011, TC-SEC-090, TC-E2E-010 | 3, 4A | Verified | phase-3.md, phase-4a.md |
 | FR-005 Combined filters | M | ADR-021, ADR-022 | same | TC-UNIT-011/012, TC-INT-010, TC-E2E-010 | 3, 4A | Verified | phase-3.md, phase-4a.md |
@@ -19,14 +19,14 @@ Requirement → design/module → implementation location (planned) → tests �
 | FR-011 Add-ons display | M | ADR-019 | `features/menu/AddOnList` | TC-COMP-007, TC-E2E-020 | 4A | Verified | phase-4a.md |
 | FR-012 Related / FBT / combos | M | TRD §4 ItemRelation | `services/menu.ts#getItemDetail` | TC-INT-021, TC-E2E-020 | 3, 4A | Verified | phase-3.md, phase-4a.md |
 | FR-013 Best sellers / trending | M | ADR-021 | flags + home section | TC-INT-010, TC-E2E-001 | 3, 4A | Verified | phase-3.md, phase-4a.md |
-| FR-014 Offers & combos | M | ADR-020; UI_SPEC §12.4–12.5 | `src/app/(public)/offers/*`, `services/offers.ts`, `lib/format.ts#offerStatus` | TC-UNIT-020/021, TC-INT-030, TC-E2E-030 | 3, 4B | In progress (Phase 3 backend/API verified; UI in 4B) | phase-3.md |
-| FR-015 Student Zone | M | UI_SPEC §12.6 | `src/app/(public)/student-zone/page.tsx` | TC-E2E-031 | 4B | Planned | — |
-| FR-016 Gallery | M | UI_SPEC §12.7 | `src/app/(public)/gallery/page.tsx` | TC-E2E-040 | 4B | Planned | — |
-| FR-017 Café info & location | M | UI_SPEC §12.8; ADR-017 | `src/app/(public)/contact/page.tsx`, `services/cafe.ts` | TC-UNIT-022, TC-E2E-041 | 3, 4B | In progress (Phase 3 backend/API verified; UI in 4B) | phase-3.md |
+| FR-014 Offers & combos | M | ADR-020; UI_SPEC §12.4–12.5 | `src/app/(public)/offers/*`, `src/features/offers/offer-cards.tsx`, `services/offers.ts` | TC-UNIT-020/021, TC-INT-030, TC-E2E-030, TC-VIS | 3, 4B | Verified (active / scheduled / expired / draft; tabs; details; not-found) | phase-3.md, phase-4b.md |
+| FR-015 Student Zone | M | UI_SPEC §12.6 | `src/app/(public)/student-zone/page.tsx` | TC-E2E-031, TC-VIS | 4B | Verified (student offers only; no-verification notice; no ID check) | phase-4b.md |
+| FR-016 Gallery | M | UI_SPEC §12.7 | `src/app/(public)/gallery/page.tsx`, `src/features/gallery/gallery-grid.tsx` | TC-COMP-010, TC-E2E-040 (empty state), TC-VIS | 4B, 5C | In progress (page, lightbox and empty state verified; photos arrive with admin uploads in 5C, then the lightbox gets an E2E run) | phase-4b.md |
+| FR-017 Café info & location | M | UI_SPEC §12.8; ADR-017, ADR-046 | `src/app/(public)/contact/page.tsx`, `services/cafe.ts`, `features/cafe/*` | TC-UNIT-022, TC-INT-042, TC-E2E-041, TC-VIS | 3, 4B | Verified (address, phone, map + directions to the Cafe Zorko listing, hours with today highlighted, unconfirmed values labelled) | phase-4b.md |
 | FR-018 QR menu | M | ADR-018 | `src/app/(public)/qr/page.tsx`, `server/qr.ts` | TC-UNIT-030, TC-E2E-043/044 | 6 | Planned | — |
 | FR-019 Feedback submission | M | UI_SPEC §12.9; ADR-014/026 | `src/app/api/v1/feedback/route.ts`, `features/feedback/FeedbackForm` | TC-UNIT-050, TC-INT-041, TC-SEC-070/080/091, TC-E2E-042 | 6 | Planned | — |
 | FR-020 Public reviews | M | — | `services/feedback.ts#listApproved` | TC-INT-040, TC-SEC-040, TC-COMP-008 | 3, 6 | In progress (Feedback table, status + index in Phase 3; reviews API and UI in 6) | phase-3.md |
-| FR-021 SEO | M | — | `generateMetadata`, `app/sitemap.ts`, `app/robots.ts` | TC-E2E (metadata checks in 4B) | 4B | Planned | — |
+| FR-021 SEO | M | ADR-047 | `src/lib/site/seo.ts`, `generateMetadata`, `src/app/sitemap.ts`, `src/app/robots.ts` | TC-UNIT-031, TC-E2E-045 | 4B | Verified | phase-4b.md |
 | FR-022 Live availability ≤30 s | M | ADR-013 | `server/revalidate.ts` + page revalidate | TC-E2E-050/051 | 5B | Planned | — |
 | FR-023 Structured data | C | — | — | — | after Q-01…04 | Planned | — |
 | FR-024 Demo labelling | M | ADR-025 | `layout/DemoRibbon`, `isDemo` | TC-E2E-001 | 3, 4A | Verified | phase-3.md, phase-4a.md |
@@ -61,7 +61,7 @@ Requirement → design/module → implementation location (planned) → tests �
 | NFR-007 Reliability | M | TRD §7 | `src/app/api/health/route.ts`, error boundaries | E2E health tests; TC-INT-080 (DB up/down) | 2–3 | Verified (app + DB health) | phase-2.md, phase-3.md |
 | NFR-008 Freshness | M | ADR-013 | — | TC-E2E-050 | 5B | In progress (30 s tagged cache implemented, ADR-040; timing test in 5B) | phase-4a.md |
 | NFR-009 Browser support | M | TEST_PLAN §1 | `playwright.config.ts` (Chromium + WebKit) | All E2E on both engines | 2+ | In progress (all E2E on Chromium + WebKit through Phase 4A) | phase-2.md … phase-4a.md |
-| NFR-010 Content honesty | M | CLAUDE.md 6.2 | seed + UI | TC-E2E-090, review | 3–7 | In progress (Phase 3: isDemo + verified flags in data and API; UI labelling in 4A/4B) | phase-3.md |
+| NFR-010 Content honesty | M | CLAUDE.md 6.2 | seed + UI | TC-E2E-090, TC-E2E-001/031/041, review | 3–7 | In progress (4B: unconfirmed details labelled "To be confirmed"; no coupons, ratings or ID checks; illustrative photos credited) | phase-3.md, phase-4b.md |
 | NFR-011 Deployability | M | DEPLOYMENT.md | — | Phase 8 checklist | 8 | Planned | — |
 | NFR-012 Data integrity | M | TRD §4 | Prisma schema + SQL CHECKs | TC-INT-001…003, 070 | 3 | In progress (DB CHECK/UNIQUE/FK verified, TC-INT-001…004; admin transactions TC-INT-070 in 5B) | phase-3.md |
 

@@ -15,6 +15,8 @@ const PAGES = [
   '/student-zone',
   '/gallery',
   '/contact',
+  '/offers/weekend-dessert-special',
+  '/credits',
 ] as const
 const BASE = 'http://localhost:3100' // playwright.config.ts baseURL / NEXT_PUBLIC_SITE_URL
 const WIDTHS = [375, 430, 768, 1024, 1440]
@@ -368,7 +370,7 @@ test.describe('student zone (TC-E2E-031)', () => {
   })
 })
 
-test.describe('gallery (TC-E2E-032)', () => {
+test.describe('gallery (TC-E2E-040: empty state; lightbox keys in TC-COMP-010)', () => {
   test('is linked from the navigation and shows an empty state until photos are published', async ({
     page,
   }) => {
@@ -397,7 +399,7 @@ test.describe('gallery on mobile', () => {
   })
 })
 
-test.describe('about & contact (TC-E2E-033)', () => {
+test.describe('about & contact (TC-E2E-041)', () => {
   test('shows hours with today highlighted and labels unconfirmed details', async ({ page }) => {
     await gotoReady(page, '/')
     await page.getByRole('contentinfo').getByRole('link', { name: 'About & Contact' }).click()
@@ -424,7 +426,7 @@ test.describe('about & contact (TC-E2E-033)', () => {
   })
 })
 
-test.describe('SEO: metadata, sitemap and robots (TC-E2E-040)', () => {
+test.describe('SEO: metadata, sitemap and robots (TC-E2E-045)', () => {
   test('pages have a title, description, canonical and Open Graph tags', async ({ page }) => {
     await page.goto('/menu/classic-veg-burger')
     await expect(page).toHaveTitle('Classic Veg Burger | ZORKO Sangli')
@@ -479,7 +481,7 @@ test.describe('SEO: metadata, sitemap and robots (TC-E2E-040)', () => {
 
 test.describe('navigation, accessibility and responsive (TC-A11Y-001, TC-RESP-001…003)', () => {
   for (const path of PAGES) {
-    for (const width of [390, 1440]) {
+    for (const width of [390, 768, 1440]) {
       test(`axe: no serious/critical violations on ${path} at ${width}px`, async ({ page }) => {
         await page.setViewportSize({ width, height: 900 })
         await gotoReady(page, path)
@@ -549,6 +551,42 @@ test.describe('navigation, accessibility and responsive (TC-A11Y-001, TC-RESP-00
     await expect(bottom.getByRole('link', { name: 'Home' })).toHaveAttribute('aria-current', 'page')
     await bottom.getByRole('link', { name: 'Menu' }).click()
     await expect(page).toHaveURL(/\/menu$/)
+  })
+
+  test('keyboard only: skip link, offer tabs and a detail page (TC-A11Y-003)', async ({
+    page,
+    browserName,
+  }) => {
+    // Safari moves Tab between links only with Option+Tab (its default setting); Chrome with Tab.
+    const TAB = browserName === 'webkit' ? 'Alt+Tab' : 'Tab'
+    await page.setViewportSize({ width: 1440, height: 900 })
+    await gotoReady(page, '/offers')
+    await page.keyboard.press(TAB)
+    const skip = page.getByRole('link', { name: 'Skip to content' })
+    await expect(skip).toBeFocused()
+    await page.keyboard.press('Enter')
+    await expect(page).toHaveURL(/#main$/)
+    // Tabs are plain links: reachable with Tab and activated with Enter.
+    const student = page.getByRole('navigation', { name: 'Offer types' }).getByRole('link', {
+      name: 'Student',
+    })
+    await student.focus()
+    await expect(student).toBeFocused()
+    await page.keyboard.press('Enter')
+    await expect(page).toHaveURL(/tab=student/)
+    const card = page.getByRole('link', { name: 'Student Snack Box' })
+    await card.focus()
+    await page.keyboard.press('Enter')
+    await expect(page).toHaveURL(/\/offers\/student-snack-box$/)
+    // A visible focus indicator (UI_SPEC §11): the focused element has an outline or ring.
+    await page.keyboard.press(TAB)
+    const visible = await page.evaluate(() => {
+      const el = document.activeElement as HTMLElement | null
+      if (!el || el === document.body) return false
+      const cs = getComputedStyle(el)
+      return cs.outlineStyle !== 'none' || cs.boxShadow !== 'none'
+    })
+    expect(visible).toBe(true)
   })
 
   test('tablet drawer opens, traps focus and navigates', async ({ page }) => {

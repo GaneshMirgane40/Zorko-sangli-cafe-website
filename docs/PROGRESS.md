@@ -9,10 +9,10 @@ Single source of truth for project state (CLAUDE.md Section 0.1).
 | Field | Value |
 |---|---|
 | Current phase | **Phase 4B — Public site remainder** |
-| Status | **IN PROGRESS** |
+| Status | **AWAITING TEAM VERIFICATION** |
 | Branch | `phase-4b` |
-| Latest report | `docs/PHASE_REPORTS/phase-4a.md` |
-| Last updated | 2026-10-14 |
+| Latest report | `docs/PHASE_REPORTS/phase-4b.md` |
+| Last updated | 2026-10-15 |
 
 ## Approved phases
 
@@ -39,9 +39,12 @@ None.
 - Finalise CSP script policy in Phase 7 (ADR-016).
 - Remove the `deepmerge-ts` / `mysql2` npm overrides once Prisma ships patched dependencies (ADR-036, review in Phase 7).
 - Page-level caching + on-demand revalidation (≤30 s freshness) is designed with the pages in 4A/5B (ADR-035).
-- Real menu, prices, hours, address and offers: still demo placeholders (Q-01…Q-08).
+- Real menu, prices, address, phone and map are in (ADR-044, ADR-046). Opening hours (Q-05), real offers (Q-07), WhatsApp/email/social (Q-03/Q-04) are still placeholders.
 - Visual baselines exist only for macOS (`-darwin`); record Linux baselines when CI is set up (Q-16).
-- Switch on `/offers`, `/student-zone`, `/gallery`, `/contact` in `src/lib/site/nav.ts` in Phase 4B, and `/feedback`, `/qr` in Phase 6 (ADR-042).
+- Switch on `/feedback`, `/qr` in `src/lib/site/nav.ts` in Phase 6 (ADR-042); all 4B pages are live.
+- Structured data (JSON-LD, FR-023) once hours and the remaining café facts are confirmed (ADR-047).
+- Gallery lightbox E2E once real photos exist (5C); admin café form needs the "Google Maps place" field (ADR-046).
+- `robots.ts`: add `/admin` to Disallow in Phase 5A.
 - Admin actions must call `updateTag`/`revalidateTag` for the `menu`/`offers`/`cafe`/`home`/`item:<slug>` tags (Phase 5B/5C, ADR-040).
 
 ## Assumptions waiting for team confirmation
