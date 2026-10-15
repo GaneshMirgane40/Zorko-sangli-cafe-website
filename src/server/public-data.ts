@@ -11,6 +11,7 @@ import {
 } from './services/home'
 import { getMenuItemBySlug, listMenuItems } from './services/menu'
 import { getOfferBySlug, listOffers } from './services/offers'
+import { listSitemapEntries } from './services/sitemap'
 
 /**
  * Cached loaders for public pages (ADR-013, ADR-040).
@@ -94,4 +95,11 @@ export async function cachedGallery() {
   cacheLife(FRESH)
   cacheTag(TAGS.home)
   return listPublishedGallery(GALLERY_PAGE_LIMIT)
+}
+
+export async function cachedSitemapEntries() {
+  'use cache'
+  cacheLife(FRESH)
+  cacheTag(TAGS.menu, TAGS.offers)
+  return listSitemapEntries()
 }

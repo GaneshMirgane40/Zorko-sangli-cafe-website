@@ -13,6 +13,7 @@ import {
   Zap,
 } from 'lucide-react'
 import type { Metadata } from 'next'
+import { pageMetadata } from '@/lib/site/seo'
 import Image from 'next/image'
 import Link from 'next/link'
 import { connection } from 'next/server'
@@ -39,12 +40,12 @@ import {
 import type { CafeDto } from '@/server/services/cafe'
 import type { OfferDto } from '@/server/services/offers'
 
-export const metadata: Metadata = {
-  title: { absolute: 'ZORKO Sangli — Digital Menu, Offers & Café Info' },
+export const metadata: Metadata = pageMetadata({
+  title: 'ZORKO Sangli — Digital Menu, Offers & Café Info',
   description: 'Browse the ZORKO Sangli digital menu, current offers and café information.',
-  alternates: { canonical: '/' },
-  openGraph: { title: 'ZORKO Sangli', type: 'website' },
-}
+  path: '/',
+  absoluteTitle: true,
+})
 
 /** Homepage (UI_SPEC §12.1). Sections without real data are left out rather than faked. */
 /** Licence and credit: src/lib/site/image-credits.json (shown on /credits). */

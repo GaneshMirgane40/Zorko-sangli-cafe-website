@@ -1,5 +1,6 @@
 import { GraduationCap, Info } from 'lucide-react'
 import type { Metadata } from 'next'
+import { pageMetadata } from '@/lib/site/seo'
 import Link from 'next/link'
 import { connection } from 'next/server'
 import { Suspense } from 'react'
@@ -11,11 +12,11 @@ import { EmptyState } from '@/components/ui/states'
 import { InfoOfferCard, OfferCard, ScheduledOfferCard } from '@/features/offers/offer-cards'
 import { cachedCafe, cachedOffers } from '@/server/public-data'
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: 'Student Zone',
   description: 'Student offers and combos at ZORKO Sangli.',
-  alternates: { canonical: '/student-zone' },
-}
+  path: '/student-zone',
+})
 
 /** Shown on the page and tested: the site never checks student status (CLAUDE.md §3.1 D). */
 export const STUDENT_DISCLAIMER =

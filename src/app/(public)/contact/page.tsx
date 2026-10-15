@@ -1,5 +1,6 @@
 import { Clock, ExternalLink, Mail, MapPin, MessageCircle, Navigation, Phone } from 'lucide-react'
 import type { Metadata } from 'next'
+import { pageMetadata } from '@/lib/site/seo'
 import Link from 'next/link'
 import { connection } from 'next/server'
 import { Suspense, type ReactNode } from 'react'
@@ -17,11 +18,11 @@ import { cn } from '@/lib/utils'
 import { cachedCafe, cachedHomeExtras } from '@/server/public-data'
 import type { CafeDto } from '@/server/services/cafe'
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: 'About & Contact',
   description: 'Address, opening hours, phone and directions for ZORKO Sangli.',
-  alternates: { canonical: '/contact' },
-}
+  path: '/contact',
+})
 
 /** About & Contact (UI_SPEC §12.8, derived from the home "Visit" section). */
 export default function ContactPage() {

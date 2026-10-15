@@ -1,11 +1,15 @@
 import type { Metadata } from 'next'
+import { NO_INDEX, pageMetadata } from '@/lib/site/seo'
 import { Container } from '@/components/ui/container'
 import credits from '@/lib/site/image-credits.json'
 
 export const metadata: Metadata = {
-  title: 'Image credits',
-  description: 'Sources and licences of the illustrative photos used on this site.',
-  alternates: { canonical: '/credits' },
+  ...pageMetadata({
+    title: 'Image credits',
+    description: 'Sources and licences of the illustrative photos used on this site.',
+    path: '/credits',
+  }),
+  robots: NO_INDEX,
 }
 
 /**

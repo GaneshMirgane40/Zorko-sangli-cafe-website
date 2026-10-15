@@ -7,6 +7,7 @@ import {
 } from '@/features/menu/menu-params'
 import { formatHoursRange, formatTime12 } from '@/lib/format'
 import { isActivePath, isLive, liveNav, NAV_ITEMS } from '@/lib/site/nav'
+import { DEFAULT_OG_IMAGE, pageMetadata } from '@/lib/site/seo'
 import { menuQuerySchema } from '@/lib/validation/public'
 import { menuWhere } from '@/server/services/menu'
 
@@ -119,5 +120,35 @@ describe('offer % off (TC-UNIT-021)', () => {
     expect(percentOff({ savingsPaise: 2900, regularPricePaise: 15800 })).toBe(18) // 18.35 → 18
     expect(percentOff({ savingsPaise: null, regularPricePaise: 1000 })).toBeNull()
     expect(percentOff({ savingsPaise: 1, regularPricePaise: 1000 })).toBeNull() // 0.1% → hidden
+  })
+})
+
+describe('page metadata (TC-UNIT-030, FR SEO)', () => {
+  it('builds canonical, Open Graph and Twitter fields with the default share image', () => {
+    const m = pageMetadata({ title: 'Gallery', description: 'Photos.', path: '/gallery' })
+    expect(m.title).toBe('Gallery')
+    expect(m.alternates?.canonical).toBe('/gallery')
+    expect(m.openGraph).toMatchObject({
+      siteName: 'ZORKO Sangli',
+      locale: 'en_IN',
+      url: '/gallery',
+      title: 'Gallery | ZORKO Sangli',
+      images: [DEFAULT_OG_IMAGE],
+    })
+    expect(m.twitter).toMatchObject({ card: 'summary_large_image' })
+  })
+  it('uses the page image when there is one, and absolute titles as-is', () => {
+    const m = pageMetadata({
+      title: 'Home title',
+      description: 'd',
+      path: '/',
+      absoluteTitle: true,
+      image: { url: '/stock/pizza.webp', alt: 'Pizza' },
+    })
+    expect(m.title).toEqual({ absolute: 'Home title' })
+    expect(m.openGraph).toMatchObject({
+      title: 'Home title',
+      images: [{ url: '/stock/pizza.webp' }],
+    })
   })
 })

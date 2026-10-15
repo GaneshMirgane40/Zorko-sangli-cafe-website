@@ -1,5 +1,6 @@
 import { ArrowDown, GraduationCap, Layers, Sparkles, Tag } from 'lucide-react'
 import type { Metadata } from 'next'
+import { pageMetadata } from '@/lib/site/seo'
 import Link from 'next/link'
 import { Suspense } from 'react'
 import { buttonClasses } from '@/components/ui/button'
@@ -13,11 +14,11 @@ import { InfoOfferCard, OfferCard, ScheduledOfferCard } from '@/features/offers/
 import { cachedCafe, cachedOffers } from '@/server/public-data'
 import type { OffersQuery } from '@/lib/validation/public'
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: 'Offers & Combos',
   description: 'Current combos, item deals and Student Zone offers at ZORKO Sangli.',
-  alternates: { canonical: '/offers' },
-}
+  path: '/offers',
+})
 
 /** Tabs (UI_SPEC §12.4): kept in the URL so they work without JavaScript and can be shared. */
 const TABS = [

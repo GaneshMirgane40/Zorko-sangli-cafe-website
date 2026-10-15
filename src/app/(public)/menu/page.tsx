@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import { pageMetadata } from '@/lib/site/seo'
 import Link from 'next/link'
 import { connection } from 'next/server'
 import { Suspense } from 'react'
@@ -27,11 +28,11 @@ import { MenuResultsSkeleton } from '@/features/menu/skeletons'
 import { cn } from '@/lib/utils'
 import { cachedCafe, cachedCategories, cachedMenu } from '@/server/public-data'
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: 'Digital Menu',
   description: 'Browse the ZORKO Sangli menu: search, filter by category, price and offers.',
-  alternates: { canonical: '/menu' },
-}
+  path: '/menu',
+})
 
 /** Digital menu (UI_SPEC §12.2). All state lives in the URL; results are rendered on the server. */
 export default function MenuPage({ searchParams }: PageProps<'/menu'>) {

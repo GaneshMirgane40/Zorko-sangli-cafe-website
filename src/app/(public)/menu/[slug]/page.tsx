@@ -1,5 +1,6 @@
 import { CircleCheck, Flame } from 'lucide-react'
 import type { Metadata } from 'next'
+import { NO_INDEX, pageMetadata } from '@/lib/site/seo'
 import Image from 'next/image'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
@@ -25,13 +26,14 @@ async function loadItem(params: PageProps<'/menu/[slug]'>['params']) {
 
 export async function generateMetadata({ params }: PageProps<'/menu/[slug]'>): Promise<Metadata> {
   const item = await loadItem(params)
-  if (!item) return { title: 'Item not found' }
-  return {
+  if (!item) return { title: 'Item not found', robots: NO_INDEX }
+  const image = item.images[0]
+  return pageMetadata({
     title: item.name,
     description: item.description.slice(0, 160),
-    alternates: { canonical: `/menu/${item.slug}` },
-    openGraph: { title: item.name, images: item.images[0] ? [item.images[0].url] : undefined },
-  }
+    path: `/menu/${item.slug}`,
+    image: image ? { url: image.url, alt: image.altText } : null,
+  })
 }
 
 /**

@@ -1,5 +1,6 @@
 import { CalendarClock, CircleCheck, GraduationCap, Tag } from 'lucide-react'
 import type { Metadata } from 'next'
+import { NO_INDEX, pageMetadata } from '@/lib/site/seo'
 import Image from 'next/image'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
@@ -22,13 +23,13 @@ async function loadOffer(params: PageProps<'/offers/[slug]'>['params']) {
 
 export async function generateMetadata({ params }: PageProps<'/offers/[slug]'>): Promise<Metadata> {
   const offer = await loadOffer(params)
-  if (!offer) return { title: 'Offer not found' }
-  return {
+  if (!offer) return { title: 'Offer not found', robots: NO_INDEX }
+  return pageMetadata({
     title: offer.title,
     description: offer.description.slice(0, 160),
-    alternates: { canonical: `/offers/${offer.slug}` },
-    openGraph: { title: offer.title, images: offer.image ? [offer.image.url] : undefined },
-  }
+    path: `/offers/${offer.slug}`,
+    image: offer.image ? { url: offer.image.url, alt: offer.image.altText } : null,
+  })
 }
 
 /** Offer details (UI_SPEC §12.5). Expired or unpublished offers show the not-found page (ADR-041). */

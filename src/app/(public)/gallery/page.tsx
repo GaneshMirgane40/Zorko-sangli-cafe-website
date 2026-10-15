@@ -1,5 +1,6 @@
 import { Images } from 'lucide-react'
 import type { Metadata } from 'next'
+import { pageMetadata } from '@/lib/site/seo'
 import Link from 'next/link'
 import { connection } from 'next/server'
 import { Suspense } from 'react'
@@ -10,11 +11,11 @@ import { EmptyState } from '@/components/ui/states'
 import { GalleryGrid } from '@/features/gallery/gallery-grid'
 import { cachedGallery } from '@/server/public-data'
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: 'Gallery',
   description: 'Photos from ZORKO Sangli.',
-  alternates: { canonical: '/gallery' },
-}
+  path: '/gallery',
+})
 
 /** Gallery (UI_SPEC §12.7, derived screen). Photos are uploaded by admins (Phase 5C). */
 export default function GalleryPage() {

@@ -13,11 +13,11 @@
 | | |
 |---|---|
 | **Current phase** | Phase 4B — Public site remainder |
-| **Phase status** | IN PROGRESS. Done: CI, demo menu (ADR-043), real Sangli menu (ADR-044), illustrative photos (ADR-045), **Offers & Combos** (`/offers`, `/offers/[slug]`), **Student Zone** (`/student-zone`), home hero burger photo, **Gallery** (`/gallery` + lightbox), **About & Contact** (`/contact`, ADR-046). |
+| **Phase status** | IN PROGRESS. Done: CI, demo menu (ADR-043), real Sangli menu (ADR-044), illustrative photos (ADR-045), **Offers & Combos** (`/offers`, `/offers/[slug]`), **Student Zone** (`/student-zone`), home hero burger photo, **Gallery** (`/gallery` + lightbox), **About & Contact** (`/contact`, ADR-046), **SEO** (metadata, sitemap, robots, ADR-047). |
 | **Git** | Branch `phase-4b`, pushed to `origin` (github.com/uTkarsho6/cafe-website) after each task when the user says "push". `main` holds phases 0–4A (tags up to `phase-4a-approved`). |
-| **Last task completed** | About & Contact page: address, phone/email/social, map + directions from the verified address (ADR-046), hours table with today highlighted, about text, reviews; all main nav pages live (2026-10-15). |
-| **Next action** | SEO/sitemap/robots → nav links, responsive/a11y, baselines → Phase 4B report. |
-| **Waiting on the team** | "push" for the About & Contact task; open questions in `docs/OPEN_QUESTIONS.md`. |
+| **Last task completed** | SEO: `pageMetadata()` on every page (canonical, Open Graph, Twitter, default share image), `/sitemap.xml`, `/robots.txt`, noindex on not-found pages (2026-10-15). |
+| **Next action** | Final responsive/a11y sweep at all widths, baselines → Phase 4B report. |
+| **Waiting on the team** | "push" for the SEO task; open questions in `docs/OPEN_QUESTIONS.md`. |
 | **Note** | This Mac runs under very high load (BTLEServer ~97 % CPU), so E2E with 4 workers can time out on static files. Run `npx playwright test --workers=2` locally. |
 
 ### On approval (the CLAUDE.md §0.2 step 8 routine)

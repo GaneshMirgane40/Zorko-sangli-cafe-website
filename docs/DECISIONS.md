@@ -332,3 +332,10 @@ Prisma parameterises `contains`, but it does **not** escape `%`, `_` and `\`. A 
 - Now the map and directions use the coordinates when set; otherwise the **verified** address (`name, addressLine, city, postalCode`), URL-encoded. An unverified placeholder address is never sent to Google, so customers are never pointed to a wrong place.
 - The logic lives in `getCafeInfo` (`mapQuery`, `directionsUrl`), shared by the home "Visit" section and `/contact`. Tested in `tests/integration/api.test.ts` (TC-INT-040).
 - The embedded Google map can show Google's own place details (for example its ratings). Those come from Google, not from this site; the site itself still shows no ratings (CLAUDE.md §6.2).
+
+## ADR-047 SEO metadata, sitemap and robots — Accepted (2026-10-15)
+- Every page builds its metadata with `pageMetadata()` (`src/lib/site/seo.ts`): title, description, canonical URL, and complete Open Graph and Twitter fields. Next.js replaces rather than merges a parent's `openGraph`, so a shared helper avoids pages silently losing `siteName`, `locale` or the image.
+- Share image: the page's own photo (dish or offer), else `/og-default.jpg`, a 1200×630 crop of the credited CC BY-SA 4.0 burger photo (same licence).
+- `/sitemap.xml` is built at request time: the pages that are live in the navigation (ADR-042) plus visible dishes and offers that have not ended, using the same visibility rules as the pages (`src/server/services/sitemap.ts`). Unpublished, archived, expired and draft content never appears.
+- `/robots.txt` allows the site and disallows `/api/` and `/dev/`. Not-found pages and `/credits` are `noindex`.
+- No structured data (JSON-LD) yet: CLAUDE.md §3.1 I allows it only for verified data, and hours and coordinates are not confirmed (backlog).

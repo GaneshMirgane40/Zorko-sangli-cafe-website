@@ -16,6 +16,7 @@ const PAGES = [
   '/gallery',
   '/contact',
 ] as const
+const BASE = 'http://localhost:3100' // playwright.config.ts baseURL / NEXT_PUBLIC_SITE_URL
 const WIDTHS = [375, 430, 768, 1024, 1440]
 
 async function axeSeriousOrCritical(page: Page) {
@@ -420,6 +421,59 @@ test.describe('about & contact (TC-E2E-033)', () => {
       page.getByText('Demo text: replace with the café’s approved description.'),
     ).toBeVisible()
     await expect(page.getByRole('link', { name: 'Share feedback' })).toHaveCount(0)
+  })
+})
+
+test.describe('SEO: metadata, sitemap and robots (TC-E2E-040)', () => {
+  test('pages have a title, description, canonical and Open Graph tags', async ({ page }) => {
+    await page.goto('/menu/classic-veg-burger')
+    await expect(page).toHaveTitle('Classic Veg Burger | ZORKO Sangli')
+    const meta = (sel: string) => page.locator(sel).first().getAttribute('content')
+    expect(await meta('meta[name="description"]')).toContain('vegetable patty')
+    expect(await page.locator('link[rel="canonical"]').getAttribute('href')).toBe(
+      `${BASE}/menu/classic-veg-burger`,
+    )
+    expect(await meta('meta[property="og:site_name"]')).toBe('ZORKO Sangli')
+    expect(await meta('meta[property="og:url"]')).toBe(`${BASE}/menu/classic-veg-burger`)
+    expect(await meta('meta[property="og:image"]')).toMatch(/^http:\/\/localhost:3100\/demo\//)
+    expect(await meta('meta[name="twitter:card"]')).toBe('summary_large_image')
+    // A page without its own image falls back to the default share image.
+    await page.goto('/gallery')
+    expect(await meta('meta[property="og:image"]')).toBe(`${BASE}/og-default.jpg`)
+    expect((await page.request.get('/og-default.jpg')).status()).toBe(200)
+  })
+
+  test('missing pages are noindex', async ({ page }) => {
+    for (const path of ['/menu/nope', '/offers/nope', '/no-such-page']) {
+      await page.goto(path)
+      await expect(page.locator('meta[name="robots"]').first()).toHaveAttribute(
+        'content',
+        /noindex/,
+      )
+    }
+  })
+
+  test('sitemap.xml lists live pages and visible details only; robots.txt points to it', async ({
+    request,
+  }) => {
+    const res = await request.get('/sitemap.xml')
+    expect(res.status()).toBe(200)
+    const urls = [...(await res.text()).matchAll(/<loc>(.*?)<\/loc>/g)].map((m) => m[1])
+    for (const path of ['/', '/menu', '/offers', '/student-zone', '/gallery', '/contact'])
+      expect(urls).toContain(`${BASE}${path}`)
+    expect(urls).toContain(`${BASE}/menu/classic-veg-burger`)
+    expect(urls).toContain(`${BASE}/offers/burger-fries-combo`)
+    expect(urls).toContain(`${BASE}/offers/weekend-dessert-special`) // scheduled: page exists
+    // Never: unpublished items, expired or draft offers, pages from later phases.
+    for (const hidden of ['pink-sauce-pasta', 'old-pasta-offer', 'draft-offer', '/feedback', '/qr'])
+      expect(urls.join(' ')).not.toContain(hidden)
+    // Every listed page really exists.
+    for (const u of urls) expect((await request.get(u)).status(), u).toBe(200)
+
+    const robots = await (await request.get('/robots.txt')).text()
+    expect(robots).toContain('Disallow: /api/')
+    expect(robots).toContain('Disallow: /dev/')
+    expect(robots).toContain(`Sitemap: ${BASE}/sitemap.xml`)
   })
 })
 
