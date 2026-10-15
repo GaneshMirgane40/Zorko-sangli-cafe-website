@@ -678,8 +678,9 @@ export const sangliMenu: RealCategory[] = [
 ]
 
 /**
- * Outlet details printed on the menu. Opening hours, coordinates, email and social links are not
- * on the menu and stay unconfirmed (Q-01, Q-03, Q-04, Q-05).
+ * Outlet details printed on the menu, plus the map coordinates the team supplied (2026-10-15,
+ * Q-01). Opening hours, email and social links are not on the menu and stay unconfirmed
+ * (Q-03, Q-04, Q-05).
  */
 export const sangliCafe = {
   name: 'ZORKO Sangli',
@@ -690,6 +691,9 @@ export const sangliCafe = {
   isPureVegConfirmed: true, // green veg mark printed on the outlet menu (Q-06)
   addressVerified: true,
   contactVerified: true,
+  latitude: 16.845262,
+  longitude: 74.596347,
+  mapVerified: true,
 }
 
 /** URL slug from a menu name: "Ala Rosey (Pink Sauce)" → "ala-rosey-pink-sauce". */

@@ -9,7 +9,7 @@
  * - Re-running refreshes our own bundled images (placeholder tiles, earlier illustrative photos) to
  *   the current per-item photo; admin-uploaded images are never touched (ADR-045).
  * - Café information: replaces the row only while it is still demo data; hours are kept
- *   (still unconfirmed, Q-05).
+ *   (still unconfirmed, Q-05). On a real row it only fills in map coordinates if none are set.
  */
 import { scriptClient } from './client'
 import { sangliCafe, sangliMenu, slugify, stockAlt, stockPath } from './data/sangli-menu'
@@ -123,6 +123,15 @@ async function main() {
     } else if (cafe.isDemo) {
       await db.cafeInformation.update({ where: { id: 'cafe' }, data: cafeData })
       created.cafe = 'replaced demo row'
+    } else if (cafe.latitude === null && cafe.longitude === null) {
+      // Real row already exists: only fill in coordinates that were never set, so values an
+      // admin has edited are never overwritten.
+      const { latitude, longitude, mapVerified } = sangliCafe
+      await db.cafeInformation.update({
+        where: { id: 'cafe' },
+        data: { latitude, longitude, mapVerified },
+      })
+      created.cafe = 'added map coordinates'
     }
     console.log('Sangli menu import finished:', created)
   } finally {

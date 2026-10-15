@@ -4,7 +4,7 @@ Information or decisions the team, the café or the guide must supply. Until ans
 
 | ID | Question | Ask whom | Default until answered | Blocks |
 |---|---|---|---|---|
-| Q-01 | Verified outlet address and map coordinates (lat/lng) | Café | Placeholder address "To be confirmed"; no map pin | 4B (real data), 8 | **Answered 2026-10-14 (ADR-044):** address from the printed menu — "Cafe Zorko, Chavan Arkade, Near Sambha Bhel, 100 ft. Road, Vishrambag, Sangli 416415". Coordinates still needed.
+| Q-01 | Verified outlet address and map coordinates (lat/lng) | Café | Placeholder address "To be confirmed"; no map pin | 4B (real data), 8 | **Answered 2026-10-14 (ADR-044):** address from the printed menu — "Cafe Zorko, Chavan Arkade, Near Sambha Bhel, 100 ft. Road, Vishrambag, Sangli 416415". Coordinates still needed. Coordinates 16.845262, 74.596347 supplied by the team 2026-10-15 (map pin and directions now use them, ADR-046). |
 | Q-02 | Phone and WhatsApp numbers | Café | Hidden / "To be confirmed" | 4B, 8 | **Answered 2026-10-14 (ADR-044):** phone 9890011348 (printed menu). WhatsApp number still needed.
 | Q-03 | Optional public email | Café | Hidden | 4B |
 | Q-04 | Instagram and Facebook URLs | Café | Hidden | 4B |
