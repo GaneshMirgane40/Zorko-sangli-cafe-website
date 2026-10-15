@@ -125,7 +125,7 @@ test.describe('signed-in flows (TC-SEC-002/007/009, TC-E2E-060/061)', () => {
   test.beforeAll(async () => {
     // Allowlist the test admin in the TEST database (never in Supabase or the dev database).
     const supabase = createClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      new URL(process.env.NEXT_PUBLIC_SUPABASE_URL!).origin, // origin only (ADR-048)
       process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!,
       {
         auth: { persistSession: false },
@@ -136,7 +136,9 @@ test.describe('signed-in flows (TC-SEC-002/007/009, TC-E2E-060/061)', () => {
       password: ADMIN.password!,
     })
     if (error || !data.user)
-      throw new Error('E2E admin account could not sign in (check .env.local)')
+      throw new Error(
+        `E2E admin account could not sign in: ${error?.code ?? error?.status ?? 'no user'} (check .env.local)`,
+      )
     await supabase.auth.signOut({ scope: 'local' })
     const db = new Client({ connectionString: TEST_DB })
     await db.connect()
@@ -195,6 +197,30 @@ test.describe('signed-in flows (TC-SEC-002/007/009, TC-E2E-060/061)', () => {
     await expect(page.getByRole('main').getByText('You have been signed out.')).toBeVisible()
     await page.goto('/admin')
     await expect(page).toHaveURL(/\/admin\/login/)
+  })
+
+  test('dashboard visual baselines (TC-VIS, admin dashboard)', async ({ page, browserName }) => {
+    test.skip(browserName !== 'chromium', 'baselines are recorded in Chromium')
+    test.skip(process.platform !== 'darwin', 'visual baselines are recorded on macOS')
+    await signIn(page, ADMIN.email!, ADMIN.password!)
+    await expect(page).toHaveURL(/\/admin$/)
+    for (const [device, width, height] of [
+      ['desktop', 1440, 900],
+      ['mobile', 390, 844],
+    ] as const) {
+      await page.setViewportSize({ width, height })
+      await page.emulateMedia({ reducedMotion: 'reduce' })
+      // Wait for the streamed dashboard, not the "Checking your session" skeleton.
+      await expect(page.getByRole('heading', { level: 1, name: 'Dashboard' })).toBeVisible()
+      await expect(page.getByTestId('stat-card')).toHaveCount(7)
+      await page.evaluate(() => document.fonts.ready)
+      await expect(page).toHaveScreenshot(`admin-dashboard-${device}.png`, {
+        fullPage: true,
+        // Recent activity (times, number of sign-ins) and the account name differ per run.
+        mask: [page.getByRole('table'), page.getByText(/Signed in as|Welcome,/)],
+        maxDiffPixelRatio: 0.01,
+      })
+    }
   })
 
   test('mobile: the admin menu opens as a drawer with the dashboard and log out', async ({

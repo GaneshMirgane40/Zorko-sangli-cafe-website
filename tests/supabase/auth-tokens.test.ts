@@ -92,12 +92,16 @@ describe.runIf(Boolean(url && key) && prerequisitesDone)(
       const supabase = createServerClient(url!, key!, {
         cookies: { getAll: () => [], setAll: () => {} },
       })
+      // A plus-variant of the team's own test address: example.com is rejected earlier as an
+      // invalid address, which would make the test pass without reaching the signup check.
+      const [local, domain] = process.env.E2E_USER_EMAIL!.split('@')
       const { data, error } = await supabase.auth.signUp({
-        email: `signup-probe-${randomUUID()}@example.com`,
+        email: `${local}+signup-probe-${randomUUID().slice(0, 8)}@${domain}`,
         password: `Probe-${randomUUID()}`,
       })
       expect(data.user).toBeNull()
-      expect(error?.message ?? '').toMatch(/signups not allowed|signup.*disabled/i)
+      // Supabase checks "signup disabled" before validating the address or sending email.
+      expect(error?.code).toBe('signup_disabled')
     })
   },
 )

@@ -15,8 +15,10 @@ export function mediaUrl(
 ): string | null {
   if (!storagePath) return null
   if (DEMO_PATH.test(storagePath)) return `/${storagePath}`
-  if (STORAGE_PATH.test(storagePath) && supabaseUrl) {
-    return `${supabaseUrl.replace(/\/+$/, '')}/storage/v1/object/public/${STORAGE_BUCKET}/${storagePath}`
+  // Origin only: the variable is sometimes set to the REST URL (…/rest/v1/), ADR-048.
+  if (STORAGE_PATH.test(storagePath) && supabaseUrl && URL.canParse(supabaseUrl)) {
+    const origin = new URL(supabaseUrl).origin
+    return `${origin}/storage/v1/object/public/${STORAGE_BUCKET}/${storagePath}`
   }
   return null
 }
