@@ -67,8 +67,8 @@ describe('menu page URL state (UI_SPEC §12.2)', () => {
 
 describe('navigation gating (CLAUDE.md rule 7: no dead links)', () => {
   it('only shows pages that exist in this phase', () => {
-    expect(liveNav().map((i) => i.href)).toEqual(['/', '/menu'])
-    expect(isLive('/offers')).toBe(false)
+    expect(liveNav().map((i) => i.href)).toEqual(['/', '/menu', '/offers'])
+    expect(isLive('/gallery')).toBe(false)
     expect(NAV_ITEMS).toHaveLength(6) // the full nav is defined once; phases switch pages on
   })
   it('marks the active section, exact for home', () => {
@@ -102,5 +102,15 @@ describe('formatPhone', () => {
     const { formatPhone } = await import('@/lib/format')
     expect(formatPhone('+919890011348')).toBe('+91 98900 11348')
     expect(formatPhone('0233-2600000')).toBe('0233-2600000')
+  })
+})
+
+describe('offer % off (TC-UNIT-021)', () => {
+  it('rounds down and hides zero or missing savings', async () => {
+    const { percentOff } = await import('@/features/offers/offer-cards')
+    expect(percentOff({ savingsPaise: 3800, regularPricePaise: 26700 })).toBe(14) // 14.23 → 14
+    expect(percentOff({ savingsPaise: 2900, regularPricePaise: 15800 })).toBe(18) // 18.35 → 18
+    expect(percentOff({ savingsPaise: null, regularPricePaise: 1000 })).toBeNull()
+    expect(percentOff({ savingsPaise: 1, regularPricePaise: 1000 })).toBeNull() // 0.1% → hidden
   })
 })

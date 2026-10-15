@@ -43,7 +43,19 @@ const offerSelect = {
     orderBy: { menuItem: { name: 'asc' } },
     select: {
       quantity: true,
-      menuItem: { select: { slug: true, name: true, pricePaise: true, isAvailable: true } },
+      menuItem: {
+        select: {
+          slug: true,
+          name: true,
+          pricePaise: true,
+          isAvailable: true,
+          images: {
+            orderBy: { sortOrder: 'asc' },
+            take: 1,
+            select: { storagePath: true, altText: true },
+          },
+        },
+      },
     },
   },
 } satisfies Prisma.OfferSelect
@@ -60,14 +72,22 @@ function toOffer(row: OfferRow, now: Date): OfferDto | null {
     regular !== null && row.promoPricePaise !== null && regular > row.promoPricePaise
       ? regular - row.promoPricePaise
       : null
+  // Offer image, else the first included dish's photo (real offers may not have their own yet).
   const url = mediaUrl(row.imagePath)
+  const dishImage = row.items
+    .map((i) => i.menuItem.images[0])
+    .find((img) => mediaUrl(img?.storagePath))
   return {
     slug: row.slug,
     kind: row.kind,
     status,
     title: row.title,
     description: row.description,
-    image: url ? { url, altText: row.title } : null,
+    image: url
+      ? { url, altText: row.title }
+      : dishImage
+        ? { url: mediaUrl(dishImage.storagePath)!, altText: dishImage.altText }
+        : null,
     promoPricePaise: row.promoPricePaise,
     priceLabel: row.promoPricePaise === null ? null : formatRupees(row.promoPricePaise),
     regularPricePaise: regular,

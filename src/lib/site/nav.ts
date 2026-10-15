@@ -7,7 +7,7 @@ export type NavItem = { href: string; label: string; shortLabel?: string; live: 
 export const NAV_ITEMS: NavItem[] = [
   { href: '/', label: 'Home', live: true },
   { href: '/menu', label: 'Digital Menu', shortLabel: 'Menu', live: true },
-  { href: '/offers', label: 'Offers & Combos', shortLabel: 'Offers', live: false }, // Phase 4B
+  { href: '/offers', label: 'Offers & Combos', shortLabel: 'Offers', live: true },
   { href: '/student-zone', label: 'Student Zone', shortLabel: 'Students', live: false }, // 4B
   { href: '/gallery', label: 'Gallery', live: false }, // Phase 4B
   { href: '/contact', label: 'About & Contact', live: false }, // Phase 4B

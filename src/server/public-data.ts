@@ -10,7 +10,7 @@ import {
   listPublishedGallery,
 } from './services/home'
 import { getMenuItemBySlug, listMenuItems } from './services/menu'
-import { listOffers } from './services/offers'
+import { getOfferBySlug, listOffers } from './services/offers'
 
 /**
  * Cached loaders for public pages (ADR-013, ADR-040).
@@ -64,6 +64,13 @@ export async function cachedOffers(query: OffersQuery = {}) {
   cacheLife(FRESH)
   cacheTag(TAGS.offers, TAGS.menu)
   return listOffers(query)
+}
+
+export async function cachedOffer(slug: string) {
+  'use cache'
+  cacheLife(FRESH)
+  cacheTag(TAGS.offers, TAGS.menu, `offer:${slug}`)
+  return getOfferBySlug(slug)
 }
 
 export async function cachedHomeExtras() {

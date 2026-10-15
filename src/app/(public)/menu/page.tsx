@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
+import { connection } from 'next/server'
 import { Suspense } from 'react'
 import { buttonClasses } from '@/components/ui/button'
 import { FilterChip, PillLink, PillRow } from '@/components/ui/chip'
@@ -53,6 +54,7 @@ export default function MenuPage({ searchParams }: PageProps<'/menu'>) {
 
 async function MenuContent({ searchParams }: Pick<PageProps<'/menu'>, 'searchParams'>) {
   const { query, params } = parseMenuParams(pickMenuParams(await searchParams))
+  await connection() // request time: "today's hours" below reads the current time
   const [categories, menu, cafe] = await Promise.all([
     cachedCategories(),
     cachedMenu(query),

@@ -6,7 +6,13 @@ import { expect, test, type Page } from '@playwright/test'
  * Runs against the seeded local test database (scripts/test-db.sh), production build.
  */
 
-const PAGES = ['/', '/menu', '/menu/classic-veg-burger'] as const
+const PAGES = [
+  '/',
+  '/menu',
+  '/menu/classic-veg-burger',
+  '/offers',
+  '/offers/burger-fries-combo',
+] as const
 const WIDTHS = [375, 430, 768, 1024, 1440]
 
 async function axeSeriousOrCritical(page: Page) {
@@ -252,6 +258,77 @@ test.describe('item details (TC-E2E-020)', () => {
   })
 })
 
+test.describe('offers & combos (TC-E2E-030, TC-INT-030 end to end)', () => {
+  test('lists active combos and deals, a scheduled offer, never expired or draft ones', async ({
+    page,
+  }) => {
+    await gotoReady(page, '/offers')
+    await expect(page.getByRole('heading', { level: 1 })).toContainText('Offers & Combo Feasts')
+    await expect(page.getByText('3 active offers')).toBeVisible()
+    const titles = await page.getByTestId('offer-card').getByRole('heading').allInnerTexts()
+    expect(titles).toEqual([
+      'Burger + Fries + Coffee Combo',
+      'Student Snack Box',
+      'Pizza Duo Deal',
+      'Dessert Special (scheduled)',
+    ])
+    await expect(page.getByText(/Old Pasta Offer|Draft Offer/)).toHaveCount(0)
+    // Prices, saving and % off come from the database (₹267 − ₹229 = ₹38, 14%).
+    const combo = page.getByTestId('offer-card').first()
+    await expect(combo).toContainText('₹229')
+    await expect(combo).toContainText('Save ₹38')
+    await expect(combo).toContainText('14% off')
+    // No voucher, coupon or ordering UI (CLAUDE.md §6.3).
+    for (const banned of [/Claim/i, /Copy code/i, /coupon/i, /Add to/i])
+      await expect(page.getByText(banned)).toHaveCount(0)
+  })
+
+  test('tabs filter in the URL; Student shows only student offers', async ({ page }) => {
+    await gotoReady(page, '/offers')
+    await page
+      .getByRole('navigation', { name: 'Offer types' })
+      .getByRole('link', { name: 'Student' })
+      .click()
+    await expect(page).toHaveURL(/tab=student/)
+    await expect
+      .poll(() => page.getByTestId('offer-card').getByRole('heading').allInnerTexts())
+      .toEqual(['Student Snack Box'])
+    // Item deals: the active deal, plus the scheduled dessert deal under "Coming soon".
+    await gotoReady(page, '/offers?tab=deals')
+    expect(await page.getByTestId('offer-card').getByRole('heading').allInnerTexts()).toEqual([
+      'Pizza Duo Deal',
+      'Dessert Special (scheduled)',
+    ])
+    // Unknown tab values fall back to "All".
+    await gotoReady(page, '/offers?tab=evil')
+    await expect(page.getByRole('link', { name: 'All' })).toHaveAttribute('aria-current', 'page')
+  })
+
+  test('offer details: included items link to the menu; scheduled shows its start date', async ({
+    page,
+  }) => {
+    await gotoReady(page, '/')
+    await page.getByRole('link', { name: 'View offer', exact: true }).click()
+    await expect(page).toHaveURL(/\/offers\/burger-fries-combo$/)
+    await expect(
+      page.getByRole('heading', { level: 1, name: 'Burger + Fries + Coffee Combo' }),
+    ).toBeVisible()
+    await expect(page.getByText('You save ₹38')).toBeVisible()
+    await page.getByRole('link', { name: /1× French Fries/ }).click()
+    await expect(page).toHaveURL(/\/menu\/french-fries$/)
+    await gotoReady(page, '/offers/weekend-dessert-special')
+    await expect(page.getByText(/^Starts /)).toBeVisible()
+    await expect(page.getByText('Active now')).toHaveCount(0)
+  })
+
+  test('expired, unpublished and unknown offers show the not-found page', async ({ page }) => {
+    for (const path of ['/offers/old-pasta-offer', '/offers/draft-offer', '/offers/nope']) {
+      await page.goto(path)
+      await expect(page.getByRole('heading', { name: "This offer isn't available" })).toBeVisible()
+    }
+  })
+})
+
 test.describe('navigation, accessibility and responsive (TC-A11Y-001, TC-RESP-001…003)', () => {
   for (const path of PAGES) {
     for (const width of [390, 1440]) {
@@ -348,6 +425,7 @@ test.describe('visual baselines (TC-VIS-001…003)', () => {
     ['home', '/'],
     ['menu', '/menu'],
     ['item', '/menu/classic-veg-burger'],
+    ['offers', '/offers'],
   ] as const) {
     for (const [device, width, height] of [
       ['desktop', 1440, 900],
