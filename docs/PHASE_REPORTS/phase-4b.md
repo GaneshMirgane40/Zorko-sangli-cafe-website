@@ -164,3 +164,20 @@ npm run test:db:reset && npx playwright test --workers=2   # 214 passed, 14 skip
 **If something fails, send:** the URL, the screen width, a screenshot, and any red errors from the browser console (F12 → Console).
 
 Phase 4B complete. Waiting for your approval or bug reports before starting Phase 5A. To approve, reply exactly: approved, go to Phase 5A
+
+
+---
+
+## Erratum (found in Phase 5A, 2026-10-15)
+
+The Supabase REST-denial result reported in this phase ("34/34 PASS") was **not valid evidence**:
+- `NEXT_PUBLIC_SUPABASE_URL` in the development `.env.local` pointed to the REST URL (`…/rest/v1/`).
+- The test appended `/rest/v1/<table>` again, so it requested a non-existent path.
+- That path returned 404 (`PGRST125`, "invalid path"), which the test counted as "denied".
+
+The test has been fixed (ADR-048):
+- It uses the URL's origin.
+- It accepts only PostgREST's real denial codes: `42501` permission denied, or `PGRST205` hidden table.
+- It includes a positive control.
+
+Re-run on 2026-10-15 against the development project: **every table is denied for reads and writes (401, `42501`)**, so the security control itself was working. Only the earlier evidence was wrong.

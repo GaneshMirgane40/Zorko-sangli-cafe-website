@@ -8,10 +8,10 @@ Single source of truth for project state (CLAUDE.md Section 0.1).
 
 | Field | Value |
 |---|---|
-| Current phase | **Phase 5A — Authentication and admin shell** |
+| Current phase | **Phase 5B — Menu administration** |
 | Status | **IN PROGRESS** |
-| Branch | `phase-5a` |
-| Latest report | `docs/PHASE_REPORTS/phase-4b.md` |
+| Branch | `phase-5b` |
+| Latest report | `docs/PHASE_REPORTS/phase-5a.md` |
 | Last updated | 2026-10-15 |
 
 ## Approved phases
@@ -24,10 +24,11 @@ Single source of truth for project state (CLAUDE.md Section 0.1).
 | Phase 3 | 2026-10-14 | "approved, go to Phase 4A" |
 | Phase 4A | 2026-10-14 | "approved, go to Phase 4B" |
 | Phase 4B | 2026-10-15 | "approved, go to Phase 5A" |
+| Phase 5A | 2026-10-15 | "approved, go to Phase 5B, pls do it quickly u are taking a hell lot of time" |
 
 ## Open bugs
 
-None.
+None open. Fixed in 5A: TC-SEC-020 false pass (REST URL), see the errata in phase-3.md / phase-4b.md and ADR-048.
 
 ## Deferred backlog (outside current phase scope)
 
@@ -45,7 +46,6 @@ None.
 - Switch on `/feedback`, `/qr` in `src/lib/site/nav.ts` in Phase 6 (ADR-042); all 4B pages are live.
 - Structured data (JSON-LD, FR-023) once hours and the remaining café facts are confirmed (ADR-047).
 - Gallery lightbox E2E once real photos exist (5C); admin café form needs the "Google Maps place" field (ADR-046).
-- `robots.ts`: add `/admin` to Disallow in Phase 5A.
 - Admin actions must call `updateTag`/`revalidateTag` for the `menu`/`offers`/`cafe`/`home`/`item:<slug>` tags (Phase 5B/5C, ADR-040).
 
 ## Assumptions waiting for team confirmation

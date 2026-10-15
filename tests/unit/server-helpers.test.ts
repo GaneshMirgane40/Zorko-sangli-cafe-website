@@ -97,6 +97,10 @@ describe('mediaUrl (TC-UNIT-071)', () => {
     'https://evil.com/x.webp',
     `gallery/${uuid}.svg`,
   ])('returns null for unsafe or empty path %j', (p) => expect(mediaUrl(p, sb)).toBeNull())
+  it('uses only the origin when the variable is the REST URL (ADR-048)', () =>
+    expect(mediaUrl(`gallery/${uuid}.webp`, `${sb}/rest/v1/`)).toBe(
+      `${sb}/storage/v1/object/public/public-media/gallery/${uuid}.webp`,
+    ))
   it('returns null for storage paths when Supabase is not configured', () =>
     expect(mediaUrl(`gallery/${uuid}.webp`, undefined)).toBeNull())
 })

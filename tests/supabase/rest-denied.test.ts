@@ -11,7 +11,11 @@ import { describe, expect, it } from 'vitest'
 // mode, so the keys were never loaded (Phase 3 Round 2 bug). Node's loader reads the file
 // directly and does not override variables already set in the shell.
 if (existsSync('.env.local')) process.loadEnvFile('.env.local')
-const url = process.env.NEXT_PUBLIC_SUPABASE_URL?.replace(/\/+$/, '')
+// Origin only: the variable is sometimes set to the REST URL (…/rest/v1/). Appending
+// /rest/v1 to that hit a non-existent path whose 404 was wrongly counted as "denied"
+// (found in Phase 5A; see the positive control below).
+const rawUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+const url = rawUrl ? new URL(rawUrl.trim()).origin : undefined
 const key = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY
 
 const TABLES = [
@@ -44,17 +48,40 @@ describe.runIf(Boolean(url && key))('Supabase REST API is denied (TC-SEC-020)', 
   const rest = (path: string, init?: RequestInit) =>
     fetch(`${url}/rest/v1/${path}`, { ...init, headers: { ...headers, ...init?.headers } })
 
+  /** True only for PostgREST's real "no access" answers. */
+  async function denial(res: Response): Promise<boolean> {
+    const code = (
+      (await res
+        .clone()
+        .json()
+        .catch(() => ({}))) as { code?: string }
+    ).code
+    return (
+      ([401, 403].includes(res.status) && code === '42501') ||
+      (res.status === 404 && code === 'PGRST205')
+    )
+  }
+
+  it('positive control: requests reach the real PostgREST endpoint', async () => {
+    const res = await rest('NoSuchTable_positive_control?select=*')
+    expect(res.status).toBe(404)
+    expect(((await res.json()) as { code?: string }).code).toBe('PGRST205')
+  })
+
   it.each(TABLES)('cannot read %s', async (table) => {
     const res = await rest(`${encodeURIComponent(table)}?select=*&limit=1`)
-    // Revoked privileges → 401/403 (42501) or 404 (table hidden from the schema cache).
-    // A 200 is only acceptable if it returns no rows.
+    // Revoked privileges → 401/403 with Postgres code 42501, or 404 PGRST205 (table hidden from
+    // the schema cache). Any other error (e.g. PGRST125 "invalid path") means the test is not
+    // reaching the real endpoint and must fail. A 200 is only acceptable with no rows.
     if (res.ok) expect(await res.json()).toEqual([])
-    else expect([401, 403, 404]).toContain(res.status)
+    else expect(await denial(res)).toBe(true)
   })
 
   it.each(TABLES)('cannot insert into, update or delete from %s', async (table) => {
     const t = encodeURIComponent(table)
-    const insert = await rest(t, { method: 'POST', body: JSON.stringify({ id: 'rls-probe' }) })
+    // `{}` (all defaults): PostgREST attempts a real INSERT, so the privilege check decides.
+    // A body naming a column fails earlier on tables without that column (e.g. OfferMenuItem).
+    const insert = await rest(t, { method: 'POST', body: '{}' })
     const update = await rest(`${t}?id=eq.rls-probe`, {
       method: 'PATCH',
       body: JSON.stringify({ id: 'rls-probe-2' }),
@@ -65,6 +92,7 @@ describe.runIf(Boolean(url && key))('Supabase REST API is denied (TC-SEC-020)', 
       headers: { Prefer: 'return=representation' },
     })
     expect(insert.status).not.toBe(201)
+    expect(await denial(insert)).toBe(true)
     for (const res of [update, del]) {
       if (res.ok) expect(await res.json()).toEqual([])
       else expect(res.status).toBeGreaterThanOrEqual(400)

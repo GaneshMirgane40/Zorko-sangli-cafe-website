@@ -28,9 +28,11 @@ The full table is in TRD §8.
 - Where to find each value in the Supabase dashboard *(verified against the dashboard in Phase 3)*:
   - **`DATABASE_URL`:** Project → Connect → *Transaction pooler* (port 6543). Append the query parameters required by the Prisma 7 docs (recorded in Phase 3).
   - **`DIRECT_URL`:** Project → Connect → *Direct connection* or *Session pooler* (port 5432).
-  - **`NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`:** Project Settings → API Keys (publishable key, or the legacy anon key).
-  - **`SUPABASE_SECRET_KEY`:** Project Settings → API Keys → secret key (or the legacy service_role). Server only.
-  - **`RATE_LIMIT_SALT`:** generate with `openssl rand -hex 32`.
+  - **`NEXT_PUBLIC_SUPABASE_URL`:** the project URL, `https://<project-ref>.supabase.co` (Project Settings → Data API). The app uses only its origin, so the REST URL (`…/rest/v1/`) also works, but prefer the plain project URL.
+  - **`NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`:** Project Settings → API Keys (publishable key, or the legacy anon key).
+  - **`SUPABASE_SECRET_KEY`:** Project Settings → API Keys → secret key (or the legacy service_role). Server only. **Not used in Phase 5A** (admin provisioning needs no secret key); first needed for Storage uploads in Phase 5B.
+  - **`RATE_LIMIT_SALT`:** generate with `openssl rand -hex 32`. Required from Phase 5A (admin login rate limiting).
+  - **`E2E_ADMIN_EMAIL`/`E2E_ADMIN_PASSWORD`, `E2E_USER_EMAIL`/`E2E_USER_PASSWORD`:** development only, for the automated admin tests: two dedicated test accounts in the **dev** Supabase project (one becomes an admin in the throwaway test database only, one stays a normal user). Never set these in production.
   - **`NEXT_PUBLIC_SITE_URL`:** `http://localhost:3000` locally; the https production domain in production.
 
 ## 4. Local setup *(verified in Phase 2)*
@@ -76,16 +78,23 @@ ALLOW_DEMO_SEED=true npm run db:seed    # demo data; refuses without the flag an
 
 ## 6. First-admin provisioning *(Phase 5A)*
 
-1. Supabase dashboard → Authentication → Sign In / Providers → **disable "Allow new users to sign up"**. Keep Email provider enabled.
-2. Authentication → Users → **Add user** → email + strong password (≥14 chars, password manager), "Auto confirm user".
-3. On the dev machine: `npm run admin:grant -- --email <admin email>`. This looks up the user ID with the server-only secret key and inserts or activates the `AdminUser` row. It never creates or prints passwords.
-4. Log in at `/admin/login`.
+1. Supabase dashboard → Authentication → Sign In / Providers → **disable "Allow new users to sign up"**. Keep the Email provider enabled.
+2. Authentication → Users → **Add user** → **Create new user**: email + strong password (≥14 characters, from a password manager), tick **Auto Confirm User**. Copy the new user's **User UID**.
+3. On the dev machine (uses `DIRECT_URL` from `.env.local`):
+   ```bash
+   npm run admin:add -- --user-id <User UID> --email <admin email> --name "Display name"
+   npm run admin:list            # check: shows the admin as "active"
+   ```
+   The script only inserts or re-activates an `AdminUser` row and writes an audit entry. It never creates, reads or prints passwords and needs no Supabase secret key.
+4. Sign in at `/admin/login`.
 5. Optional (Q-14): enable MFA (TOTP) for admins in Supabase.
 
-- **Revoke an admin:** `npm run admin:revoke -- --email <email>` (sets `isActive=false`). Optionally delete the user in Supabase.
+- **Production:** the same steps against the production project; the script refuses to run with `VERCEL_ENV=production` unless `--production` is added (Phase 8).
+- **Disable an admin:** `npm run admin:disable -- --email <email>` (`isActive=false`; the row and its audit history stay). The next admin request is refused, because every page and action checks the allowlist. Optionally also delete or ban the user in Supabase.
 - **Recovery:**
-  - Forgotten password: reset it in the Supabase dashboard (Users → user → Reset password / Send recovery email).
+  - Forgotten password: reset it in the Supabase dashboard (Users → user → Send password recovery), or set a new one there.
   - Lost all admins: repeat steps 2–3.
+- **Sessions:** sign-out revokes that session's refresh token. A signed-out or forged token is rejected at once, because `requireAdmin()` checks the session with the Supabase Auth server (`getUser()`), not just the cookie (ADR-048).
 
 ## 7. Storage *(Phase 5B)*
 

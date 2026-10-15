@@ -196,7 +196,7 @@ erDiagram
    - The proxy only refreshes the session and redirects.
 4. **Logout:** POST `/api/admin/logout` (Origin check) → `supabase.auth.signOut()` (revokes the refresh token) → clear cookies → audit `LOGOUT` → redirect.
 5. **Session expiry:** an expired token makes `requireAdmin` fail. Server Actions return `{error:"SESSION_EXPIRED"}` and the client shows a toast and redirects to `/admin/login?next=<internal path>`. `next` is validated: it must start with `/admin` and not with `//`.
-6. **Provisioning:** first admin per DEPLOYMENT.md §6; `npm run admin:grant -- --email <email>` (server script; uses `DIRECT_URL` and the Supabase secret key to look up the user ID; never creates passwords).
+6. **Provisioning:** first admin per DEPLOYMENT.md §6; `npm run admin:add -- --user-id <User UID> --email <email>` (server script; uses `DIRECT_URL`; the User UID is copied from the Supabase dashboard, so no secret key is needed; never creates or reads passwords). `admin:disable`, `admin:list` (ADR-048).
 
 ## 6. API contracts
 

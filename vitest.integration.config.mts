@@ -18,7 +18,12 @@ export default defineConfig({
     environment: 'node',
     include: ['tests/integration/**/*.test.ts', 'tests/supabase/**/*.test.ts'],
     setupFiles: ['./tests/integration/setup.ts'],
-    env: { DATABASE_URL: TEST_DB, DIRECT_URL: TEST_DB },
+    // RATE_LIMIT_SALT: a fixed, non-secret value for the throwaway test database only.
+    env: {
+      DATABASE_URL: TEST_DB,
+      DIRECT_URL: TEST_DB,
+      RATE_LIMIT_SALT: 'integration-test-salt-not-a-secret-000000',
+    },
     fileParallelism: false, // tests share one database
     testTimeout: 20_000,
   },

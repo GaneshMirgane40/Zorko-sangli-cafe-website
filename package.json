@@ -28,11 +28,16 @@
     "test:db:up": "./scripts/test-db.sh up",
     "test:db:reset": "./scripts/test-db.sh reset",
     "test:db:down": "./scripts/test-db.sh down",
-    "db:import-menu": "tsx prisma/import-menu.ts"
+    "db:import-menu": "tsx prisma/import-menu.ts",
+    "admin:add": "tsx prisma/admin-allowlist.ts add",
+    "admin:disable": "tsx prisma/admin-allowlist.ts disable",
+    "admin:list": "tsx prisma/admin-allowlist.ts list"
   },
   "dependencies": {
     "@prisma/adapter-pg": "7.10.0",
     "@prisma/client": "7.10.0",
+    "@supabase/ssr": "^0.12.7",
+    "@supabase/supabase-js": "^2.118.0",
     "lucide-react": "1.56.0",
     "next": "16.4.0",
     "pg": "8.23.1",

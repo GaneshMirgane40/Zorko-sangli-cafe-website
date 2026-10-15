@@ -108,6 +108,8 @@ Added in Phase 4A: menu URL state (invalid values dropped, hrefs keep filters, c
 | TC-INT-042 | Café map/directions (ADR-046): Google Maps place > coordinates > verified address; unverified address never sent | `mapQuery`/`directionsUrl` as specified, URL-encoded; null when unverified |
 | TC-INT-050 | Response contracts (Zod-validated in the test) for every public endpoint | Match TRD §6 |
 | TC-INT-060 | Rate limiter: N allowed, N+1 → limited; window reset; concurrent increments | Correct counts under concurrency |
+| TC-INT-061 | Audit entries: admin name, trimmed and length-capped summary, newest first | Correct entry; summary ≤300 chars |
+| TC-INT-062 | Dashboard counts equal database counts (public items, available, active/scheduled offers, pending feedback, photos) | Matches the fixtures |
 | TC-INT-070 | Admin service transactions (add-on save replaces groups atomically; failure rolls back) | No partial writes |
 | TC-INT-071 | Audit entry written with every admin mutation | Present, no secrets |
 | TC-INT-080 | `/api/health` with DB up/down (mock) | 200 ok / 503 down, no internals |
