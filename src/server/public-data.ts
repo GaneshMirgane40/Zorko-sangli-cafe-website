@@ -85,3 +85,13 @@ export async function cachedHomeExtras() {
   ])
   return { banners, reviews, gallery, itemCount }
 }
+
+/** Published gallery for /gallery (capped: the café uploads tens of photos, not thousands). */
+export const GALLERY_PAGE_LIMIT = 60
+
+export async function cachedGallery() {
+  'use cache'
+  cacheLife(FRESH)
+  cacheTag(TAGS.home)
+  return listPublishedGallery(GALLERY_PAGE_LIMIT)
+}

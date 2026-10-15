@@ -13,11 +13,11 @@
 | | |
 |---|---|
 | **Current phase** | Phase 4B — Public site remainder |
-| **Phase status** | IN PROGRESS. Done: CI, demo menu (ADR-043), real Sangli menu (ADR-044), illustrative photos (ADR-045), **Offers & Combos** (`/offers`, `/offers/[slug]`), **Student Zone** (`/student-zone`). |
+| **Phase status** | IN PROGRESS. Done: CI, demo menu (ADR-043), real Sangli menu (ADR-044), illustrative photos (ADR-045), **Offers & Combos** (`/offers`, `/offers/[slug]`), **Student Zone** (`/student-zone`), home hero burger photo, **Gallery** (`/gallery` + lightbox). |
 | **Git** | Branch `phase-4b`, pushed to `origin` (github.com/uTkarsho6/cafe-website) after each task when the user says "push". `main` holds phases 0–4A (tags up to `phase-4a-approved`). |
-| **Last task completed** | Student Zone page (info only, disclaimer, student offers, empty state), live in nav, tests and baselines (2026-10-15). |
-| **Next action** | Gallery → About & Contact → SEO/sitemap/robots → nav links, responsive/a11y, baselines → Phase 4B report. |
-| **Waiting on the team** | "push" for the Student Zone task; open questions in `docs/OPEN_QUESTIONS.md`. |
+| **Last task completed** | Gallery page: grid + lightbox (prev/next, arrow keys, Escape), empty state until Phase 5C uploads, live in nav (2026-10-15). |
+| **Next action** | About & Contact → SEO/sitemap/robots → nav links, responsive/a11y, baselines → Phase 4B report. |
+| **Waiting on the team** | "push" for the Gallery task; open questions in `docs/OPEN_QUESTIONS.md`. |
 | **Note** | This Mac runs under very high load (BTLEServer ~97 % CPU), so E2E with 4 workers can time out on static files. Run `npx playwright test --workers=2` locally. |
 
 ### On approval (the CLAUDE.md §0.2 step 8 routine)

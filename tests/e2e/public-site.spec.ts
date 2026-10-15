@@ -13,6 +13,7 @@ const PAGES = [
   '/offers',
   '/offers/burger-fries-combo',
   '/student-zone',
+  '/gallery',
 ] as const
 const WIDTHS = [375, 430, 768, 1024, 1440]
 
@@ -302,7 +303,10 @@ test.describe('offers & combos (TC-E2E-030, TC-INT-030 end to end)', () => {
     ])
     // Unknown tab values fall back to "All".
     await gotoReady(page, '/offers?tab=evil')
-    await expect(page.getByRole('link', { name: 'All' })).toHaveAttribute('aria-current', 'page')
+    await expect(page.getByRole('link', { name: 'All', exact: true })).toHaveAttribute(
+      'aria-current',
+      'page',
+    )
   })
 
   test('offer details: included items link to the menu; scheduled shows its start date', async ({
@@ -317,6 +321,8 @@ test.describe('offers & combos (TC-E2E-030, TC-INT-030 end to end)', () => {
     await expect(page.getByText('You save ₹38')).toBeVisible()
     await page.getByRole('link', { name: /1× French Fries/ }).click()
     await expect(page).toHaveURL(/\/menu\/french-fries$/)
+    // Wait for the dish page to finish rendering before navigating again (WebKit race).
+    await expect(page.getByRole('heading', { level: 1, name: 'French Fries' })).toBeVisible()
     await gotoReady(page, '/offers/weekend-dessert-special')
     await expect(page.getByText(/^Starts /)).toBeVisible()
     await expect(page.getByText('Active now')).toHaveCount(0)
@@ -357,6 +363,35 @@ test.describe('student zone (TC-E2E-031)', () => {
       await expect(page.getByText(banned)).toHaveCount(0)
     await page.getByRole('link', { name: 'Student Snack Box' }).click()
     await expect(page).toHaveURL(/\/offers\/student-snack-box$/)
+  })
+})
+
+test.describe('gallery (TC-E2E-032)', () => {
+  test('is linked from the navigation and shows an empty state until photos are published', async ({
+    page,
+  }) => {
+    await gotoReady(page, '/student-zone')
+    await page.getByRole('contentinfo').getByRole('link', { name: 'Gallery' }).click()
+    await expect(page).toHaveURL(/\/gallery$/)
+    await expect(page.getByRole('heading', { level: 1, name: 'Gallery' })).toBeVisible()
+    // The test fixtures have no published photos (lightbox: tests/component/gallery-grid.test.tsx).
+    await expect(page.getByRole('heading', { name: 'No photos yet' })).toBeVisible()
+    await page.getByRole('link', { name: 'Browse the menu' }).click()
+    await expect(page).toHaveURL(/\/menu$/)
+  })
+})
+
+test.describe('gallery on mobile', () => {
+  test('the bottom nav "More" sheet links to the gallery', async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 })
+    await gotoReady(page, '/')
+    await page
+      .getByRole('navigation', { name: 'Bottom' })
+      .getByRole('button', { name: 'More' })
+      .click()
+    await page.getByRole('dialog', { name: 'More' }).getByRole('link', { name: 'Gallery' }).click()
+    await expect(page).toHaveURL(/\/gallery$/)
+    await expect(page.getByRole('dialog')).toHaveCount(0)
   })
 })
 
@@ -458,6 +493,7 @@ test.describe('visual baselines (TC-VIS-001…003)', () => {
     ['item', '/menu/classic-veg-burger'],
     ['offers', '/offers'],
     ['student-zone', '/student-zone'],
+    ['gallery', '/gallery'],
   ] as const) {
     for (const [device, width, height] of [
       ['desktop', 1440, 900],
