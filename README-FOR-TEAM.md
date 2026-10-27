@@ -62,3 +62,4 @@ Open your browser at: **[http://localhost:3000](http://localhost:3000)**
   * Print or configure table tent cards.
 * **Audit Log (`/admin`):**
   * Tracks every administrative action with timestamps.
+
