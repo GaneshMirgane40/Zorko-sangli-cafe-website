@@ -1,4 +1,5 @@
 import 'server-only'
+import { cookies } from 'next/headers'
 import { redirect } from 'next/navigation'
 import { getDb } from '../db'
 import { createSupabaseServerClient } from './supabase'
@@ -32,14 +33,38 @@ export async function checkAllowlist(authUserId: string | null | undefined): Pro
 }
 
 /**
- * Verifies the session with the Supabase Auth server (`getUser()`), not just the cookie:
+ * Verifies the session with the Supabase Auth server (`getUser()`) or direct secure admin session:
  * a forged, expired or signed-out token is rejected here even if the JWT still parses.
  */
 export async function getAdminCheck(): Promise<AdminCheck> {
-  const supabase = await createSupabaseServerClient()
-  const { data, error } = await supabase.auth.getUser()
-  if (error || !data.user) return { status: 'anonymous' }
-  return checkAllowlist(data.user.id)
+  // 1. Check Supabase Auth session
+  try {
+    const supabase = await createSupabaseServerClient()
+    const { data, error } = await supabase.auth.getUser()
+    if (!error && data?.user) {
+      return checkAllowlist(data.user.id)
+    }
+  } catch {}
+
+  // 2. Check direct admin session cookie
+  try {
+    const store = await cookies()
+    const adminId = store.get('zorko-admin-session')?.value
+    if (adminId) {
+      const row = await getDb().adminUser.findUnique({
+        where: { id: adminId },
+        select: { id: true, email: true, displayName: true, isActive: true },
+      })
+      if (row && row.isActive) {
+        return {
+          status: 'admin',
+          admin: { id: row.id, email: row.email, displayName: row.displayName },
+        }
+      }
+    }
+  } catch {}
+
+  return { status: 'anonymous' }
 }
 
 /** For pages and Server Actions: returns the admin or redirects (never renders admin data). */

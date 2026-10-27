@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import Link from 'next/link'
 import { connection } from 'next/server'
 import { formatDateIST } from '@/lib/format'
 import { requireAdmin } from '@/server/auth/admin'
@@ -11,6 +12,11 @@ const ACTION_LABEL: Record<string, string> = {
   LOGIN_REFUSED: 'Sign-in refused',
   LOGOUT: 'Signed out',
   ADMIN_ALLOWLISTED: 'Admin added',
+  MENU_ITEM_CREATED: 'Dish added',
+  MENU_ITEM_UPDATED: 'Dish updated',
+  MENU_ITEM_DELETED: 'Dish removed',
+  FEEDBACK_MODERATED: 'Feedback moderated',
+  FEEDBACK_DELETED: 'Feedback deleted',
 }
 
 /** Dashboard (UI_SPEC §13): real counts from the database and the latest audit entries. */
@@ -19,12 +25,12 @@ export default async function AdminDashboardPage() {
   const admin = await requireAdmin('/admin')
   const [stats, audit] = await Promise.all([getDashboardStats(), listRecentAudit(10)])
   const cards = [
-    { label: 'Menu items', value: stats.totalItems },
-    { label: 'Available', value: stats.availableItems },
-    { label: 'Out of stock', value: stats.unavailableItems },
+    { label: 'Menu items', value: stats.totalItems, href: '/admin/menu' },
+    { label: 'Available', value: stats.availableItems, href: '/admin/menu' },
+    { label: 'Out of stock', value: stats.unavailableItems, href: '/admin/menu' },
     { label: 'Active offers', value: stats.activeOffers },
     { label: 'Scheduled offers', value: stats.scheduledOffers },
-    { label: 'Pending feedback', value: stats.pendingFeedback },
+    { label: 'Pending feedback', value: stats.pendingFeedback, href: '/admin/feedback' },
     { label: 'Gallery photos', value: stats.publishedPhotos },
   ]
 
@@ -43,16 +49,28 @@ export default async function AdminDashboardPage() {
           Summary
         </h2>
         <dl className="grid gap-space-md sm:grid-cols-2 xl:grid-cols-4">
-          {cards.map((c) => (
-            <div
-              key={c.label}
-              data-testid="stat-card"
-              className="flex flex-col gap-1 rounded-2xl bg-surface-container-lowest p-space-lg shadow-sm"
-            >
-              <dt className="text-label-md text-on-surface-variant">{c.label}</dt>
-              <dd className="font-heading text-headline-lg">{c.value}</dd>
-            </div>
-          ))}
+          {cards.map((c) => {
+            const content = (
+              <div
+                key={c.label}
+                data-testid="stat-card"
+                className={`flex flex-col gap-1 rounded-2xl bg-surface-container-lowest p-space-lg shadow-sm transition-all ${
+                  c.href ? 'hover:shadow-md hover:border-primary/30 border border-transparent' : ''
+                }`}
+              >
+                <dt className="text-label-md text-on-surface-variant">{c.label}</dt>
+                <dd className="font-heading text-headline-lg">{c.value}</dd>
+              </div>
+            )
+
+            return c.href ? (
+              <Link key={c.label} href={c.href}>
+                {content}
+              </Link>
+            ) : (
+              <div key={c.label}>{content}</div>
+            )
+          })}
         </dl>
       </section>
 

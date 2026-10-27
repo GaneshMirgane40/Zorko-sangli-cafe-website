@@ -245,16 +245,30 @@ async function HomeContent() {
                 ) : undefined
               }
             />
-            <ul className="grid grid-cols-2 gap-space-sm md:grid-cols-3">
+            <ul
+              className={
+                extras.gallery.length <= 2
+                  ? 'grid grid-cols-1 gap-6 md:grid-cols-2 max-w-4xl mx-auto'
+                  : 'grid grid-cols-2 gap-space-sm md:grid-cols-3'
+              }
+            >
               {extras.gallery.map((g) => (
-                <li key={g.id} className="relative aspect-square overflow-hidden rounded-2xl">
+                <li
+                  key={g.id}
+                  className="group relative aspect-[4/3] sm:aspect-[5/4] overflow-hidden rounded-3xl border border-surface-container-high bg-surface-container-lowest shadow-md transition-all duration-300 hover:shadow-xl"
+                >
                   <Image
                     src={g.url}
                     alt={g.altText}
                     fill
-                    sizes="(min-width: 768px) 33vw, 50vw"
-                    className="object-cover"
+                    sizes="(min-width: 768px) 50vw, 100vw"
+                    className="object-cover object-center transition-transform duration-500 motion-safe:group-hover:scale-105"
                   />
+                  {g.caption && (
+                    <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent p-space-md text-body-sm font-medium text-white">
+                      {g.caption}
+                    </div>
+                  )}
                 </li>
               ))}
             </ul>

@@ -1,6 +1,6 @@
 'use client'
 
-import { Menu } from 'lucide-react'
+import { Lock, Menu } from 'lucide-react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { Suspense, useState } from 'react'
@@ -58,6 +58,17 @@ function MobileNavView({ items, pathname }: { items: NavItem[]; pathname: string
                 </li>
               )
             })}
+
+            <li className="mt-2 pt-2 border-t border-surface-container">
+              <Link
+                href="/admin"
+                onClick={() => setOpen(false)}
+                className="flex min-h-11 items-center gap-2 rounded-xl px-space-md text-label-md text-on-surface-variant hover:bg-surface-container hover:text-on-surface"
+              >
+                <Lock aria-hidden="true" className="size-4" />
+                <span>Staff / Admin Portal</span>
+              </Link>
+            </li>
           </ul>
         </nav>
       </Dialog>

@@ -1,6 +1,14 @@
 'use client'
 
-import { Ellipsis, GraduationCap, House, Tag, UtensilsCrossed, type LucideIcon } from 'lucide-react'
+import {
+  Ellipsis,
+  GraduationCap,
+  House,
+  Lock,
+  Tag,
+  UtensilsCrossed,
+  type LucideIcon,
+} from 'lucide-react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { Suspense, useState } from 'react'
@@ -101,6 +109,17 @@ function BottomNavView({
                 </Link>
               </li>
             ))}
+
+            <li className="mt-2 pt-2 border-t border-surface-container">
+              <Link
+                href="/admin"
+                onClick={() => setOpen(false)}
+                className="flex min-h-11 items-center gap-2 rounded-xl px-space-md text-label-md text-on-surface-variant hover:bg-surface-container hover:text-on-surface"
+              >
+                <Lock aria-hidden="true" className="size-4 text-primary" />
+                <span>Staff / Admin Portal</span>
+              </Link>
+            </li>
           </ul>
         </Dialog>
       )}

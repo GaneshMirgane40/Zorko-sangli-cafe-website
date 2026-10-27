@@ -1,23 +1,36 @@
+import Image from 'next/image'
 import Link from 'next/link'
 
-/** Text wordmark (UI_SPEC §8.1). The official logo is used only once permission is confirmed (Q-09). */
-export function Logo() {
+interface LogoProps {
+  className?: string
+  showTag?: boolean
+  priority?: boolean
+}
+
+/** Official ZORKO Brand Logo with Sangli outlet tag. */
+export function Logo({ className = '', showTag = true, priority = true }: LogoProps) {
   return (
     <Link
       href="/"
-      className="flex shrink-0 items-center gap-space-sm rounded-xl"
+      className={`group flex shrink-0 items-center gap-space-xs rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary ${className}`}
       aria-label="ZORKO Sangli — home"
     >
-      <span
-        aria-hidden="true"
-        className="flex size-11 items-center justify-center rounded-xl bg-primary font-heading text-headline-sm font-extrabold text-on-primary"
-      >
-        Z
-      </span>
-      <span aria-hidden="true" className="flex flex-col leading-none">
-        <span className="font-heading text-headline-sm font-extrabold">ZORKO</span>
-        <span className="text-label-sm tracking-widest text-primary uppercase">Sangli</span>
-      </span>
+      <Image
+        src="/logo.webp"
+        alt="ZORKO — Brand of Food Lovers"
+        width={118}
+        height={50}
+        priority={priority}
+        className="h-10 w-auto object-contain transition-transform group-hover:scale-105 md:h-12"
+      />
+      {showTag && (
+        <span
+          aria-hidden="true"
+          className="rounded-full bg-primary/10 px-2 py-0.5 font-heading text-[11px] font-bold tracking-wider text-primary uppercase transition-colors group-hover:bg-primary/15"
+        >
+          Sangli
+        </span>
+      )}
     </Link>
   )
 }

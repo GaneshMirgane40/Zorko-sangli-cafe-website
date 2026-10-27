@@ -20,7 +20,7 @@ function InfoBar({ cafe }: { cafe: CafeDto }) {
   const today = todayHours(cafe)
   return (
     <div className="hidden bg-surface-container-low md:block">
-      <div className="mx-auto flex h-9 max-w-[1280px] items-center justify-between gap-space-md px-margin-tablet text-label-md text-on-surface-variant lg:px-margin-desktop">
+      <div className="mx-auto flex h-9 max-w-7xl xl:max-w-[1380px] 2xl:max-w-[1480px] items-center justify-between gap-space-md px-4 sm:px-6 md:px-8 lg:px-10 text-label-md text-on-surface-variant">
         <div className="flex min-w-0 items-center gap-space-md">
           <PureVegPill confirmed={cafe.isPureVegConfirmed} />
           <span className="flex min-w-0 items-center gap-1.5">
@@ -45,16 +45,14 @@ function InfoBar({ cafe }: { cafe: CafeDto }) {
 }
 
 /**
- * Public header (UI_SPEC §8.1): sticky; info bar ≥768; nav pills ≥1280; drawer 768–1279;
- * compact row + bottom nav <768. `cafe` is null when the database is unavailable — the header
- * still renders so navigation keeps working.
+ * Public header: sticky; info bar ≥768; fluid responsive container.
  */
 export function SiteHeader({ cafe }: { cafe: CafeDto | null }) {
   const nav = liveNav()
   return (
     <header className="sticky top-0 z-50 bg-surface/90 shadow-[0_1px_8px_rgba(0,0,0,0.04)] backdrop-blur-xl">
       {cafe && <InfoBar cafe={cafe} />}
-      <div className="mx-auto flex h-16 max-w-[1280px] items-center justify-between gap-space-md px-margin md:h-20 md:px-margin-tablet lg:px-margin-desktop">
+      <div className="mx-auto flex h-16 max-w-7xl xl:max-w-[1380px] 2xl:max-w-[1480px] items-center justify-between gap-space-md px-4 sm:px-6 md:px-8 lg:px-10 md:h-20">
         <Logo />
         <NavLinks items={nav} />
         <div className="flex items-center gap-space-sm">

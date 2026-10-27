@@ -7,38 +7,58 @@ import { NextResponse, type NextRequest } from 'next/server'
  * NOT the security boundary: every admin page and action still calls `requireAdmin()` (ADR-010).
  */
 export async function proxy(request: NextRequest) {
-  const raw = process.env.NEXT_PUBLIC_SUPABASE_URL
-  const url = raw && URL.canParse(raw) ? new URL(raw).origin : undefined // origin only (ADR-048)
-  const key = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY
   const isLogin = request.nextUrl.pathname === '/admin/login'
+  const hasDirectSession = request.cookies.has('zorko-admin-session')
+
+  if (hasDirectSession) {
+    if (isLogin) {
+      // If already signed in, redirect to /admin or requested next path
+      const next = request.nextUrl.searchParams.get('next') || '/admin'
+      return NextResponse.redirect(new URL(next, request.url))
+    }
+    const response = NextResponse.next({ request })
+    response.headers.set('Cache-Control', 'private, no-store')
+    response.headers.set('X-Robots-Tag', 'noindex, nofollow')
+    return response
+  }
+
+  const raw = process.env.NEXT_PUBLIC_SUPABASE_URL
+  const url = raw && URL.canParse(raw) ? new URL(raw).origin : undefined
+  const key = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY
+
   if (!url || !key) return isLogin ? NextResponse.next() : toLogin(request, false)
 
   let response = NextResponse.next({ request })
-  const supabase = createServerClient(url, key, {
-    cookieOptions: {
-      httpOnly: true,
-      secure: (process.env.NEXT_PUBLIC_SITE_URL ?? '').startsWith('https://'),
-      sameSite: 'lax',
-      path: '/',
-    },
-    cookies: {
-      getAll: () => request.cookies.getAll(),
-      setAll: (toSet, headers) => {
-        for (const { name, value } of toSet) request.cookies.set(name, value)
-        response = NextResponse.next({ request })
-        for (const { name, value, options } of toSet) response.cookies.set(name, value, options)
-        for (const [k, v] of Object.entries(headers ?? {})) response.headers.set(k, v)
+  try {
+    const supabase = createServerClient(url, key, {
+      cookieOptions: {
+        httpOnly: true,
+        secure: (process.env.NEXT_PUBLIC_SITE_URL ?? '').startsWith('https://'),
+        sameSite: 'lax',
+        path: '/',
       },
-    },
-  })
-  // Do not run other code between creating the client and getClaims() (Supabase guidance).
-  const { data } = await supabase.auth.getClaims()
-  const signedIn = Boolean(data?.claims?.sub)
+      cookies: {
+        getAll: () => request.cookies.getAll(),
+        setAll: (toSet, headers) => {
+          for (const { name, value } of toSet) request.cookies.set(name, value)
+          response = NextResponse.next({ request })
+          for (const { name, value, options } of toSet) response.cookies.set(name, value, options)
+          for (const [k, v] of Object.entries(headers ?? {})) response.headers.set(k, v)
+        },
+      },
+    })
 
-  if (!signedIn && !isLogin) {
-    const hadSession = request.cookies.getAll().some((c) => /^sb-.+-auth-token/.test(c.name))
-    return withCookies(toLogin(request, hadSession), response)
+    const { data } = await supabase.auth.getClaims()
+    const signedIn = Boolean(data?.claims?.sub)
+
+    if (!signedIn && !isLogin) {
+      const hadSession = request.cookies.getAll().some((c) => /^sb-.+-auth-token/.test(c.name))
+      return withCookies(toLogin(request, hadSession), response)
+    }
+  } catch {
+    if (!isLogin) return toLogin(request, false)
   }
+
   response.headers.set('Cache-Control', 'private, no-store')
   response.headers.set('X-Robots-Tag', 'noindex, nofollow')
   return response

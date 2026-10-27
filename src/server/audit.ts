@@ -6,7 +6,16 @@ import { log } from './log'
  * Audit records for important admin actions (CLAUDE.md §4.9): who, what, when, a short
  * non-sensitive summary. Never pass passwords, tokens, cookies, emails or IPs in `summary`.
  */
-export type AuditAction = 'LOGIN' | 'LOGIN_REFUSED' | 'LOGOUT' | 'ADMIN_ALLOWLISTED'
+export type AuditAction =
+  | 'LOGIN'
+  | 'LOGIN_REFUSED'
+  | 'LOGOUT'
+  | 'ADMIN_ALLOWLISTED'
+  | 'MENU_ITEM_CREATED'
+  | 'MENU_ITEM_UPDATED'
+  | 'MENU_ITEM_DELETED'
+  | 'FEEDBACK_MODERATED'
+  | 'FEEDBACK_DELETED'
 
 export async function recordAudit(entry: {
   adminUserId: string | null

@@ -211,7 +211,7 @@ async function MenuContent({ searchParams }: Pick<PageProps<'/menu'>, 'searchPar
             className={cn(
               list
                 ? 'flex flex-col gap-space-sm'
-                : 'grid grid-cols-2 gap-space-sm md:gap-space-md xl:grid-cols-3',
+                : 'grid grid-cols-1 sm:grid-cols-2 gap-space-sm md:gap-space-md xl:grid-cols-3 2xl:grid-cols-4',
             )}
           >
             {items.map((item, i) => (

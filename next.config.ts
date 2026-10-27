@@ -16,6 +16,16 @@ const nextConfig: NextConfig = {
   cacheComponents: true,
   partialPrefetching: true,
   poweredByHeader: false,
+  images: {
+    remotePatterns: supabaseOrigin
+      ? [new URL(`${supabaseOrigin}/storage/v1/object/public/**`)]
+      : [
+          {
+            protocol: 'https',
+            hostname: '**.supabase.co',
+          },
+        ],
+  },
   turbopack: {
     // Pin the project root: an unrelated package-lock.json exists in a parent folder.
     root: path.resolve(__dirname),
